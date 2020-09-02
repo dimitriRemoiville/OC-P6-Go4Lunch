@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Go4Lunch</string>
+    <string name="facebook_app_id">4110727392277145</string> <string name="fb_login_protocol_scheme">fb4110727392277145</string>
+    <!-- ... -->
+    <string name="facebook_application_id" translatable="false">4110727392277145</string>
+    <!-- Facebook Application ID, prefixed by 'fb'. Enables Chrome Custom tabs. -->
+    <string name="facebook_login_protocol_scheme" translatable="false">fb4110727392277145</string>
+
 </resources>
