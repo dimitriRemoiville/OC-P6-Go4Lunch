@@ -1,9 +1,14 @@
 <resources>
     <string name="app_name">Go4Lunch</string>
+
+    <!-- Facebook login -->
     <string name="facebook_app_id">4110727392277145</string> <string name="fb_login_protocol_scheme">fb4110727392277145</string>
-    <!-- ... -->
     <string name="facebook_application_id" translatable="false">4110727392277145</string>
-    <!-- Facebook Application ID, prefixed by 'fb'. Enables Chrome Custom tabs. -->
     <string name="facebook_login_protocol_scheme" translatable="false">fb4110727392277145</string>
 
+    <!-- Main Activity - Sign in -->
+    <string name="connection_succeed">Authentification réussie !</string>
+    <string name="error_authentication_canceled">Authentification annulée&#8230;</string>
+    <string name="error_no_internet">Aucune connexion internet !</string>
+    <string name="error_unknown_error">Une erreur inconnue s\'est produite&#8230;</string>
 </resources>
