@@ -12,6 +12,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
@@ -28,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration mBottomNavigationBar;
     private AppBarConfiguration mNavigationDrawer;
     private ConstraintLayout constraintLayout;
+    private static final String TAG = "MainActivity";
 
 
     @Override
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         constraintLayout = findViewById(R.id.content_main);
+        Log.d(TAG, "onCreate: ");
 
         // Bottom navigation
         BottomNavigationView navView = findViewById(R.id.nav_view);
@@ -61,13 +64,13 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navigationView, navController1);
 
         // Launch authentication screen
-        //startSignIn();
+        startSignIn();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        //handleResponseAfterSignIn(requestCode, resultCode, data);
+        handleResponseAfterSignIn(requestCode, resultCode, data);
     }
 
     private void startSignIn() {
@@ -111,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onSupportNavigateUp() {
+        Log.d(TAG, "onSupportNavigateUp: test");
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         return NavigationUI.navigateUp(navController, mNavigationDrawer)
                 || super.onSupportNavigateUp();

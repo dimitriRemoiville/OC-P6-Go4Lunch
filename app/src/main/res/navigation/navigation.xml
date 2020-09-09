@@ -3,23 +3,35 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
-    app:startDestination="@+id/navigation_mapview">
+    app:startDestination="@+id/nav_mapview">
 
     <fragment
-        android:id="@+id/navigation_mapview"
+        android:id="@+id/nav_mapview"
         android:name="com.dimitri.remoiville.go4lunch.ui.mapview.MapViewFragment"
         android:label="@string/title_mapview"
         tools:layout="@layout/fragment_mapview" />
 
     <fragment
-        android:id="@+id/navigation_listview"
+        android:id="@+id/nav_listview"
         android:name="com.dimitri.remoiville.go4lunch.ui.listview.ListViewFragment"
         android:label="@string/title_listview"
         tools:layout="@layout/fragment_listview" />
 
     <fragment
-        android:id="@+id/navigation_workmates"
+        android:id="@+id/nav_workmates"
         android:name="com.dimitri.remoiville.go4lunch.ui.workmates.WorkmatesFragment"
         android:label="@string/title_workmates"
         tools:layout="@layout/fragment_workmates" />
+
+    <fragment
+        android:id="@+id/nav_yourLunch"
+        android:name="com.dimitri.remoiville.go4lunch.ui.yourlunch.YourLunchFragment"
+        android:label="@string/menu_yourLunch"
+        tools:layout="@layout/fragment_yourlunch" />
+
+    <fragment
+        android:id="@+id/nav_settings"
+        android:name="com.dimitri.remoiville.go4lunch.ui.settings.SettingsFragment"
+        android:label="@string/menu_settings"
+        tools:layout="@layout/fragment_settings" />
 </navigation>
