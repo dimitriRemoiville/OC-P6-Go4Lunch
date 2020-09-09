@@ -2,7 +2,9 @@ package com.dimitri.remoiville.go4lunch;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -15,6 +17,7 @@ import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Arrays;
@@ -22,6 +25,8 @@ import java.util.Arrays;
 public class MainActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 123;
+    private AppBarConfiguration mBottomNavigationBar;
+    private AppBarConfiguration mNavigationDrawer;
     private ConstraintLayout constraintLayout;
 
 
@@ -29,24 +34,40 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        constraintLayout = findViewById(R.id.main_activity);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        constraintLayout = findViewById(R.id.content_main);
+
+        // Bottom navigation
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_mapview, R.id.navigation_listview, R.id.navigation_workmates)
+        mBottomNavigationBar = new AppBarConfiguration.Builder(
+                R.id.nav_mapview, R.id.nav_listview, R.id.nav_workmates)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+        NavigationUI.setupActionBarWithNavController(this, navController, mBottomNavigationBar);
         NavigationUI.setupWithNavController(navView, navController);
+
+        // Drawer navigation
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        NavigationView navigationView = findViewById(R.id.nav_view_drawer);
+        mNavigationDrawer = new AppBarConfiguration.Builder(
+                R.id.nav_yourLunch, R.id.nav_settings, R.id.nav_logout)
+                .setDrawerLayout(drawer)
+                .build();
+        NavController navController1 = Navigation.findNavController(this, R.id.nav_host_fragment);
+        NavigationUI.setupActionBarWithNavController(this, navController1, mNavigationDrawer);
+        NavigationUI.setupWithNavController(navigationView, navController1);
+
         // Launch authentication screen
-        startSignIn();
+        //startSignIn();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        handleResponseAfterSignIn(requestCode, resultCode, data);
+        //handleResponseAfterSignIn(requestCode, resultCode, data);
     }
 
     private void startSignIn() {
@@ -86,5 +107,12 @@ public class MainActivity extends AppCompatActivity {
     // Show Snack Bar with a message
     private void showSnackBar(ConstraintLayout constraintLayout, String message){
         Snackbar.make(constraintLayout, message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        return NavigationUI.navigateUp(navController, mNavigationDrawer)
+                || super.onSupportNavigateUp();
     }
 }
