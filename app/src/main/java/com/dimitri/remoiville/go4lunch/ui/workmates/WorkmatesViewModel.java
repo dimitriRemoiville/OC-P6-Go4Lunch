@@ -9,7 +9,7 @@ public class WorkmatesViewModel extends ViewModel {
 
     public WorkmatesViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is Workmates fragment");
+        mText.setValue("This is Workmate fragment");
     }
 
     public LiveData<String> getText() {
