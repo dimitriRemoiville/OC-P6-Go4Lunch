@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.dimitri.remoiville.go4lunch.BuildConfig;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -25,6 +26,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     private MapViewViewModel mMapViewViewModel;
     private GoogleMap mMap;
     private MapView mMapView;
+    private String API_KEY = BuildConfig.API_KEY;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -46,7 +48,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         mMapView.getMapAsync(this);
 
         // Initialize the SDK
-        Places.initialize(getActivity().getApplicationContext(), "AIzaSyAynh8qPrSebLcyLjTc3JcVAIcGrST9FlE");
+        Places.initialize(getActivity().getApplicationContext(), API_KEY);
 
         // Create a new PlacesClient instance
         PlacesClient placesClient = Places.createClient(getActivity().getApplicationContext());
