@@ -1,8 +1,5 @@
 package com.dimitri.remoiville.go4lunch.ui.mapview;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,14 +12,14 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.dimitri.remoiville.go4lunch.R;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.net.PlacesClient;
 
 public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     private MapViewViewModel mMapViewViewModel;
@@ -48,10 +45,15 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
         mMapView.getMapAsync(this);
 
+        // Initialize the SDK
+        Places.initialize(getActivity().getApplicationContext(), "AIzaSyAynh8qPrSebLcyLjTc3JcVAIcGrST9FlE");
+
+        // Create a new PlacesClient instance
+        PlacesClient placesClient = Places.createClient(getActivity().getApplicationContext());
+
         return root;
     }
 
-    @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;

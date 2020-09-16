@@ -65,6 +65,8 @@ dependencies {
 
     // Google maps
     implementation 'com.google.maps.android:android-maps-utils:2.0.3'
+    // Google places
+    implementation 'com.google.android.libraries.places:places:2.3.0'
 
 
 }
