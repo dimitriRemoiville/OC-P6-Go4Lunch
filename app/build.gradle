@@ -3,6 +3,10 @@ apply plugin: 'com.android.application'
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 def googleMapKey = properties.getProperty('googleMapKey')
+def RELEASE_STORE_FILE = properties.getProperty('RELEASE_STORE_FILE')
+def RELEASE_STORE_PASSWORD = properties.getProperty('RELEASE_STORE_PASSWORD')
+def RELEASE_KEY_ALIAS = properties.getProperty('RELEASE_KEY_ALIAS')
+def RELEASE_KEY_PASSWORD = properties.getProperty('RELEASE_KEY_PASSWORD')
 
 android {
     compileSdkVersion 30
@@ -21,10 +25,23 @@ android {
         manifestPlaceholders = [googleMapKey: googleMapKey]
     }
 
+    signingConfigs {
+        release {
+            storeFile file(RELEASE_STORE_FILE)
+            storePassword RELEASE_STORE_PASSWORD
+            keyAlias RELEASE_KEY_ALIAS
+            keyPassword RELEASE_KEY_PASSWORD
+
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled true
             shrinkResources true
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
@@ -38,8 +55,6 @@ android {
 }
 
 apply plugin: 'com.google.gms.google-services'
-// Apply the Crashlytics Gradle plugin
-apply plugin: 'com.google.firebase.crashlytics'
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
@@ -58,9 +73,6 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui:2.3.0'
 
     // Firebase SDK for Google Analytics
-    implementation 'com.google.firebase:firebase-analytics:17.5.0'
-    // Firebase Crashlytics SDK.
-    implementation 'com.google.firebase:firebase-crashlytics:17.2.1'
     // Firebase UI
     // Firebase authentication
     implementation 'com.firebaseui:firebase-ui-auth:6.3.0'
@@ -73,5 +85,8 @@ dependencies {
     // Google maps
     implementation 'com.google.maps.android:android-maps-utils:2.0.3'
     // Google places
-    implementation 'com.google.android.libraries.places:places:2.3.0'
+    implementation 'com.google.android.libraries.places:places:2.4.0'
+
+    // EasyPermissions
+    implementation 'pub.devrel:easypermissions:3.0.0'
 }

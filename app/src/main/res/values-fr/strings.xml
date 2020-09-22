@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Go4Lunch</string>
+    <string name="connection_succeed">Authentification réussie !</string>
+    <string name="error_authentication_canceled">Authentification annulée&#8230;</string>
+    <string name="error_no_internet">Aucune connexion internet !</string>
+    <string name="error_unknown_error">Une erreur inconnue s\\\'est produite&#8230;</string>
+    <string name="title_mapview">Carte</string>
+    <string name="title_listview">Liste</string>
+    <string name="title_workmates">Collègues</string>
+    <string name="navigation_drawer_open">Ouvrir le volet de navigation</string>
+    <string name="navigation_drawer_close">Fermer le volet de navigation</string>
+    <string name="action_settings">Réglages</string>
+    <string name="menu_yourLunch">Ton déjeuner</string>
+    <string name="menu_settings">Réglages</string>
+    <string name="menu_logout">Déconnexion</string>
+    <string name="nav_header_desc">En-tête de navigation</string>
+</resources>
