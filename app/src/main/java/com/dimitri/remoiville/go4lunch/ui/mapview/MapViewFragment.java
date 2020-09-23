@@ -93,7 +93,7 @@ public class MapViewFragment extends Fragment
                     if (location != null) {
                         lastLocation = location;
                         LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(currentLatLng, 10);
+                        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(currentLatLng, 15);
                         mMap.moveCamera(update);
                     }
                 }

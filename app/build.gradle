@@ -13,6 +13,7 @@ android {
     buildToolsVersion "30.0.2"
 
     defaultConfig {
+        vectorDrawables.useSupportLibrary = true
         applicationId "com.dimitri.remoiville.go4lunch"
         minSdkVersion 19
         targetSdkVersion 30

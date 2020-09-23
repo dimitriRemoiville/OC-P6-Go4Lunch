@@ -5,9 +5,9 @@ import androidx.annotation.Nullable;
 import java.util.List;
 import java.util.Set;
 
-public class Restaurant {
+public class Place {
 
-    private long restaurantId;
+    private long placeId;
     private String mName;
     private String mType;
     private String mAddress;
@@ -18,8 +18,8 @@ public class Restaurant {
     private List<Workmate> mWorkmateList;
     private Set<OpeningHours> mOpeningHours;
 
-    public Restaurant(long restaurantId, String name, String type, String address, int distance, int rating, String urlPicture, List<Workmate> workmateList, Set<OpeningHours> openingHours) {
-        this.restaurantId = restaurantId;
+    public Place(long placeId, String name, String type, String address, int distance, int rating, String urlPicture, List<Workmate> workmateList, Set<OpeningHours> openingHours) {
+        this.placeId = placeId;
         mName = name;
         mType = type;
         mAddress = address;
@@ -30,12 +30,12 @@ public class Restaurant {
         mOpeningHours = openingHours;
     }
 
-    public long getRestaurantId() {
-        return restaurantId;
+    public long getPlaceId() {
+        return placeId;
     }
 
-    public void setRestaurantId(long restaurantId) {
-        this.restaurantId = restaurantId;
+    public void setPlaceId(long placeId) {
+        this.placeId = placeId;
     }
 
     public String getName() {
