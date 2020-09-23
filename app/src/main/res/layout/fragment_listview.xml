@@ -67,7 +67,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/list_places_nb_workmates"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_person_outline_24" />
+            app:srcCompat="@drawable/person_outline_black_24" />
 
         <TextView
             android:id="@+id/list_places_nb_workmates"
@@ -111,7 +111,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/list_places_star2"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_star_24" />
+            app:srcCompat="@drawable/star_yellow_24" />
 
         <ImageView
             android:id="@+id/list_places_star2"
@@ -121,7 +121,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/list_places_star3"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_star_24" />
+            app:srcCompat="@drawable/star_yellow_24" />
 
         <ImageView
             android:id="@+id/list_places_star3"
@@ -131,7 +131,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_star_24" />
+            app:srcCompat="@drawable/star_yellow_24" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -143,6 +143,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_baseline_star_24" />
+        app:srcCompat="@drawable/star_yellow_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

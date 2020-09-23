@@ -4,14 +4,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_search"
-        android:icon="@drawable/ic_baseline_search_24"
+        android:icon="@drawable/search_white_24"
         android:title="Search"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="ifRoom|collapseActionView" />
 
     <item
         android:id="@+id/action_chat"
-        android:icon="@drawable/ic_baseline_message_24"
+        android:icon="@drawable/message_white_24"
         android:title="Chat"
         app:showAsAction="ifRoom|collapseActionView"
         />
