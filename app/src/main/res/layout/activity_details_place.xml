@@ -17,7 +17,8 @@
         <ImageView
             android:id="@+id/activity_details_img"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="1.66:1"
             android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -27,12 +28,13 @@
             android:id="@+id/activity_details_act_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="35dp"
+            android:layout_marginEnd="32dp"
             android:clickable="true"
             android:focusable="true"
             app:backgroundTint="@android:color/white"
-            app:layout_constraintBottom_toBottomOf="@id/activity_details_img"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/activity_details_img"
+            app:layout_constraintBottom_toTopOf="@id/activity_details_restaurant_card"
+            app:layout_constraintEnd_toEndOf="@id/activity_details_restaurant_card"
             app:srcCompat="@drawable/check_circle_green_24" />
 
         <LinearLayout
@@ -200,7 +202,9 @@
             android:layout_height="match_parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/activity_details_grid_layout"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager">
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:context=".ui.DetailsPlaceActivity"
+            tools:listitem="@layout/activity_details_place_item">
 
         </androidx.recyclerview.widget.RecyclerView>
     </androidx.constraintlayout.widget.ConstraintLayout>
