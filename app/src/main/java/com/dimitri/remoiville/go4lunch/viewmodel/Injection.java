@@ -1,4 +1,4 @@
-package com.dimitri.remoiville.go4lunch.utils;
+package com.dimitri.remoiville.go4lunch.viewmodel;
 
 import com.dimitri.remoiville.go4lunch.source.repository.PlacesRepository;
 

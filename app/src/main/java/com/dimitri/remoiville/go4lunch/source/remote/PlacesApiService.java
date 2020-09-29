@@ -5,6 +5,7 @@ import com.dimitri.remoiville.go4lunch.model.PlacesPOJO;
 import java.util.List;
 
 import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.Observable;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory;
 import retrofit2.http.GET;

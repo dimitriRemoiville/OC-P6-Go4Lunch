@@ -1,6 +1,7 @@
 package com.dimitri.remoiville.go4lunch.model;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Place {
 
@@ -107,5 +108,24 @@ public class Place {
 
     public void setPhoneNumbers(String phoneNumbers) {
         mPhoneNumbers = phoneNumbers;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Place place = (Place) o;
+        return Objects.equals(placeId, place.placeId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(placeId);
     }
 }

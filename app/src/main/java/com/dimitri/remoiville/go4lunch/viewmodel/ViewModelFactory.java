@@ -1,11 +1,10 @@
-package com.dimitri.remoiville.go4lunch.utils;
+package com.dimitri.remoiville.go4lunch.viewmodel;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.dimitri.remoiville.go4lunch.source.repository.PlacesRepository;
-import com.dimitri.remoiville.go4lunch.viewmodel.MainViewModel;
 
 public class ViewModelFactory implements ViewModelProvider.Factory {
 
