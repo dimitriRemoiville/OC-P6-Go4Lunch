@@ -16,12 +16,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.dimitri.remoiville.go4lunch.R;
 import com.dimitri.remoiville.go4lunch.model.Workmate;
-import com.dimitri.remoiville.go4lunch.ui.listview.ListViewRecyclerViewAdapter;
+import com.dimitri.remoiville.go4lunch.viewmodel.MainViewModel;
 
 import java.util.List;
 
 public class WorkmatesFragment extends Fragment {
-    private WorkmatesViewModel mWorkmatesViewModel;
+    private MainViewModel mMainViewModel;
     private RecyclerView mRecyclerView;
     private Context mContext;
     private List<Workmate> mWorkmates;
@@ -33,8 +33,8 @@ public class WorkmatesFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        mWorkmatesViewModel =
-                ViewModelProviders.of(this).get(WorkmatesViewModel.class);
+        mMainViewModel =
+                ViewModelProviders.of(this).get(MainViewModel.class);
         View root = inflater.inflate(R.layout.fragment_workmates_list, container, false);
 
         mContext = root.getContext();

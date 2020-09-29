@@ -7,9 +7,10 @@
     android:layout_height="match_parent"
     tools:context=".ui.mapview.MapViewFragment">
 
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/mapView"
+    <fragment
+        android:id="@+id/google_map"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:name="com.google.android.gms.maps.SupportMapFragment"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

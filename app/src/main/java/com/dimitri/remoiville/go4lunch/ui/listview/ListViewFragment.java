@@ -16,12 +16,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.dimitri.remoiville.go4lunch.R;
 import com.dimitri.remoiville.go4lunch.model.Place;
+import com.dimitri.remoiville.go4lunch.viewmodel.MainViewModel;
 
 import java.util.List;
 
 public class ListViewFragment extends Fragment {
 
-    private ListViewViewModel mListViewViewModel;
+    private MainViewModel mMainViewModel;
     private RecyclerView mRecyclerView;
     private Context mContext;
     private List<Place> mPlaces;
@@ -33,8 +34,8 @@ public class ListViewFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        mListViewViewModel =
-                ViewModelProviders.of(this).get(ListViewViewModel.class);
+        mMainViewModel =
+                ViewModelProviders.of(this).get(MainViewModel.class);
         View root = inflater.inflate(R.layout.fragment_listview_list, container, false);
 
         mContext = root.getContext();

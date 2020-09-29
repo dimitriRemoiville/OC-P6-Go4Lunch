@@ -13,23 +13,18 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.dimitri.remoiville.go4lunch.R;
+import com.dimitri.remoiville.go4lunch.viewmodel.MainViewModel;
 
 public class SettingsFragment extends Fragment {
 
-    private SettingsViewModel mSettingsViewModel;
+    private MainViewModel mMainViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        mSettingsViewModel =
-                ViewModelProviders.of(this).get(SettingsViewModel.class);
+        mMainViewModel =
+                ViewModelProviders.of(this).get(MainViewModel.class);
         View root = inflater.inflate(R.layout.fragment_settings, container, false);
-        final TextView textView = root.findViewById(R.id.text_settings);
-        mSettingsViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
+
         return root;
     }
 }
