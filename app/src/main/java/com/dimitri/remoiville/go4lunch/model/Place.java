@@ -1,40 +1,39 @@
 package com.dimitri.remoiville.go4lunch.model;
 
-import androidx.annotation.Nullable;
-
 import java.util.List;
-import java.util.Set;
 
 public class Place {
 
-    private long placeId;
+    private String placeId;
     private String mName;
     private String mType;
     private String mAddress;
     private int mDistance;
     private int mRating;
-    @Nullable
     private String mUrlPicture;
     private List<Workmate> mWorkmateList;
-    private Set<OpeningHours> mOpeningHours;
+    private Boolean mOpen;
+    private String mPhoneNumbers;
 
-    public Place(long placeId, String name, String type, String address, int distance, int rating, String urlPicture, List<Workmate> workmateList, Set<OpeningHours> openingHours) {
+
+    public Place(String placeId, String name, String type, String address, int distance, int rating, String urlPicture, List<Workmate> workmateList, Boolean open, String phoneNumbers) {
         this.placeId = placeId;
-        mName = name;
-        mType = type;
-        mAddress = address;
-        mDistance = distance;
-        mRating = rating;
-        mUrlPicture = urlPicture;
-        mWorkmateList = workmateList;
-        mOpeningHours = openingHours;
+        this.mName = name;
+        this.mType = type;
+        this.mAddress = address;
+        this.mDistance = distance;
+        this.mRating = rating;
+        this.mUrlPicture = urlPicture;
+        this.mWorkmateList = workmateList;
+        this.mOpen = open;
+        this.mPhoneNumbers = phoneNumbers;
     }
 
-    public long getPlaceId() {
+    public String getPlaceId() {
         return placeId;
     }
 
-    public void setPlaceId(long placeId) {
+    public void setPlaceId(String placeId) {
         this.placeId = placeId;
     }
 
@@ -78,12 +77,11 @@ public class Place {
         mRating = rating;
     }
 
-    @Nullable
     public String getUrlPicture() {
         return mUrlPicture;
     }
 
-    public void setUrlPicture(@Nullable String urlPicture) {
+    public void setUrlPicture(String urlPicture) {
         mUrlPicture = urlPicture;
     }
 
@@ -95,11 +93,19 @@ public class Place {
         mWorkmateList = workmateList;
     }
 
-    public Set<OpeningHours> getOpeningHours() {
-        return mOpeningHours;
+    public Boolean getOpen() {
+        return mOpen;
     }
 
-    public void setOpeningHours(Set<OpeningHours> openingHours) {
-        mOpeningHours = openingHours;
+    public void setOpen(Boolean open) {
+        mOpen = open;
+    }
+
+    public String getPhoneNumbers() {
+        return mPhoneNumbers;
+    }
+
+    public void setPhoneNumbers(String phoneNumbers) {
+        mPhoneNumbers = phoneNumbers;
     }
 }
