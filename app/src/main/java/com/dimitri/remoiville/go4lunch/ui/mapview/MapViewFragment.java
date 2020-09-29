@@ -10,7 +10,9 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.dimitri.remoiville.go4lunch.BuildConfig;
+import com.dimitri.remoiville.go4lunch.viewmodel.Injection;
 import com.dimitri.remoiville.go4lunch.viewmodel.MainViewModel;
+import com.dimitri.remoiville.go4lunch.viewmodel.ViewModelFactory;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
@@ -49,8 +51,7 @@ public class MapViewFragment extends Fragment
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        mMainViewModel =
-                ViewModelProviders.of(this).get(MainViewModel.class);
+        configureViewModel();
         View root = inflater.inflate(R.layout.fragment_mapview, container, false);
 
         requestLocationPermission();
@@ -68,6 +69,11 @@ public class MapViewFragment extends Fragment
         PlacesClient placesClient = Places.createClient(getActivity().getApplicationContext());
 
         return root;
+    }
+
+    private void configureViewModel() {
+        ViewModelFactory viewModelFactory = Injection.provideViewModelFactory();
+        mMainViewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
     }
 
     @AfterPermissionGranted(REQUEST_LOCATION_PERMISSION)

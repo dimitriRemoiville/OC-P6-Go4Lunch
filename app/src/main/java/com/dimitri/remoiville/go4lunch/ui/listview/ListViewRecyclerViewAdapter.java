@@ -7,15 +7,15 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dimitri.remoiville.go4lunch.databinding.FragmentListviewBinding;
-import com.dimitri.remoiville.go4lunch.model.Place;
+import com.dimitri.remoiville.go4lunch.model.PlacesPOJO;
 
 import java.util.List;
 
 public class ListViewRecyclerViewAdapter  extends RecyclerView.Adapter<ListViewRecyclerViewAdapter.ViewHolder> {
 
-    private List<Place> mPlaces;
+    private List<PlacesPOJO> mPlaces;
 
-    public ListViewRecyclerViewAdapter(List<Place> items) {
+    public ListViewRecyclerViewAdapter(List<PlacesPOJO> items) {
         mPlaces = items;
     }
 
@@ -27,7 +27,7 @@ public class ListViewRecyclerViewAdapter  extends RecyclerView.Adapter<ListViewR
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        // TODO
+        final PlacesPOJO place = mPlaces.get(position);
     }
 
     @Override

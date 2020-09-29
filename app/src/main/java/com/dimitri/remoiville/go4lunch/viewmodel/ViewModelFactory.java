@@ -11,7 +11,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     private final PlacesRepository mPlacesRepository;
 
     public ViewModelFactory(PlacesRepository placesRepository) {
-        this.mPlacesRepository = placesRepository;
+        this.mPlacesRepository = PlacesRepository.getInstance();
     }
 
     @NonNull
