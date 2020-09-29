@@ -1,20 +1,13 @@
 package com.dimitri.remoiville.go4lunch.source.repository;
 
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.LiveDataReactiveStreams;
-import androidx.lifecycle.MediatorLiveData;
 
 import com.dimitri.remoiville.go4lunch.model.PlacesPOJO;
-import com.dimitri.remoiville.go4lunch.source.remote.PlacesApiService;
+import com.dimitri.remoiville.go4lunch.source.remote.ServicePlacesApiGenerator;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 
@@ -34,14 +27,13 @@ public class PlacesRepository {
 
 
     public LiveData<List<PlacesPOJO>> streamFetchPlacesRestaurants(String location, int radius, String key) {
-        PlacesApiService placesApiService = PlacesApiService.retrofit.create(PlacesApiService.class);
-        return LiveDataReactiveStreams.fromPublisher(placesApiService
+        return LiveDataReactiveStreams.fromPublisher(ServicePlacesApiGenerator.getRequestPlacesApi()
                         .getNearbyPlaces(location,radius,mType,key)
                         .subscribeOn(Schedulers.io()));
     }
 
 /*    public Observable<List<PlacesPOJO>> streamFetchPlacesRestaurants(String location, int radius, String key) {
-        PlacesApiService placesApiService = PlacesApiService.retrofit.create(PlacesApiService.class);
+        RequestPlacesApi placesApiService = RequestPlacesApi.retrofit.create(RequestPlacesApi.class);
         Log.d(TAG, "streamFetchPlacesRestaurants: ici");
         return placesApiService.getNearbyPlaces(location, radius, mType, key)
                 .subscribeOn(Schedulers.io())

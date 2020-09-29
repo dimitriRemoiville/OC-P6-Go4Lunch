@@ -51,27 +51,28 @@ public class ListViewFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        View root = inflater.inflate(R.layout.fragment_listview, container, false);
+        View root = inflater.inflate(R.layout.fragment_listview_list, container, false);
 
         mContext = root.getContext();
-        //mRecyclerView = (RecyclerView) root;
-        //mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-        //mRecyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
+        mRecyclerView = (RecyclerView) root;
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
 
         configureViewModel();
         Log.d(TAG, "onCreateView: ici");
+        configureObserverPlacesRestaurants();
+        Log.d(TAG, "onCreateView: test" + mPlaces);
+        //initList(mPlaces);
+        return root;
+    }
+
+    private void configureObserverPlacesRestaurants() {
         String location = -33.8864322 + "," + 151.1933985;
         mMainViewModel.streamFetchPlacesRestaurants(location,1000, API_KEY)
-                .observe(getViewLifecycleOwner(), new Observer<List<PlacesPOJO>>() {
-                    @Override
-                    public void onChanged(List<PlacesPOJO> placesPOJOS) {
-                        Log.d(TAG, "onChanged: this is a live data response!");
-                        Log.d(TAG, "onChanged: " + placesPOJOS.toString());
-                    }
+                .observe(getViewLifecycleOwner(), placesPOJOS -> {
+                    Log.d(TAG, "configureObserverPlacesRestaurants: " + placesPOJOS.toString());
+                    mPlaces = placesPOJOS;
                 });
-        //initList(mPlaces);
-        Log.d(TAG, "onCreateView: test" + mPlaces);
-        return root;
     }
 
     private void configureViewModel() {
