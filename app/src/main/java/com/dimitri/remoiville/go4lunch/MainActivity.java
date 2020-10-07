@@ -30,8 +30,11 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.itkacher.okhttpprofiler.OkHttpProfilerInterceptor;
 
 import java.util.Arrays;
+
+import okhttp3.OkHttpClient;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 

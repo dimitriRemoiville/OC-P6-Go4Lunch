@@ -7,27 +7,30 @@ public class Place {
 
     private String placeId;
     private String mName;
-    private String mType;
     private String mAddress;
-    private int mDistance;
+    private Double mLat;
+    private Double mLng;
     private int mRating;
     private String mUrlPicture;
     private List<Workmate> mWorkmateList;
-    private Boolean mOpen;
+    private boolean mOpen;
     private String mPhoneNumbers;
+    private String mWebsite;
 
 
-    public Place(String placeId, String name, String type, String address, int distance, int rating, String urlPicture, List<Workmate> workmateList, Boolean open, String phoneNumbers) {
+    public Place(String placeId, String name, String address, Double lat, Double lng, int rating,
+                 String urlPicture, List<Workmate> workmateList, boolean open, String phoneNumbers, String website) {
         this.placeId = placeId;
         this.mName = name;
-        this.mType = type;
         this.mAddress = address;
-        this.mDistance = distance;
+        this.mLat = lat;
+        this.mLng = lng;
         this.mRating = rating;
         this.mUrlPicture = urlPicture;
         this.mWorkmateList = workmateList;
         this.mOpen = open;
         this.mPhoneNumbers = phoneNumbers;
+        this.mWebsite = website;
     }
 
     public String getPlaceId() {
@@ -46,14 +49,6 @@ public class Place {
         mName = name;
     }
 
-    public String getType() {
-        return mType;
-    }
-
-    public void setType(String type) {
-        mType = type;
-    }
-
     public String getAddress() {
         return mAddress;
     }
@@ -62,12 +57,20 @@ public class Place {
         mAddress = address;
     }
 
-    public int getDistance() {
-        return mDistance;
+    public Double getLat() {
+        return mLat;
     }
 
-    public void setDistance(int distance) {
-        mDistance = distance;
+    public void setLat(Double lat) {
+        mLat = lat;
+    }
+
+    public Double getLng() {
+        return mLng;
+    }
+
+    public void setLng(Double lng) {
+        mLng = lng;
     }
 
     public int getRating() {
@@ -94,11 +97,11 @@ public class Place {
         mWorkmateList = workmateList;
     }
 
-    public Boolean getOpen() {
+    public boolean isOpen() {
         return mOpen;
     }
 
-    public void setOpen(Boolean open) {
+    public void setOpen(boolean open) {
         mOpen = open;
     }
 
@@ -108,6 +111,14 @@ public class Place {
 
     public void setPhoneNumbers(String phoneNumbers) {
         mPhoneNumbers = phoneNumbers;
+    }
+
+    public String getWebsite() {
+        return mWebsite;
+    }
+
+    public void setWebsite(String website) {
+        mWebsite = website;
     }
 
     @Override

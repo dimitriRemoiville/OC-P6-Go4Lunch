@@ -1,35 +1,37 @@
+
 package com.dimitri.remoiville.go4lunch.model;
 
-import java.time.DayOfWeek;
-import java.time.LocalTime;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 public class OpeningHours {
 
-    private DayOfWeek dayOfWeek;
-    private LocalTime from;
-    private LocalTime to;
+    @SerializedName("open_now")
+    @Expose
+    private Boolean openNow;
 
-    public DayOfWeek getDayOfWeek() {
-        return dayOfWeek;
+    /**
+     * No args constructor for use in serialization
+     * 
+     */
+    public OpeningHours() {
     }
 
-    public void setDayOfWeek(DayOfWeek dayOfWeek) {
-        this.dayOfWeek = dayOfWeek;
+    /**
+     * 
+     * @param openNow
+     */
+    public OpeningHours(Boolean openNow) {
+        super();
+        this.openNow = openNow;
     }
 
-    public LocalTime getFrom() {
-        return from;
+    public Boolean getOpenNow() {
+        return openNow;
     }
 
-    public void setFrom(LocalTime from) {
-        this.from = from;
+    public void setOpenNow(Boolean openNow) {
+        this.openNow = openNow;
     }
 
-    public LocalTime getTo() {
-        return to;
-    }
-
-    public void setTo(LocalTime to) {
-        this.to = to;
-    }
 }

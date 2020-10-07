@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -21,27 +20,22 @@ import com.dimitri.remoiville.go4lunch.BuildConfig;
 import com.dimitri.remoiville.go4lunch.R;
 import com.dimitri.remoiville.go4lunch.model.Place;
 import com.dimitri.remoiville.go4lunch.model.PlacesPOJO;
+import com.dimitri.remoiville.go4lunch.model.Result;
 import com.dimitri.remoiville.go4lunch.viewmodel.Injection;
 import com.dimitri.remoiville.go4lunch.viewmodel.MainViewModel;
 import com.dimitri.remoiville.go4lunch.viewmodel.ViewModelFactory;
 
-import java.io.IOException;
 import java.util.List;
-
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.observers.DisposableObserver;
 
 public class ListViewFragment extends Fragment {
 
     private MainViewModel mMainViewModel;
     private RecyclerView mRecyclerView;
     private Context mContext;
-    private List<PlacesPOJO> mPlaces;
+    private List<Place> mPlaces;
     private Location mCurrentLocation;
     private final String API_KEY = BuildConfig.API_KEY;
     private static final String TAG = "ListViewFragment";
-    private Disposable listdisposable;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,29 +53,26 @@ public class ListViewFragment extends Fragment {
         mRecyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
 
         configureViewModel();
-        Log.d(TAG, "onCreateView: ici");
         configureObserverPlacesRestaurants();
-        Log.d(TAG, "onCreateView: test" + mPlaces);
-        //initList(mPlaces);
         return root;
     }
 
     private void configureObserverPlacesRestaurants() {
         String location = -33.8864322 + "," + 151.1933985;
         mMainViewModel.streamFetchPlacesRestaurants(location,1000, API_KEY)
-                .observe(getViewLifecycleOwner(), placesPOJOS -> {
-                    Log.d(TAG, "configureObserverPlacesRestaurants: " + placesPOJOS.toString());
-                    mPlaces = placesPOJOS;
+                .observe(getViewLifecycleOwner(), places -> {
+                    initList(places);
+                    Log.d(TAG, "configureObserverPlacesRestaurants: ici");
                 });
     }
 
     private void configureViewModel() {
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory();
         mMainViewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
-        Log.d(TAG, "configureViewModel: ici");
     }
 
-    private void initList(List<PlacesPOJO> places) {
+    private void initList(List<Place> places) {
+        Log.d(TAG, "initList: ici");
         mRecyclerView.setAdapter(new ListViewRecyclerViewAdapter(places));
     }
 }
