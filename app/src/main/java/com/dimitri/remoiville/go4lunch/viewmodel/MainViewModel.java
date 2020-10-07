@@ -14,8 +14,8 @@ import com.dimitri.remoiville.go4lunch.source.repository.PlacesRepository;
 
 import java.util.List;
 
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 
 
 public class MainViewModel extends ViewModel {

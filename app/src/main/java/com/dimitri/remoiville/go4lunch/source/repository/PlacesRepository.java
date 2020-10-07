@@ -7,14 +7,13 @@ import com.dimitri.remoiville.go4lunch.model.PlacesPOJO;
 import com.dimitri.remoiville.go4lunch.model.Result;
 import com.dimitri.remoiville.go4lunch.model.Workmate;
 import com.dimitri.remoiville.go4lunch.source.remote.ServicePlacesApiGenerator;
-import com.itkacher.okhttpprofiler.transfer.LogDataTransfer;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.schedulers.Schedulers;
+import io.reactivex.Flowable;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 
 public class PlacesRepository {
@@ -42,7 +41,7 @@ public class PlacesRepository {
         return streamFetchPlacesRestaurants(location, radius, key)
                 .map(new Function<PlacesPOJO, List<Place>>() {
                     @Override
-                    public List<Place> apply(PlacesPOJO placesPOJO) throws Throwable {
+                    public List<Place> apply(PlacesPOJO placesPOJO) {
                         List<Place> restaurantsList = new ArrayList<>();
                         Log.d(TAG, "apply: ici");
 
