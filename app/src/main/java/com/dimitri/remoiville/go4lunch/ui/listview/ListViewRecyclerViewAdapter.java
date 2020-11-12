@@ -17,10 +17,12 @@ import java.util.List;
 public class ListViewRecyclerViewAdapter  extends RecyclerView.Adapter<ListViewRecyclerViewAdapter.ViewHolder> {
 
     private List<Place> mPlaces;
+    private List<Integer> mDistances;
     private static final String TAG = "ListViewRecyclerViewAda";
 
-    public ListViewRecyclerViewAdapter(List<Place> items) {
+    public ListViewRecyclerViewAdapter(List<Place> items, List<Integer> integers) {
         mPlaces = items;
+        mDistances = integers;
     }
 
     @NonNull
@@ -34,7 +36,7 @@ public class ListViewRecyclerViewAdapter  extends RecyclerView.Adapter<ListViewR
         Log.d(TAG, "onBindViewHolder: ici");
         final Place place = mPlaces.get(position);
         holder.mFragmentListviewBinding.listPlacesName.setText(place.getName());
-        holder.mFragmentListviewBinding.listPlacesDistance.setText("100m");
+        holder.mFragmentListviewBinding.listPlacesDistance.setText(mDistances.get(position) + "m");
         holder.mFragmentListviewBinding.listPlacesTypeAddress.setText(place.getAddress());
         int nbWorkmates = place.getWorkmateList().size();
         String nbWorkmatesString = "" + nbWorkmates;
@@ -61,6 +63,7 @@ public class ListViewRecyclerViewAdapter  extends RecyclerView.Adapter<ListViewR
                 holder.mFragmentListviewBinding.listPlacesStar3.setVisibility(View.VISIBLE);
                 break;
         }
+        Log.d(TAG, "onBindViewHolder: "+  place.getUrlPicture());
         Glide.with(holder.itemView)
                 .load(place.getUrlPicture())
                 .into(holder.mFragmentListviewBinding.listPlacesImg);

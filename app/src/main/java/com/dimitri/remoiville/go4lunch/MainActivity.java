@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         constraintLayout = mBinding.appBarMain.contentMain.contentMain;
 
         // Launch authentication screen
-        startSignIn();
+        //startSignIn();
 
         // Bottom navigation
         initBottomNavigation();

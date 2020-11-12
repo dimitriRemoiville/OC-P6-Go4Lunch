@@ -13,6 +13,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
+        android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toStartOf="@id/list_places_img"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -45,20 +46,30 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
+        android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toStartOf="@id/list_places_img"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/list_places_first_line">
 
-        <TextView
-            android:id="@+id/list_places_type_address"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="French - 12 Rue du Faubourg Poissonnière"
-            android:textColor="@android:color/black"
-            android:textSize="12sp"
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/list_places_workmates_img"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/list_places_type_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="French - 12 Rue du Faubourg Poissonnière"
+                android:textColor="@android:color/black"
+                android:textSize="12sp" />
+
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/list_places_workmates_img"
@@ -87,6 +98,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toStartOf="@id/list_places_img"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/list_places_second_line">
@@ -139,7 +151,7 @@
         android:id="@+id/list_places_img"
         android:layout_width="70dp"
         android:layout_height="70dp"
-        android:layout_marginStart="4dp"
+        android:layout_marginStart="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>

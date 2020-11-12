@@ -27,7 +27,6 @@ public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<Workmates
 
     @Override
     public void onBindViewHolder(@NonNull WorkmatesRecyclerViewAdapter.ViewHolder holder, int position) {
-        // TODO
     }
 
     @Override

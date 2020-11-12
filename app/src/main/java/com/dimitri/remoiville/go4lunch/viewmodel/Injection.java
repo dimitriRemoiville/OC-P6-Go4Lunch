@@ -11,7 +11,6 @@ public class Injection {
 
 
     public static ViewModelFactory provideViewModelFactory() {
-        PlacesRepository placesRepository = providePlacesRepository();
-        return new ViewModelFactory(placesRepository);
+        return new ViewModelFactory(providePlacesRepository());
     }
 }

@@ -15,15 +15,15 @@ public class ServicePlacesApiGenerator {
     private static OkHttpClient client = builder.build();
 
     private static Retrofit.Builder retrofitBuilder = new Retrofit.Builder()
-            .baseUrl("https://maps.googleapis.com/maps/api/place/")
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .baseUrl("https://maps.googleapis.com/maps/api/")
             .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .client(client);
 
     private static Retrofit retrofit = retrofitBuilder.build();
 
-    private static RequestPlacesApi sRequestPlacesApi = retrofit.create(RequestPlacesApi.class);
+    private static RequestGoogleApi sRequestGoogleApi = retrofit.create(RequestGoogleApi.class);
 
-    public static RequestPlacesApi getRequestPlacesApi() {return sRequestPlacesApi;
+    public static RequestGoogleApi getRequestGoogleApi() {return sRequestGoogleApi;
     }
 }

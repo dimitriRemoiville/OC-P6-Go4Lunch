@@ -8,12 +8,13 @@ import com.dimitri.remoiville.go4lunch.source.repository.PlacesRepository;
 
 public class ViewModelFactory implements ViewModelProvider.Factory {
 
-    private final PlacesRepository mPlacesRepository;
+    private PlacesRepository mPlacesRepository;
 
     public ViewModelFactory(PlacesRepository placesRepository) {
-        this.mPlacesRepository = PlacesRepository.getInstance();
+        this.mPlacesRepository = placesRepository;
     }
 
+    @SuppressWarnings("unchecked")
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
