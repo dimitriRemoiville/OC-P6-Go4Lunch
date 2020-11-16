@@ -10,6 +10,9 @@ public class PlacesPOJO {
     @SerializedName("html_attributions")
     @Expose
     private List<Object> htmlAttributions = null;
+    @SerializedName("next_page_token")
+    @Expose
+    private String nextPageToken;
     @SerializedName("results")
     @Expose
     private List<Result> results = null;
@@ -33,6 +36,7 @@ public class PlacesPOJO {
     public PlacesPOJO(List<Object> htmlAttributions, List<Result> results, String status) {
         super();
         this.htmlAttributions = htmlAttributions;
+        this.nextPageToken = nextPageToken;
         this.results = results;
         this.status = status;
     }
@@ -48,6 +52,14 @@ public class PlacesPOJO {
     public PlacesPOJO withHtmlAttributions(List<Object> htmlAttributions) {
         this.htmlAttributions = htmlAttributions;
         return this;
+    }
+
+    public String getNextPageToken() {
+        return nextPageToken;
+    }
+
+    public void setNextPageToken(String nextPageToken) {
+        this.nextPageToken = nextPageToken;
     }
 
     public List<Result> getResults() {

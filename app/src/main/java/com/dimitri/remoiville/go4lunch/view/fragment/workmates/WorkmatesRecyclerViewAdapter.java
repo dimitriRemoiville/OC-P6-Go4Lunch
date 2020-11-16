@@ -1,4 +1,4 @@
-package com.dimitri.remoiville.go4lunch.ui.workmates;
+package com.dimitri.remoiville.go4lunch.view.fragment.workmates;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -13,7 +13,7 @@ import java.util.List;
 
 public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<WorkmatesRecyclerViewAdapter.ViewHolder> {
 
-    private List<Workmate> mWorkmates;
+    private final List<Workmate> mWorkmates;
 
     public WorkmatesRecyclerViewAdapter(List<Workmate> items) {
         mWorkmates = items;
@@ -35,7 +35,7 @@ public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<Workmates
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private FragmentWorkmatesBinding mFragmentWorkmatesBinding;
+        private final FragmentWorkmatesBinding mFragmentWorkmatesBinding;
 
         public ViewHolder(FragmentWorkmatesBinding fragmentWorkmatesBinding) {
             super(fragmentWorkmatesBinding.getRoot());

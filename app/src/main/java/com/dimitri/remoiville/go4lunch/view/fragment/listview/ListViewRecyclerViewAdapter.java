@@ -1,4 +1,4 @@
-package com.dimitri.remoiville.go4lunch.ui.listview;
+package com.dimitri.remoiville.go4lunch.view.fragment.listview;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,7 +16,7 @@ import java.util.List;
 
 public class ListViewRecyclerViewAdapter  extends RecyclerView.Adapter<ListViewRecyclerViewAdapter.ViewHolder> {
 
-    private List<Place> mPlaces;
+    private final List<Place> mPlaces;
     private static final String TAG = "ListViewRecyclerViewAda";
 
     public ListViewRecyclerViewAdapter(List<Place> items) {

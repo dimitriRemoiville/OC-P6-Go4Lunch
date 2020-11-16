@@ -16,11 +16,11 @@ public interface RequestGoogleApi {
                                       @Query("type") String type,
                                       @Query("key") String key);
 
-    @GET("nearbysearch/json?")
+    @GET("place/nearbysearch/json?")
     Call<PlacesPOJO> getNearbyPlacesNext (@Query("pagetoken") String pageToken,
                                                 @Query("key") String key);
 
-    @GET("details/json?")
+    @GET("place/details/json?")
     Call<PlacesPOJO> getPlaceDetails (@Query("place_id") String placesId,
                                               @Query("fields") String fields,
                                               @Query("key") String key);

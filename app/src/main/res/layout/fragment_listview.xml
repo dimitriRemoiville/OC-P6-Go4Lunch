@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
     android:background="#FFFFFF"
-    tools:context=".ui.listview.ListViewFragment">
+    tools:context=".view.fragment.listview.ListViewFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/list_places_first_line"

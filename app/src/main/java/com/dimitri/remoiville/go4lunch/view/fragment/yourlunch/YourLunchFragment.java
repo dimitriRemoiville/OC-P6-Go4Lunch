@@ -1,4 +1,4 @@
-package com.dimitri.remoiville.go4lunch.ui.yourlunch;
+package com.dimitri.remoiville.go4lunch.view.fragment.yourlunch;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

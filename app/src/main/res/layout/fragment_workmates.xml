@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".ui.workmates.WorkmatesFragment"
+    tools:context=".view.fragment.workmates.WorkmatesFragment"
     app:layout_constraintEnd_toEndOf="parent"
     android:layout_margin="8dp">
 

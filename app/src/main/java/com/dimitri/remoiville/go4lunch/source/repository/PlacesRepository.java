@@ -1,5 +1,9 @@
 package com.dimitri.remoiville.go4lunch.source.repository;
 
+import android.location.Location;
+import android.os.Handler;
+import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
 import com.dimitri.remoiville.go4lunch.model.Place;
 import com.dimitri.remoiville.go4lunch.model.PlacesPOJO;
@@ -16,16 +20,14 @@ import retrofit2.Response;
 public class PlacesRepository {
 
     private final String mType = "restaurant";
-    private final String mUnit = "metric";
-    private final String mMode = "walking";
     private final String mFields = "international_phone_number,website";
 
-    private MutableLiveData<List<Place>> listRestaurantsMutableLiveData = new MutableLiveData<>();
-    private List<Place> listRestaurants = new ArrayList<>();
-
-    private final String TAG = "PlacesRepository";
+    private final MutableLiveData<List<Place>> listRestaurantsMutableLiveData = new MutableLiveData<>();
+    private final List<Place> listRestaurants = new ArrayList<>();
 
     private static PlacesRepository sPlacesRepository;
+
+    private final String TAG = "PlacesRepository";
 
     public static PlacesRepository getInstance(){
         if (sPlacesRepository == null) {
@@ -34,15 +36,20 @@ public class PlacesRepository {
         return sPlacesRepository;
     }
 
-    public MutableLiveData<List<Place>> getListRestaurants(Double lat, Double lng, int radius, String key) {
-        String location = lat + "," + lng;
-        Call<PlacesPOJO> listRestaurantsPOJOOut = ServicePlacesApiGenerator.getRequestGoogleApi().getNearbyPlaces(location, radius, mType, key);
+    public MutableLiveData<List<Place>> getListRestaurants(Location location, int radius, String key) {
+        Double lat = location.getLatitude();
+        Double lng = location.getLongitude();
+        String latLng = lat + "," + lng;
+        Call<PlacesPOJO> listRestaurantsPOJOOut = ServicePlacesApiGenerator.getRequestGoogleApi().getNearbyPlaces(latLng, radius, mType, key);
         listRestaurantsPOJOOut.enqueue(new Callback<PlacesPOJO>() {
             @Override
             public void onResponse(Call<PlacesPOJO> call, Response<PlacesPOJO> response) {
                 for (int i = 0; i < response.body().getResults().size(); i++) {
-                    Place place = new Place(response.body().getResults().get(i), key);
+                    Place place = new Place(response.body().getResults().get(i), location, key);
                     listRestaurants.add(place);
+                }
+                if (response.body().getNextPageToken() != null) {
+                    getListRestaurantsNext(response.body().getNextPageToken(), location, key);
                 }
                 listRestaurantsMutableLiveData.setValue(listRestaurants);
             }
@@ -53,6 +60,34 @@ public class PlacesRepository {
             }
         });
         return listRestaurantsMutableLiveData;
+    }
+
+    private void getListRestaurantsNext(String token, Location location, String key) {
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Call<PlacesPOJO> listRestaurantsPOJOOutNext = ServicePlacesApiGenerator.getRequestGoogleApi().getNearbyPlacesNext(token, key);
+                listRestaurantsPOJOOutNext.enqueue(new Callback<PlacesPOJO>() {
+                    @Override
+                    public void onResponse(Call<PlacesPOJO> call, Response<PlacesPOJO> response) {
+                        for (int i = 0; i < response.body().getResults().size(); i++) {
+                            Place place = new Place(response.body().getResults().get(i), location, key);
+                            listRestaurants.add(place);
+                        }
+                        if (response.body().getNextPageToken() != null) {
+                            getListRestaurantsNext(response.body().getNextPageToken(), location, key);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<PlacesPOJO> call, Throwable t) {
+
+                    }
+                });
+            }
+        }, 2000);
     }
 
 

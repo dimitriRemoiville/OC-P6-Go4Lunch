@@ -8,7 +8,7 @@ import com.dimitri.remoiville.go4lunch.source.repository.PlacesRepository;
 
 public class ViewModelFactory implements ViewModelProvider.Factory {
 
-    private PlacesRepository mPlacesRepository;
+    private final PlacesRepository mPlacesRepository;
 
     public ViewModelFactory(PlacesRepository placesRepository) {
         this.mPlacesRepository = placesRepository;

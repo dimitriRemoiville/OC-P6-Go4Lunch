@@ -1,10 +1,9 @@
-package com.dimitri.remoiville.go4lunch.ui.listview;
+package com.dimitri.remoiville.go4lunch.view.fragment.listview;
 
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -43,7 +42,7 @@ public class ListViewFragment extends Fragment
     private MainViewModel mMainViewModel;
     private RecyclerView mRecyclerView;
     private Context mContext;
-    private String API_KEY = BuildConfig.API_KEY;
+    private final String API_KEY = BuildConfig.API_KEY;
     private Location mCurrentLocation;
     private final int REQUEST_LOCATION_PERMISSION = 1;
     private FusedLocationProviderClient mFusedLocationProviderClient;
@@ -109,16 +108,9 @@ public class ListViewFragment extends Fragment
 
     private void configureObserverPlacesRestaurants() {
         Log.d(TAG, "configureObserverPlacesRestaurants: " + mCurrentLocation.getLatitude() + " ; " + mCurrentLocation.getLongitude());
-        mMainViewModel.getRestaurantsRepository(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), radius, API_KEY)
+        mMainViewModel.getRestaurantsRepository(mCurrentLocation, radius, API_KEY)
                 .observe(getViewLifecycleOwner(), places -> {
-                    for (int i = 0; i < places.size(); i++) {
-                        Location locationDestination = new Location(LocationManager.GPS_PROVIDER);
-                        locationDestination.setLatitude(places.get(i).getLat());
-                        locationDestination.setLongitude(places.get(i).getLng());
-
-                        places.get(i).setDistance((int) mCurrentLocation.distanceTo(locationDestination));
-                    }
-
+                    Log.d(TAG, "configureObserverPlacesRestaurants places.size() : " + places.size());
                     initList(places);
                 });
 /*        mMainViewModel.streamFetchPlacesRestaurants(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), radius, API_KEY)

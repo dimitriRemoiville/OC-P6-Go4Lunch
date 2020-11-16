@@ -9,29 +9,29 @@
         android:id="@+id/nav_mapview"
         android:label="@string/title_mapview"
         tools:layout="@layout/fragment_mapview"
-        android:name="com.dimitri.remoiville.go4lunch.ui.mapview.MapViewFragment"/>
+        android:name="com.dimitri.remoiville.go4lunch.view.fragment.mapview.MapViewFragment"/>
 
     <fragment
         android:id="@+id/nav_listview"
-        android:name="com.dimitri.remoiville.go4lunch.ui.listview.ListViewFragment"
+        android:name="com.dimitri.remoiville.go4lunch.view.fragment.listview.ListViewFragment"
         android:label="@string/title_listview"
         tools:layout="@layout/fragment_listview" />
 
     <fragment
         android:id="@+id/nav_workmates"
-        android:name="com.dimitri.remoiville.go4lunch.ui.workmates.WorkmatesFragment"
+        android:name="com.dimitri.remoiville.go4lunch.view.fragment.workmates.WorkmatesFragment"
         android:label="@string/title_workmates"
         tools:layout="@layout/fragment_workmates" />
 
     <fragment
         android:id="@+id/nav_yourLunch"
-        android:name="com.dimitri.remoiville.go4lunch.ui.yourlunch.YourLunchFragment"
+        android:name="com.dimitri.remoiville.go4lunch.view.fragment.yourlunch.YourLunchFragment"
         android:label="@string/menu_yourLunch"
         tools:layout="@layout/fragment_yourlunch" />
 
     <fragment
         android:id="@+id/nav_settings"
-        android:name="com.dimitri.remoiville.go4lunch.ui.settings.SettingsFragment"
+        android:name="com.dimitri.remoiville.go4lunch.view.fragment.settings.SettingsFragment"
         android:label="@string/menu_settings"
         tools:layout="@layout/fragment_settings" />
 </navigation>

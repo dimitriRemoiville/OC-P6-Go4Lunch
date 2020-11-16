@@ -9,7 +9,7 @@
     android:layout_height="match_parent"
     android:layout_margin="8dp"
     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-    tools:context=".ui.workmates.WorkmatesFragment"
+    tools:context=".view.fragment.workmates.WorkmatesFragment"
     tools:listitem="@layout/fragment_workmates">
 
 </androidx.recyclerview.widget.RecyclerView>

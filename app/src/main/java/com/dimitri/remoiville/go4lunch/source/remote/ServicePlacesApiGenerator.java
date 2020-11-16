@@ -8,19 +8,19 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ServicePlacesApiGenerator {
 
-    private static OkHttpClient.Builder builder = new OkHttpClient.Builder()
+    private static final OkHttpClient.Builder builder = new OkHttpClient.Builder()
             .addInterceptor(new OkHttpProfilerInterceptor());
 
-    private static OkHttpClient client = builder.build();
+    private static final OkHttpClient client = builder.build();
 
-    private static Retrofit.Builder retrofitBuilder = new Retrofit.Builder()
+    private static final Retrofit.Builder retrofitBuilder = new Retrofit.Builder()
             .baseUrl("https://maps.googleapis.com/maps/api/")
             .addConverterFactory(GsonConverterFactory.create())
             .client(client);
 
-    private static Retrofit retrofit = retrofitBuilder.build();
+    private static final Retrofit retrofit = retrofitBuilder.build();
 
-    private static RequestGoogleApi sRequestGoogleApi = retrofit.create(RequestGoogleApi.class);
+    private static final RequestGoogleApi sRequestGoogleApi = retrofit.create(RequestGoogleApi.class);
 
     public static RequestGoogleApi getRequestGoogleApi() {
         return sRequestGoogleApi;

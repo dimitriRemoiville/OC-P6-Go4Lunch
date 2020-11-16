@@ -1,6 +1,8 @@
 package com.dimitri.remoiville.go4lunch.viewmodel;
 
 
+import android.location.Location;
+
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -20,13 +22,13 @@ public class MainViewModel extends ViewModel {
         this.mPlacesRepository = placesRepository;
     }
 
-    public MutableLiveData<List<Place>> getRestaurantsRepository(Double lat, Double lng, int radius, String key) {
-        listRestaurants = loadRestaurantsData(lat, lng, radius, key);
+    public MutableLiveData<List<Place>> getRestaurantsRepository(Location location, int radius, String key) {
+        listRestaurants = loadRestaurantsData(location, radius, key);
         return listRestaurants;
     }
 
-    private  MutableLiveData<List<Place>> loadRestaurantsData(Double lat, Double lng, int radius, String key) {
-        return mPlacesRepository.getListRestaurants(lat, lng, radius, key);
+    private  MutableLiveData<List<Place>> loadRestaurantsData(Location location, int radius, String key) {
+        return mPlacesRepository.getListRestaurants(location, radius, key);
     }
 
 /*    public MutableLiveData<Observable<List<Place>>> streamFetchPlacesRestaurants(Double lat, Double lng, int radius, String key) {

@@ -1,9 +1,10 @@
-package com.dimitri.remoiville.go4lunch.ui.mapview;
+package com.dimitri.remoiville.go4lunch.view.fragment.mapview;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,8 +31,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.net.PlacesClient;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -45,11 +44,11 @@ public class MapViewFragment extends Fragment
 
     private MainViewModel mMainViewModel;
     private GoogleMap mMap;
-    private String API_KEY = BuildConfig.API_KEY;
+    private final String API_KEY = BuildConfig.API_KEY;
     private final int REQUEST_LOCATION_PERMISSION = 1;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private Location mCurrentLocation;
-    private final int radius = 400;
+    private final int radius = 290;
     private static final String TAG = "MapViewFragment";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -64,12 +63,6 @@ public class MapViewFragment extends Fragment
         SupportMapFragment supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.google_map);
         // Async Map
         supportMapFragment.getMapAsync(this);
-
-
-        // Initialize the SDK
-        Places.initialize(getActivity().getApplicationContext(), API_KEY);
-        // Create a new PlacesClient instance
-        PlacesClient placesClient = Places.createClient(getActivity().getApplicationContext());
 
         return root;
     }
@@ -122,13 +115,15 @@ public class MapViewFragment extends Fragment
     }
 
     private void configureObserverPlacesRestaurants() {
-        mMainViewModel.getRestaurantsRepository(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), radius, API_KEY)
+        mMainViewModel.getRestaurantsRepository(mCurrentLocation, radius, API_KEY)
                 .observe(getViewLifecycleOwner(), places -> {
+                    Log.d(TAG, "configureObserverPlacesRestaurants places.size() : " + places.size());
                     for (int i = 0; i < places.size(); i++) {
                         LatLng position = new LatLng(places.get(i).getLat(), places.get(i).getLng());
                         mMap.addMarker(new MarkerOptions().position(position)
                                 .title(places.get(i).getName())
-                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                                .alpha(0.9f)
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
                     }
                 });
 /*        mMainViewModel.streamFetchPlacesRestaurants(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), radius, API_KEY)
@@ -163,13 +158,15 @@ public class MapViewFragment extends Fragment
 
     @Override
     public boolean onMyLocationButtonClick() {
-        Toast.makeText(getActivity().getApplicationContext(), "MyLocation button clicked", Toast.LENGTH_SHORT).show();
+        mMap.clear();
+        if (mCurrentLocation != null) {
+            configureObserverPlacesRestaurants();
+        }
         return false;
     }
 
     @Override
     public void onMyLocationClick(@NonNull Location location) {
-        Toast.makeText(getActivity().getApplicationContext(), "Current location:\n" + location, Toast.LENGTH_LONG).show();
     }
 
 }

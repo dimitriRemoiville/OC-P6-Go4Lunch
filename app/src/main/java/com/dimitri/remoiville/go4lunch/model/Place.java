@@ -1,5 +1,10 @@
 package com.dimitri.remoiville.go4lunch.model;
 
+import android.location.Location;
+import android.location.LocationManager;
+
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -18,25 +23,26 @@ public class Place {
     private String mPhoneNumbers;
     private String mWebsite;
     private int mDistance;
+    private String mIcon;
     private final int maxWidth = 80;
 
-
-    public Place(String placeId, String name, String address, Double lat, Double lng, int rating,
-                 String urlPicture, List<Workmate> workmateList, boolean open, String phoneNumbers, String website) {
+    public Place(String placeId, String name, String address, Double lat, Double lng, int rating, String urlPicture, List<Workmate> workmateList, boolean open, String phoneNumbers, String website, int distance, String icon) {
         this.placeId = placeId;
-        this.mName = name;
-        this.mAddress = address;
-        this.mLat = lat;
-        this.mLng = lng;
-        this.mRating = rating;
-        this.mUrlPicture = urlPicture;
-        this.mWorkmateList = workmateList;
-        this.mOpen = open;
-        this.mPhoneNumbers = phoneNumbers;
-        this.mWebsite = website;
+        mName = name;
+        mAddress = address;
+        mLat = lat;
+        mLng = lng;
+        mRating = rating;
+        mUrlPicture = urlPicture;
+        mWorkmateList = workmateList;
+        mOpen = open;
+        mPhoneNumbers = phoneNumbers;
+        mWebsite = website;
+        mDistance = distance;
+        mIcon = icon;
     }
 
-    public Place(PlacesPOJO.Result POJOResult, String key) {
+    public Place(@NonNull PlacesPOJO.Result POJOResult, Location location, String key) {
         placeId = "";
         if (POJOResult.getPlaceId() != null) {
             placeId = POJOResult.getPlaceId();
@@ -52,9 +58,17 @@ public class Place {
             mAddress = POJOResult.getVicinity();
         }
 
+        mLat = 0.0;
+        mLng = 0.0;
+        mDistance = 0;
         if (POJOResult.getGeometry() != null) {
             mLat = POJOResult.getGeometry().getLocation().getLat();
             mLng = POJOResult.getGeometry().getLocation().getLng();
+
+            Location locationDestination = new Location(LocationManager.GPS_PROVIDER);
+            locationDestination.setLatitude(mLat);
+            locationDestination.setLongitude(mLng);
+            mDistance = (int) location.distanceTo(locationDestination);
         }
 
         mRating = 0;
@@ -76,7 +90,11 @@ public class Place {
 
         mPhoneNumbers = "";
         mWebsite = "";
-        mDistance = 0;
+
+        mIcon = "";
+        if (POJOResult.getIcon() != null) {
+            mIcon = POJOResult.getIcon();
+        }
     }
 
     private String getPlacesPhoto(String photoReference, String key) {
@@ -177,6 +195,14 @@ public class Place {
 
     public void setDistance(int distance) {
         mDistance = distance;
+    }
+
+    public String getIcon() {
+        return mIcon;
+    }
+
+    public void setIcon(String icon) {
+        mIcon = icon;
     }
 
     @Override
