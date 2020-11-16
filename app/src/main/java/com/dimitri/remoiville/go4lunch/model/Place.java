@@ -1,5 +1,6 @@
 package com.dimitri.remoiville.go4lunch.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,6 +17,8 @@ public class Place {
     private boolean mOpen;
     private String mPhoneNumbers;
     private String mWebsite;
+    private int mDistance;
+    private final int maxWidth = 80;
 
 
     public Place(String placeId, String name, String address, Double lat, Double lng, int rating,
@@ -31,6 +34,53 @@ public class Place {
         this.mOpen = open;
         this.mPhoneNumbers = phoneNumbers;
         this.mWebsite = website;
+    }
+
+    public Place(PlacesPOJO.Result POJOResult, String key) {
+        placeId = "";
+        if (POJOResult.getPlaceId() != null) {
+            placeId = POJOResult.getPlaceId();
+        }
+
+        mName = "";
+        if (POJOResult.getName() != null) {
+            mName = POJOResult.getName();
+        }
+
+        mAddress = "";
+        if (POJOResult.getVicinity() != null) {
+            mAddress = POJOResult.getVicinity();
+        }
+
+        if (POJOResult.getGeometry() != null) {
+            mLat = POJOResult.getGeometry().getLocation().getLat();
+            mLng = POJOResult.getGeometry().getLocation().getLng();
+        }
+
+        mRating = 0;
+        if (POJOResult.getRating() != null) {
+            mRating = (int) Math.round((POJOResult.getRating() * 3) / 5);
+        }
+
+        mUrlPicture = "";
+        if (POJOResult.getPhotos() != null) {
+            mUrlPicture = getPlacesPhoto(POJOResult.getPhotos().get(0).getPhotoReference(), key);
+        }
+
+        mWorkmateList = new ArrayList<>();
+
+        mOpen = false;
+        if (POJOResult.getOpeningHours() != null) {
+            mOpen = POJOResult.getOpeningHours().getOpenNow();
+        }
+
+        mPhoneNumbers = "";
+        mWebsite = "";
+        mDistance = 0;
+    }
+
+    private String getPlacesPhoto(String photoReference, String key) {
+        return "https://maps.googleapis.com/maps/api/place/photo?maxwidth=" + maxWidth + "&photoreference=" + photoReference + "&key=" + key;
     }
 
     public String getPlaceId() {
@@ -119,6 +169,14 @@ public class Place {
 
     public void setWebsite(String website) {
         mWebsite = website;
+    }
+
+    public int getDistance() {
+        return mDistance;
+    }
+
+    public void setDistance(int distance) {
+        mDistance = distance;
     }
 
     @Override

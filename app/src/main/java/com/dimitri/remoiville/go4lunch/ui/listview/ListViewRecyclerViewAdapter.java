@@ -17,12 +17,10 @@ import java.util.List;
 public class ListViewRecyclerViewAdapter  extends RecyclerView.Adapter<ListViewRecyclerViewAdapter.ViewHolder> {
 
     private List<Place> mPlaces;
-    private List<Integer> mDistances;
     private static final String TAG = "ListViewRecyclerViewAda";
 
-    public ListViewRecyclerViewAdapter(List<Place> items, List<Integer> integers) {
+    public ListViewRecyclerViewAdapter(List<Place> items) {
         mPlaces = items;
-        mDistances = integers;
     }
 
     @NonNull
@@ -36,7 +34,7 @@ public class ListViewRecyclerViewAdapter  extends RecyclerView.Adapter<ListViewR
         Log.d(TAG, "onBindViewHolder: ici");
         final Place place = mPlaces.get(position);
         holder.mFragmentListviewBinding.listPlacesName.setText(place.getName());
-        holder.mFragmentListviewBinding.listPlacesDistance.setText(mDistances.get(position) + "m");
+        holder.mFragmentListviewBinding.listPlacesDistance.setText(place.getDistance() + "m");
         holder.mFragmentListviewBinding.listPlacesTypeAddress.setText(place.getAddress());
         int nbWorkmates = place.getWorkmateList().size();
         String nbWorkmatesString = "" + nbWorkmates;
@@ -75,7 +73,7 @@ public class ListViewRecyclerViewAdapter  extends RecyclerView.Adapter<ListViewR
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private FragmentListviewBinding mFragmentListviewBinding;
+        private final FragmentListviewBinding mFragmentListviewBinding;
 
         public ViewHolder(FragmentListviewBinding fragmentListviewBinding) {
             super(fragmentListviewBinding.getRoot());

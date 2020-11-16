@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,7 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -33,9 +33,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.List;
 
-import io.reactivex.Observable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.observers.DisposableObserver;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -47,7 +44,6 @@ public class ListViewFragment extends Fragment
     private RecyclerView mRecyclerView;
     private Context mContext;
     private String API_KEY = BuildConfig.API_KEY;
-    private Disposable disposable;
     private Location mCurrentLocation;
     private final int REQUEST_LOCATION_PERMISSION = 1;
     private FusedLocationProviderClient mFusedLocationProviderClient;
@@ -113,7 +109,19 @@ public class ListViewFragment extends Fragment
 
     private void configureObserverPlacesRestaurants() {
         Log.d(TAG, "configureObserverPlacesRestaurants: " + mCurrentLocation.getLatitude() + " ; " + mCurrentLocation.getLongitude());
-        mMainViewModel.streamFetchPlacesRestaurants(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), radius, API_KEY)
+        mMainViewModel.getRestaurantsRepository(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), radius, API_KEY)
+                .observe(getViewLifecycleOwner(), places -> {
+                    for (int i = 0; i < places.size(); i++) {
+                        Location locationDestination = new Location(LocationManager.GPS_PROVIDER);
+                        locationDestination.setLatitude(places.get(i).getLat());
+                        locationDestination.setLongitude(places.get(i).getLng());
+
+                        places.get(i).setDistance((int) mCurrentLocation.distanceTo(locationDestination));
+                    }
+
+                    initList(places);
+                });
+/*        mMainViewModel.streamFetchPlacesRestaurants(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), radius, API_KEY)
                 .observe(getViewLifecycleOwner(), new Observer<Observable<List<Place>>>() {
                     @Override
                     public void onChanged(Observable<List<Place>> listObservable) {
@@ -164,7 +172,7 @@ public class ListViewFragment extends Fragment
                             }
                         });
                     }
-                });
+                });*/
     }
 
     private void configureViewModel() {
@@ -172,8 +180,8 @@ public class ListViewFragment extends Fragment
         mMainViewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
     }
 
-    private void initList(List<Place> places, List<Integer> distances) {
+    private void initList(List<Place> places) {
         Log.d(TAG, "initList: ici");
-        mRecyclerView.setAdapter(new ListViewRecyclerViewAdapter(places, distances));
+        mRecyclerView.setAdapter(new ListViewRecyclerViewAdapter(places));
     }
 }

@@ -1,23 +1,16 @@
 package com.dimitri.remoiville.go4lunch.source.repository;
 
-import android.util.Log;
-
-import com.dimitri.remoiville.go4lunch.model.DistanceMatrix;
-import com.dimitri.remoiville.go4lunch.model.Element;
+import androidx.lifecycle.MutableLiveData;
 import com.dimitri.remoiville.go4lunch.model.Place;
 import com.dimitri.remoiville.go4lunch.model.PlacesPOJO;
-import com.dimitri.remoiville.go4lunch.model.Row;
-import com.dimitri.remoiville.go4lunch.model.Workmate;
 import com.dimitri.remoiville.go4lunch.source.remote.ServicePlacesApiGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Flowable;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class PlacesRepository {
@@ -25,11 +18,45 @@ public class PlacesRepository {
     private final String mType = "restaurant";
     private final String mUnit = "metric";
     private final String mMode = "walking";
-    private final int mMaxWidth = 80;
     private final String mFields = "international_phone_number,website";
+
+    private MutableLiveData<List<Place>> listRestaurantsMutableLiveData = new MutableLiveData<>();
+    private List<Place> listRestaurants = new ArrayList<>();
+
     private final String TAG = "PlacesRepository";
 
+    private static PlacesRepository sPlacesRepository;
 
+    public static PlacesRepository getInstance(){
+        if (sPlacesRepository == null) {
+            sPlacesRepository = new PlacesRepository();
+        }
+        return sPlacesRepository;
+    }
+
+    public MutableLiveData<List<Place>> getListRestaurants(Double lat, Double lng, int radius, String key) {
+        String location = lat + "," + lng;
+        Call<PlacesPOJO> listRestaurantsPOJOOut = ServicePlacesApiGenerator.getRequestGoogleApi().getNearbyPlaces(location, radius, mType, key);
+        listRestaurantsPOJOOut.enqueue(new Callback<PlacesPOJO>() {
+            @Override
+            public void onResponse(Call<PlacesPOJO> call, Response<PlacesPOJO> response) {
+                for (int i = 0; i < response.body().getResults().size(); i++) {
+                    Place place = new Place(response.body().getResults().get(i), key);
+                    listRestaurants.add(place);
+                }
+                listRestaurantsMutableLiveData.setValue(listRestaurants);
+            }
+
+            @Override
+            public void onFailure(Call<PlacesPOJO> call, Throwable t) {
+                listRestaurantsMutableLiveData.postValue(null);
+            }
+        });
+        return listRestaurantsMutableLiveData;
+    }
+
+
+/*
     public Observable<PlacesPOJO> streamFetchPlacesRestaurants(String location, int radius, String key) {
         return ServicePlacesApiGenerator.getRequestGoogleApi().getNearbyPlaces(location, radius, mType, key)
                 .subscribeOn(Schedulers.io())
@@ -87,12 +114,9 @@ public class PlacesRepository {
                     return restaurants;
                 });
     }
+*/
 
-    public String getPlacesPhoto(String photoReference, String key) {
-        return "https://maps.googleapis.com/maps/api/place/photo?maxwidth=" + mMaxWidth + "&photoreference=" + photoReference + "&key=" + key;
-    }
-
-    public Observable<DistanceMatrix> streamFetchDistanceMatrix(String location, String destinations, String key) {
+/*    public Observable<DistanceMatrix> streamFetchDistanceMatrix(String location, String destinations, String key) {
         return ServicePlacesApiGenerator.getRequestGoogleApi().getDistance(mUnit, location, destinations, mMode, key)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -119,5 +143,5 @@ public class PlacesRepository {
         return ServicePlacesApiGenerator.getRequestGoogleApi()
                 .getPlaceDetails(placeId, mFields, key)
                 .subscribeOn(Schedulers.io());
-    }
+    }*/
 }

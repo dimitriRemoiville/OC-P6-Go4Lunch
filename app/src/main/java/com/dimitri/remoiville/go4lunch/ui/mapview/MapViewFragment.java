@@ -4,14 +4,18 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+
 import com.dimitri.remoiville.go4lunch.BuildConfig;
-import com.dimitri.remoiville.go4lunch.model.Place;
+import com.dimitri.remoiville.go4lunch.R;
 import com.dimitri.remoiville.go4lunch.viewmodel.Injection;
 import com.dimitri.remoiville.go4lunch.viewmodel.MainViewModel;
 import com.dimitri.remoiville.go4lunch.viewmodel.ViewModelFactory;
@@ -21,16 +25,7 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-
-import com.dimitri.remoiville.go4lunch.R;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -38,11 +33,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.net.PlacesClient;
 
-import java.util.List;
-
-import io.reactivex.Observable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.observers.DisposableObserver;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -59,7 +49,6 @@ public class MapViewFragment extends Fragment
     private final int REQUEST_LOCATION_PERMISSION = 1;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private Location mCurrentLocation;
-    private Disposable disposable;
     private final int radius = 400;
     private static final String TAG = "MapViewFragment";
 
@@ -133,7 +122,16 @@ public class MapViewFragment extends Fragment
     }
 
     private void configureObserverPlacesRestaurants() {
-        mMainViewModel.streamFetchPlacesRestaurants(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), radius, API_KEY)
+        mMainViewModel.getRestaurantsRepository(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), radius, API_KEY)
+                .observe(getViewLifecycleOwner(), places -> {
+                    for (int i = 0; i < places.size(); i++) {
+                        LatLng position = new LatLng(places.get(i).getLat(), places.get(i).getLng());
+                        mMap.addMarker(new MarkerOptions().position(position)
+                                .title(places.get(i).getName())
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                    }
+                });
+/*        mMainViewModel.streamFetchPlacesRestaurants(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), radius, API_KEY)
                 .observe(getViewLifecycleOwner(), new Observer<Observable<List<Place>>>() {
                     @Override
                     public void onChanged(Observable<List<Place>> listObservable) {
@@ -160,7 +158,7 @@ public class MapViewFragment extends Fragment
                             }
                         });
                     }
-                });
+                });*/
     }
 
     @Override
