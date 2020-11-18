@@ -1,46 +1,63 @@
 package com.dimitri.remoiville.go4lunch.view.activity;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
-import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import android.Manifest;
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
+import com.dimitri.remoiville.go4lunch.BuildConfig;
 import com.dimitri.remoiville.go4lunch.R;
 import com.dimitri.remoiville.go4lunch.databinding.ActivityMainBinding;
+import com.dimitri.remoiville.go4lunch.view.fragment.listview.ListViewFragment;
+import com.dimitri.remoiville.go4lunch.view.fragment.mapview.MapViewFragment;
+import com.dimitri.remoiville.go4lunch.view.fragment.workmates.WorkmatesFragment;
+import com.dimitri.remoiville.go4lunch.viewmodel.Injection;
+import com.dimitri.remoiville.go4lunch.viewmodel.MainViewModel;
+import com.dimitri.remoiville.go4lunch.viewmodel.ViewModelFactory;
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.ErrorCodes;
-import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.util.Arrays;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private static final int RC_SIGN_IN = 123;
     private AppBarConfiguration mNavigationDrawer;
-    private ConstraintLayout constraintLayout;
     private ActivityMainBinding mBinding;
     private DrawerLayout drawer;
+    private Context mContext;
+    private NavController navController;
+    private MainViewModel mMainViewModel;
+    private final int REQUEST_LOCATION_PERMISSION = 1;
     private static final String TAG = "MainActivity";
 
 
@@ -51,10 +68,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         View view = mBinding.getRoot();
         setContentView(view);
         setSupportActionBar(mBinding.appBarMain.toolbar);
-        constraintLayout = mBinding.appBarMain.contentMain.contentMain;
+        mContext = view.getContext();
+        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        configureViewModel();
 
-        // Launch authentication screen
-        //startSignIn();
+        // Managing permissions
+        requestLocationPermission();
 
         // Bottom navigation
         initBottomNavigation();
@@ -63,15 +82,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initDrawerNavigation();
     }
 
+    private void configureViewModel() {
+        ViewModelFactory viewModelFactory = Injection.provideViewModelFactory();
+        mMainViewModel =  new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
+    }
+
+    @AfterPermissionGranted(REQUEST_LOCATION_PERMISSION)
+    public void requestLocationPermission() {
+        String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION};
+        if (EasyPermissions.hasPermissions(mContext, perms)) {
+            Toast.makeText(mContext, "Permission alrea  dy granted", Toast.LENGTH_SHORT).show();
+        } else {
+            EasyPermissions.requestPermissions(this, "Please grant the location permission", REQUEST_LOCATION_PERMISSION, perms);
+        }
+    }
+
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        handleResponseAfterSignIn(requestCode, resultCode, data);
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 
     @Override
     public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         return NavigationUI.navigateUp(navController, mNavigationDrawer)
                 || super.onSupportNavigateUp();
     }
@@ -87,53 +121,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return super.onCreateOptionsMenu(menu);
     }
 
-    private void startSignIn() {
-        startActivityForResult(
-                AuthUI.getInstance()
-                        .createSignInIntentBuilder()
-                        .setAvailableProviders(Arrays.asList(
-                                new AuthUI.IdpConfig.GoogleBuilder().build(),
-                                new AuthUI.IdpConfig.FacebookBuilder().build(),
-                                new AuthUI.IdpConfig.TwitterBuilder().build(),
-                                new AuthUI.IdpConfig.EmailBuilder().build()))
-                        .setIsSmartLockEnabled(true,true)
-                        .setTheme(R.style.AuthTheme)
-                        .setLogo(R.drawable.logo_go4lunch_txt)
-                        .build(),
-                RC_SIGN_IN);
-    }
-
-    private void handleResponseAfterSignIn(int requestCode, int resultCode, Intent data) {
-        IdpResponse response = IdpResponse.fromResultIntent(data);
-
-        if (requestCode == RC_SIGN_IN) {
-            if (resultCode == RESULT_OK) { // SUCCESS
-                showSnackBar(constraintLayout, getString(R.string.connection_succeed));
-            } else { // ERRORS
-                if (response == null) {
-                    showSnackBar(constraintLayout, getString(R.string.error_authentication_canceled));
-                } else if (response.getError().getErrorCode() == ErrorCodes.NO_NETWORK) {
-                    showSnackBar(constraintLayout, getString(R.string.error_no_internet));
-                } else if (response.getError().getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
-                    showSnackBar(constraintLayout, getString(R.string.error_unknown_error));
-                }
-            }
-        }
-    }
-
-    // Show Snack Bar with a message
-    private void showSnackBar(ConstraintLayout constraintLayout, String message){
-        Snackbar.make(constraintLayout, message, Snackbar.LENGTH_SHORT).show();
-    }
-
     private void initBottomNavigation() {
         BottomNavigationView navView = mBinding.appBarMain.contentMain.navView;
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         AppBarConfiguration bottomNavigationBar = new AppBarConfiguration.Builder(
                 R.id.nav_mapview, R.id.nav_listview, R.id.nav_workmates)
                 .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, bottomNavigationBar);
         NavigationUI.setupWithNavController(navView, navController);
     }
@@ -145,9 +137,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 R.id.nav_yourLunch, R.id.nav_settings, R.id.nav_logout)
                 .setOpenableLayout(drawer)
                 .build();
-        NavController navController1 = Navigation.findNavController(this, R.id.nav_host_fragment);
-        NavigationUI.setupActionBarWithNavController(this, navController1, mNavigationDrawer);
-        NavigationUI.setupWithNavController(navigationView, navController1);
+        NavigationUI.setupActionBarWithNavController(this, navController, mNavigationDrawer);
+        NavigationUI.setupWithNavController(navigationView, navController);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -156,6 +147,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle navigation view item clicks here.
         if (item.getItemId() == R.id.nav_logout) {
             logOut();
+        }
+        if (item.getItemId() == R.id.nav_settings) {
+            SettingsActivity.navigate(this);
+        }
+        if (item.getItemId() == R.id.nav_yourLunch) {
+            SettingsActivity.navigate(this);
         }
         //close navigation drawer
         drawer.closeDrawer(GravityCompat.START);
@@ -168,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        startActivity(new Intent(MainActivity.this, MainActivity.class));
+                        startActivity(new Intent(mContext, AuthActivity.class));
                         finish();
                     }
                 });
@@ -180,5 +177,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     protected Boolean isCurrentUserLogged() {
         return (this.getCurrentUser() != null);
+    }
+
+    /**
+     * Used to navigate to this activity
+     * @param activity
+     */
+    public static void navigate(FragmentActivity activity) {
+        Intent intent = new Intent(activity, MainActivity.class);
+        ActivityCompat.startActivity(activity, intent, null);
     }
 }

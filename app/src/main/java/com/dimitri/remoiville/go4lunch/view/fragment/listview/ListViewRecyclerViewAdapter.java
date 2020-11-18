@@ -1,5 +1,6 @@
 package com.dimitri.remoiville.go4lunch.view.fragment.listview;
 
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.dimitri.remoiville.go4lunch.databinding.FragmentListviewBinding;
 import com.dimitri.remoiville.go4lunch.model.Place;
+import com.dimitri.remoiville.go4lunch.view.activity.DetailsPlaceActivity;
 
+import java.util.Collections;
 import java.util.List;
 
 public class ListViewRecyclerViewAdapter  extends RecyclerView.Adapter<ListViewRecyclerViewAdapter.ViewHolder> {
@@ -65,6 +68,12 @@ public class ListViewRecyclerViewAdapter  extends RecyclerView.Adapter<ListViewR
         Glide.with(holder.itemView)
                 .load(place.getUrlPicture())
                 .into(holder.mFragmentListviewBinding.listPlacesImg);
+
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(holder.itemView.getContext(), DetailsPlaceActivity.class);
+            intent.putExtra("Restaurant", place);
+            holder.itemView.getContext().startActivity(intent);
+        });
     }
 
     @Override

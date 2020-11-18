@@ -23,8 +23,7 @@ public class MainViewModel extends ViewModel {
     }
 
     public MutableLiveData<List<Place>> getRestaurantsRepository(Location location, int radius, String key) {
-        listRestaurants = loadRestaurantsData(location, radius, key);
-        return listRestaurants;
+        return listRestaurants = loadRestaurantsData(location, radius, key);
     }
 
     private  MutableLiveData<List<Place>> loadRestaurantsData(Location location, int radius, String key) {

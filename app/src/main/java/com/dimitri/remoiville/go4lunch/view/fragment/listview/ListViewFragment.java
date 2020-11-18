@@ -5,17 +5,15 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,10 +28,8 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.util.Collections;
 import java.util.List;
-
-import pub.devrel.easypermissions.AfterPermissionGranted;
-import pub.devrel.easypermissions.EasyPermissions;
 
 public class ListViewFragment extends Fragment
         implements
@@ -43,9 +39,8 @@ public class ListViewFragment extends Fragment
     private RecyclerView mRecyclerView;
     private Context mContext;
     private final String API_KEY = BuildConfig.API_KEY;
-    private Location mCurrentLocation;
-    private final int REQUEST_LOCATION_PERMISSION = 1;
     private FusedLocationProviderClient mFusedLocationProviderClient;
+    private Location mCurrentLocation;
     private final int radius = 400;
     private static final String TAG = "ListViewFragment";
 
@@ -65,54 +60,36 @@ public class ListViewFragment extends Fragment
         mRecyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
 
         configureViewModel();
-        requestLocationPermission();
         getLocation();
+
         return root;
     }
 
+    private void configureViewModel() {
+        ViewModelFactory viewModelFactory = Injection.provideViewModelFactory();
+        mMainViewModel = new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
+    }
+
     private void getLocation() {
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity().getApplicationContext());
-        Log.d(TAG, "getLocation: ici");
-        if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "getLocation: là");
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext);
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mFusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
-                    Log.d(TAG, "getLocation: re");
                     if (location != null) {
                         mCurrentLocation = location;
                         configureObserverPlacesRestaurants();
                     }
                 }
             });
-        } else {
-            requestLocationPermission();
         }
-    }
-
-    @AfterPermissionGranted(REQUEST_LOCATION_PERMISSION)
-    public void requestLocationPermission() {
-        String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION};
-        if (EasyPermissions.hasPermissions(getActivity().getApplicationContext(), perms)) {
-            Toast.makeText(getActivity().getApplicationContext(), "Permission already granted", Toast.LENGTH_SHORT).show();
-        } else {
-            EasyPermissions.requestPermissions(this, "Please grant the location permission", REQUEST_LOCATION_PERMISSION, perms);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 
     private void configureObserverPlacesRestaurants() {
-        Log.d(TAG, "configureObserverPlacesRestaurants: " + mCurrentLocation.getLatitude() + " ; " + mCurrentLocation.getLongitude());
-        mMainViewModel.getRestaurantsRepository(mCurrentLocation, radius, API_KEY)
-                .observe(getViewLifecycleOwner(), places -> {
-                    Log.d(TAG, "configureObserverPlacesRestaurants places.size() : " + places.size());
-                    initList(places);
-                });
+        mMainViewModel.getRestaurantsRepository(mCurrentLocation,radius,API_KEY).observe(getViewLifecycleOwner(), places -> {
+            Collections.sort(places, new Place.PlaceDistanceComparator());
+            initList(places);
+        });
 /*        mMainViewModel.streamFetchPlacesRestaurants(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), radius, API_KEY)
                 .observe(getViewLifecycleOwner(), new Observer<Observable<List<Place>>>() {
                     @Override
@@ -167,13 +144,7 @@ public class ListViewFragment extends Fragment
                 });*/
     }
 
-    private void configureViewModel() {
-        ViewModelFactory viewModelFactory = Injection.provideViewModelFactory();
-        mMainViewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
-    }
-
     private void initList(List<Place> places) {
-        Log.d(TAG, "initList: ici");
         mRecyclerView.setAdapter(new ListViewRecyclerViewAdapter(places));
     }
 }

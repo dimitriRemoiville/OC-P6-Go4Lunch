@@ -8,12 +8,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.dimitri.remoiville.go4lunch.BuildConfig;
 import com.dimitri.remoiville.go4lunch.R;
@@ -32,9 +31,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
-import pub.devrel.easypermissions.AfterPermissionGranted;
-import pub.devrel.easypermissions.EasyPermissions;
-
 public class MapViewFragment extends Fragment
         implements
         OnMapReadyCallback,
@@ -45,10 +41,9 @@ public class MapViewFragment extends Fragment
     private MainViewModel mMainViewModel;
     private GoogleMap mMap;
     private final String API_KEY = BuildConfig.API_KEY;
-    private final int REQUEST_LOCATION_PERMISSION = 1;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private Location mCurrentLocation;
-    private final int radius = 290;
+    private final int radius = 400;
     private static final String TAG = "MapViewFragment";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -56,7 +51,6 @@ public class MapViewFragment extends Fragment
         configureViewModel();
         View root = inflater.inflate(R.layout.fragment_mapview, container, false);
 
-        requestLocationPermission();
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity().getApplicationContext());
 
         // Initialize map fragment
@@ -69,25 +63,9 @@ public class MapViewFragment extends Fragment
 
     private void configureViewModel() {
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory();
-        mMainViewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
+        mMainViewModel = new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
     }
 
-    @AfterPermissionGranted(REQUEST_LOCATION_PERMISSION)
-    public void requestLocationPermission() {
-        String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION};
-        if(EasyPermissions.hasPermissions(getActivity().getApplicationContext(), perms)) {
-            Toast.makeText(getActivity().getApplicationContext(), "Permission already granted", Toast.LENGTH_SHORT).show();
-        }
-        else {
-            EasyPermissions.requestPermissions(this, "Please grant the location permission", REQUEST_LOCATION_PERMISSION, perms);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -109,14 +87,11 @@ public class MapViewFragment extends Fragment
                     }
                 }
             });
-        } else {
-            requestLocationPermission();
         }
     }
 
     private void configureObserverPlacesRestaurants() {
-        mMainViewModel.getRestaurantsRepository(mCurrentLocation, radius, API_KEY)
-                .observe(getViewLifecycleOwner(), places -> {
+        mMainViewModel.getRestaurantsRepository(mCurrentLocation, radius, API_KEY).observe(getViewLifecycleOwner(), places -> {
                     Log.d(TAG, "configureObserverPlacesRestaurants places.size() : " + places.size());
                     for (int i = 0; i < places.size(); i++) {
                         LatLng position = new LatLng(places.get(i).getLat(), places.get(i).getLng());

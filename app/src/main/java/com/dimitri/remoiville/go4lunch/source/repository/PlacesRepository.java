@@ -48,9 +48,9 @@ public class PlacesRepository {
                     Place place = new Place(response.body().getResults().get(i), location, key);
                     listRestaurants.add(place);
                 }
-                if (response.body().getNextPageToken() != null) {
+/*                if (response.body().getNextPageToken() != null) {
                     getListRestaurantsNext(response.body().getNextPageToken(), location, key);
-                }
+                }*/
                 listRestaurantsMutableLiveData.setValue(listRestaurants);
             }
 
