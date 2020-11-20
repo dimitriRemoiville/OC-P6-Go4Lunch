@@ -16,6 +16,7 @@ public class MainViewModel extends ViewModel {
 
     private final PlacesRepository mPlacesRepository;
     private MutableLiveData<List<Place>> listRestaurants = new MutableLiveData<>();
+    private MutableLiveData<Place> restaurantDetails = new MutableLiveData<>();
     private static final String TAG = "MainViewModel";
 
     public MainViewModel(PlacesRepository placesRepository) {
@@ -28,6 +29,14 @@ public class MainViewModel extends ViewModel {
 
     private  MutableLiveData<List<Place>> loadRestaurantsData(Location location, int radius, String key) {
         return mPlacesRepository.getListRestaurants(location, radius, key);
+    }
+
+    public MutableLiveData<Place> getRestaurantDetailsRepository(String placeId, String key) {
+        return restaurantDetails = loadRestaurantDetailsData(placeId, key);
+    }
+
+    private MutableLiveData<Place> loadRestaurantDetailsData(String placeId, String key) {
+        return mPlacesRepository.getRestaurantDetails(placeId,key);
     }
 
 /*    public MutableLiveData<Observable<List<Place>>> streamFetchPlacesRestaurants(Double lat, Double lng, int radius, String key) {

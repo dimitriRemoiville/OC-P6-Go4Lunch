@@ -18,8 +18,8 @@
             android:id="@+id/activity_details_img"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintDimensionRatio="1.66:1"
             android:scaleType="centerCrop"
+            app:layout_constraintDimensionRatio="1.66:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -32,10 +32,11 @@
             android:clickable="true"
             android:focusable="true"
             app:backgroundTint="@android:color/white"
-            app:layout_constraintTop_toBottomOf="@id/activity_details_img"
             app:layout_constraintBottom_toTopOf="@id/activity_details_restaurant_card"
             app:layout_constraintEnd_toEndOf="@id/activity_details_restaurant_card"
-            app:srcCompat="@drawable/check_circle_green_24" />
+            app:layout_constraintTop_toBottomOf="@id/activity_details_img"
+            app:srcCompat="@drawable/check_circle_green_24"
+            android:contentDescription="TODO" />
 
         <LinearLayout
             android:id="@+id/activity_details_restaurant_card"
@@ -60,7 +61,6 @@
                     android:id="@+id/activity_details_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Le Zinc"
                     android:textColor="@android:color/white"
                     android:textSize="16sp" />
 
@@ -70,7 +70,7 @@
                     android:layout_height="18dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="8dp"
-                    android:visibility="visible"
+                    android:visibility="invisible"
                     app:srcCompat="@drawable/star_yellow_24" />
 
                 <ImageView
@@ -79,7 +79,7 @@
                     android:layout_height="18dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="8dp"
-                    android:visibility="visible"
+                    android:visibility="invisible"
                     app:srcCompat="@drawable/star_yellow_24" />
 
                 <ImageView
@@ -88,7 +88,7 @@
                     android:layout_height="18dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="8dp"
-                    android:visibility="visible"
+                    android:visibility="invisible"
                     app:srcCompat="@drawable/star_yellow_24" />
 
 
@@ -109,7 +109,6 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="marquee"
                     android:singleLine="true"
-                    android:text="French - Restaurant - 12 rue du Faubourg Poissonnière"
                     android:textColor="@android:color/white"
                     android:textSize="12sp" />
 
@@ -117,92 +116,97 @@
 
         </LinearLayout>
 
-        <GridLayout
-            android:id="@+id/activity_details_grid_layout"
-            android:layout_width="match_parent"
+
+        <ImageView
+            android:id="@+id/activity_details_call_img"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:rowCount="2"
-            android:columnCount="3"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
+            app:srcCompat="@drawable/phone_orange_24"
+            android:layout_margin="16dp"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/activity_details_like_img"
+            app:layout_constraintTop_toBottomOf="@id/activity_details_restaurant_card"
+            app:layout_constraintBottom_toTopOf="@id/activity_details_call_txt"/>
+
+        <TextView
+            android:id="@+id/activity_details_call_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="16dp"
+            android:text="CALL"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@id/activity_details_call_img"
+            app:layout_constraintEnd_toEndOf="@id/activity_details_call_img"
+            app:layout_constraintTop_toBottomOf="@id/activity_details_call_img"
+            app:layout_constraintBottom_toTopOf="@id/activity_details_recyclerview_list"/>
+
+        <ImageView
+            android:id="@+id/activity_details_like_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            app:srcCompat="@drawable/star_orange_24"
+            app:layout_constraintStart_toEndOf="@id/activity_details_call_img"
+            app:layout_constraintEnd_toStartOf="@id/activity_details_website_img"
+            app:layout_constraintTop_toBottomOf="@id/activity_details_restaurant_card"
+            app:layout_constraintBottom_toTopOf="@id/activity_details_like_txt"/>
+
+        <TextView
+            android:id="@+id/activity_details_like_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="16dp"
+            android:text="LIKE"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@id/activity_details_like_img"
+            app:layout_constraintEnd_toEndOf="@id/activity_details_like_img"
+            app:layout_constraintTop_toBottomOf="@id/activity_details_like_img"
+            app:layout_constraintBottom_toTopOf="@id/activity_details_recyclerview_list"/>
+
+        <ImageView
+            android:id="@+id/activity_details_website_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            app:srcCompat="@drawable/website_orange_24"
+            app:layout_constraintStart_toEndOf="@id/activity_details_like_img"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/activity_details_restaurant_card">
+            app:layout_constraintTop_toBottomOf="@id/activity_details_restaurant_card"
+            app:layout_constraintBottom_toTopOf="@id/activity_details_website_txt"/>
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_row="0"
-                android:layout_column="0"
-                android:layout_rowWeight="1"
-                android:layout_columnWeight="1"
-                app:srcCompat="@drawable/phone_orange_24"/>
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_row="0"
-                android:layout_column="1"
-                android:layout_rowWeight="1"
-                android:layout_columnWeight="1"
-                app:srcCompat="@drawable/star_orange_24"/>
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_row="0"
-                android:layout_column="2"
-                android:layout_rowWeight="1"
-                android:layout_columnWeight="1"
-                app:srcCompat="@drawable/website_orange_24"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp"
-                android:layout_row="1"
-                android:layout_column="0"
-                android:layout_rowWeight="1"
-                android:layout_columnWeight="1"
-                android:gravity="center"
-                android:text="CALL"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp"
-                android:layout_row="1"
-                android:layout_column="1"
-                android:layout_rowWeight="1"
-                android:layout_columnWeight="1"
-                android:gravity="center"
-                android:text="LIKE"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp"
-                android:layout_row="1"
-                android:layout_column="2"
-                android:layout_rowWeight="1"
-                android:layout_columnWeight="1"
-                android:gravity="center"
-                android:text="WEBSITE"/>
-
-        </GridLayout>
+        <TextView
+            android:id="@+id/activity_details_website_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="16dp"
+            android:text="WEBSITE"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@id/activity_details_website_img"
+            app:layout_constraintEnd_toEndOf="@id/activity_details_website_img"
+            app:layout_constraintTop_toBottomOf="@id/activity_details_website_img"
+            app:layout_constraintBottom_toTopOf="@id/activity_details_recyclerview_list"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/activity_details_recyclerview_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/activity_details_grid_layout"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/activity_details_like_txt"
+            app:layout_constraintBottom_toBottomOf="parent"
             tools:context=".view.activity.DetailsPlaceActivity"
             tools:listitem="@layout/activity_details_place_item">
 

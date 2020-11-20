@@ -14,7 +14,6 @@ import com.dimitri.remoiville.go4lunch.databinding.FragmentListviewBinding;
 import com.dimitri.remoiville.go4lunch.model.Place;
 import com.dimitri.remoiville.go4lunch.view.activity.DetailsPlaceActivity;
 
-import java.util.Collections;
 import java.util.List;
 
 public class ListViewRecyclerViewAdapter  extends RecyclerView.Adapter<ListViewRecyclerViewAdapter.ViewHolder> {
@@ -64,14 +63,14 @@ public class ListViewRecyclerViewAdapter  extends RecyclerView.Adapter<ListViewR
                 holder.mFragmentListviewBinding.listPlacesStar3.setVisibility(View.VISIBLE);
                 break;
         }
-        Log.d(TAG, "onBindViewHolder: "+  place.getUrlPicture());
         Glide.with(holder.itemView)
                 .load(place.getUrlPicture())
                 .into(holder.mFragmentListviewBinding.listPlacesImg);
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(holder.itemView.getContext(), DetailsPlaceActivity.class);
-            intent.putExtra("Restaurant", place);
+            Log.d(TAG, "onBindViewHolder: place id" + place.getPlaceId());
+            intent.putExtra("placeId", mPlaces.get(position).getPlaceId());
             holder.itemView.getContext().startActivity(intent);
         });
     }

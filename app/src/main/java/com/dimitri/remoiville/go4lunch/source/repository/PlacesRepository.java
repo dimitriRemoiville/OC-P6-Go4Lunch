@@ -6,6 +6,7 @@ import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 import com.dimitri.remoiville.go4lunch.model.Place;
+import com.dimitri.remoiville.go4lunch.model.PlaceDetailsPOJO;
 import com.dimitri.remoiville.go4lunch.model.PlacesPOJO;
 import com.dimitri.remoiville.go4lunch.source.remote.ServicePlacesApiGenerator;
 
@@ -20,9 +21,8 @@ import retrofit2.Response;
 public class PlacesRepository {
 
     private final String mType = "restaurant";
-    private final String mFields = "international_phone_number,website";
-
     private final MutableLiveData<List<Place>> listRestaurantsMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Place> restaurantDetail = new MutableLiveData<>();
     private final List<Place> listRestaurants = new ArrayList<>();
 
     private static PlacesRepository sPlacesRepository;
@@ -88,6 +88,23 @@ public class PlacesRepository {
                 });
             }
         }, 2000);
+    }
+
+    public MutableLiveData<Place> getRestaurantDetails(String placeId, String key) {
+        Call<PlaceDetailsPOJO> restaurantDetailsPOJOOut = ServicePlacesApiGenerator.getRequestGoogleApi().getPlaceDetails(placeId,key);
+        restaurantDetailsPOJOOut.enqueue(new Callback<PlaceDetailsPOJO>() {
+            @Override
+            public void onResponse(Call<PlaceDetailsPOJO> call, Response<PlaceDetailsPOJO> response) {
+                Place place = new Place(response.body().getResult(), key);
+                restaurantDetail.setValue(place); ;
+            }
+
+            @Override
+            public void onFailure(Call<PlaceDetailsPOJO> call, Throwable t) {
+                restaurantDetail.postValue(null);
+            }
+        });
+        return restaurantDetail;
     }
 
 

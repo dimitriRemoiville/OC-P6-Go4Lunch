@@ -6,6 +6,7 @@ import android.location.LocationManager;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,7 +25,6 @@ public class Place {
     private String mWebsite;
     private int mDistance;
     private String mIcon;
-    private final int maxWidth = 80;
 
     public Place(String placeId, String name, String address, Double lat, Double lng, int rating, String urlPicture, List<Workmate> workmateList, boolean open, String phoneNumbers, String website, int distance, String icon) {
         this.placeId = placeId;
@@ -97,7 +97,52 @@ public class Place {
         }
     }
 
+    public Place(PlaceDetailsPOJO.Result detailsPOJO , String key) {
+        // name,formatted_address,international_phone_number,website,photos
+        placeId = "";
+
+        mName = "";
+        if (detailsPOJO.getName() != null) {
+            mName = detailsPOJO.getName();
+        }
+
+        mAddress = "";
+        if (detailsPOJO.getFormattedAddress() != null) {
+            mAddress = detailsPOJO.getFormattedAddress();
+        }
+
+        mLat = 0.0;
+        mLng = 0.0;
+        mDistance = 0;
+
+        mRating = 0;
+        if (detailsPOJO.getRating() != null) {
+            mRating = (int) Math.round((detailsPOJO.getRating() * 3) / 5);
+        }
+
+        mUrlPicture = "";
+        if (detailsPOJO.getPhotos() != null) {
+            mUrlPicture = getPlacesPhoto(detailsPOJO.getPhotos().get(0).getPhotoReference(), key);
+        }
+
+        mWorkmateList = new ArrayList<>();
+        mOpen = false;
+
+        mPhoneNumbers = "";
+        if (detailsPOJO.getInternationalPhoneNumber() != null) {
+            mPhoneNumbers = detailsPOJO.getInternationalPhoneNumber();
+        }
+
+        mWebsite = "";
+        if (detailsPOJO.getWebsite() != null) {
+            mWebsite = detailsPOJO.getWebsite();
+        }
+
+        mIcon = "";
+    }
+
     private String getPlacesPhoto(String photoReference, String key) {
+        int maxWidth = 400;
         return "https://maps.googleapis.com/maps/api/place/photo?maxwidth=" + maxWidth + "&photoreference=" + photoReference + "&key=" + key;
     }
 
@@ -223,4 +268,13 @@ public class Place {
     public int hashCode() {
         return Objects.hash(placeId);
     }
+
+    public static class PlaceDistanceComparator implements Comparator<Place> {
+        @Override
+        public int compare(Place left, Place right) {
+            return (int) (left.mDistance - right.mDistance);
+        }
+    }
 }
+
+

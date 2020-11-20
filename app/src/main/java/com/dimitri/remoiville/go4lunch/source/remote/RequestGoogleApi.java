@@ -1,5 +1,6 @@
 package com.dimitri.remoiville.go4lunch.source.remote;
 
+import com.dimitri.remoiville.go4lunch.model.PlaceDetailsPOJO;
 import com.dimitri.remoiville.go4lunch.model.PlacesPOJO;
 
 import retrofit2.Call;
@@ -21,8 +22,7 @@ public interface RequestGoogleApi {
                                                 @Query("key") String key);
 
     @GET("place/details/json?")
-    Call<PlacesPOJO> getPlaceDetails (@Query("place_id") String placesId,
-                                              @Query("fields") String fields,
-                                              @Query("key") String key);
+    Call<PlaceDetailsPOJO> getPlaceDetails (@Query("place_id") String placesId,
+                                            @Query("key") String key);
 
 }
