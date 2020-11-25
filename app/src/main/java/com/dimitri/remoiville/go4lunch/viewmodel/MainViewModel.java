@@ -46,16 +46,18 @@ public class MainViewModel extends ViewModel {
         return listRestaurants;
     }
 
-    public void setRestaurantsData(Location location, int radius, String key) {
+    public MutableLiveData<List<Place>> setRestaurantsData(Location location, int radius, String key) {
         listRestaurants.setValue(mPlacesRepository.getListRestaurants(location, radius, key));
+        return listRestaurants;
     }
 
-    public MutableLiveData<Place> getRestaurantDetailsRepository(String placeId, String key) {
+    public MutableLiveData<Place> getRestaurantDetailsRepository() {
         return restaurantDetails;
     }
 
-    public void setRestaurantDetailsData(String placeId, String key) {
+    public MutableLiveData<Place> setRestaurantDetailsData(String placeId, String key) {
         restaurantDetails.setValue(mPlacesRepository.getRestaurantDetails(placeId,key));
+        return restaurantDetails;
     }
 
     // Cloud Firestore

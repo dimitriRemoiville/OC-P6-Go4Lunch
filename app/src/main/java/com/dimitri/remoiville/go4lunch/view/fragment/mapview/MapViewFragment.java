@@ -73,6 +73,10 @@ public class MapViewFragment extends Fragment
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnMyLocationClickListener(this);
 
+        getLocation();
+    }
+
+    private void getLocation() {
         if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
             mFusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
@@ -91,7 +95,7 @@ public class MapViewFragment extends Fragment
     }
 
     private void configureObserverPlacesRestaurants() {
-        mMainViewModel.getRestaurantsRepository().observe(getViewLifecycleOwner(), places -> {
+        mMainViewModel.setRestaurantsData(mCurrentLocation,radius,API_KEY).observe(getViewLifecycleOwner(), places -> {
                     for (int i = 0; i < places.size(); i++) {
                         LatLng position = new LatLng(places.get(i).getLat(), places.get(i).getLng());
                         mMap.addMarker(new MarkerOptions().position(position)
@@ -102,29 +106,10 @@ public class MapViewFragment extends Fragment
                 });
     }
 
-    private void loadDataRestaurantsNewLocation() {
-        if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            mFusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    if (location != null) {
-                        mCurrentLocation = location;
-                        LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(currentLatLng, 15);
-                        mMap.moveCamera(update);
-                        mMainViewModel.setRestaurantsData(mCurrentLocation,radius,API_KEY);
-                        configureObserverPlacesRestaurants();
-                    }
-                }
-            });
-        }
-    }
-
-
     @Override
     public boolean onMyLocationButtonClick() {
         mMap.clear();
-        loadDataRestaurantsNewLocation();
+        getLocation();
         return false;
     }
 

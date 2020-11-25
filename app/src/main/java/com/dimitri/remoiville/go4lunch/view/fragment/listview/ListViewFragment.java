@@ -39,6 +39,10 @@ public class ListViewFragment extends Fragment
     private MainViewModel mMainViewModel;
     private RecyclerView mRecyclerView;
     private Context mContext;
+    private final String API_KEY = BuildConfig.API_KEY;
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+    private Location mCurrentLocation;
+    private final int radius = 400;
     private static final String TAG = "ListViewFragment";
 
     @Override
@@ -57,7 +61,9 @@ public class ListViewFragment extends Fragment
         mRecyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
 
         configureViewModel();
-        configureObserverPlacesRestaurants();
+
+        // Get current location
+        getLocation();
 
         return root;
     }
@@ -67,9 +73,24 @@ public class ListViewFragment extends Fragment
         mMainViewModel = new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
     }
 
+    private void getLocation() {
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext);
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mFusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
+                        mCurrentLocation = location;
+                        configureObserverPlacesRestaurants();
+                    }
+                }
+            });
+        }
+    }
+
     private void configureObserverPlacesRestaurants() {
         Log.d(TAG, "configureObserverPlacesRestaurants: observer OK");
-        mMainViewModel.getRestaurantsRepository().observe(getViewLifecycleOwner(), places -> {
+        mMainViewModel.setRestaurantsData(mCurrentLocation,radius,API_KEY).observe(getViewLifecycleOwner(), places -> {
             Log.d(TAG, "configureObserverPlacesRestaurants: observer - observe something OK");
             Collections.sort(places, new Place.PlaceDistanceComparator());
             initList(places);

@@ -86,8 +86,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Managing permissions
         requestLocationPermission();
 
-        // Get current location
-        getLocation();
+/*        // Get current location
+        getLocation();*/
 
         // Bottom navigation
         initBottomNavigation();
