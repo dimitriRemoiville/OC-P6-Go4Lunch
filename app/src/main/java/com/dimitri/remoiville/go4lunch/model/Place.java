@@ -19,14 +19,14 @@ public class Place {
     private Double mLng;
     private int mRating;
     private String mUrlPicture;
-    private List<Workmate> mWorkmateList;
+    private List<User> mUserList;
     private boolean mOpen;
     private String mPhoneNumbers;
     private String mWebsite;
     private int mDistance;
     private String mIcon;
 
-    public Place(String placeId, String name, String address, Double lat, Double lng, int rating, String urlPicture, List<Workmate> workmateList, boolean open, String phoneNumbers, String website, int distance, String icon) {
+    public Place(String placeId, String name, String address, Double lat, Double lng, int rating, String urlPicture, List<User> userList, boolean open, String phoneNumbers, String website, int distance, String icon) {
         this.placeId = placeId;
         mName = name;
         mAddress = address;
@@ -34,7 +34,7 @@ public class Place {
         mLng = lng;
         mRating = rating;
         mUrlPicture = urlPicture;
-        mWorkmateList = workmateList;
+        mUserList = userList;
         mOpen = open;
         mPhoneNumbers = phoneNumbers;
         mWebsite = website;
@@ -81,7 +81,7 @@ public class Place {
             mUrlPicture = getPlacesPhoto(POJOResult.getPhotos().get(0).getPhotoReference(), key);
         }
 
-        mWorkmateList = new ArrayList<>();
+        mUserList = new ArrayList<>();
 
         mOpen = false;
         if (POJOResult.getOpeningHours() != null) {
@@ -125,7 +125,7 @@ public class Place {
             mUrlPicture = getPlacesPhoto(detailsPOJO.getPhotos().get(0).getPhotoReference(), key);
         }
 
-        mWorkmateList = new ArrayList<>();
+        mUserList = new ArrayList<>();
         mOpen = false;
 
         mPhoneNumbers = "";
@@ -202,12 +202,12 @@ public class Place {
         mUrlPicture = urlPicture;
     }
 
-    public List<Workmate> getWorkmateList() {
-        return mWorkmateList;
+    public List<User> getUserList() {
+        return mUserList;
     }
 
-    public void setWorkmateList(List<Workmate> workmateList) {
-        mWorkmateList = workmateList;
+    public void setUserList(List<User> userList) {
+        mUserList = userList;
     }
 
     public boolean isOpen() {

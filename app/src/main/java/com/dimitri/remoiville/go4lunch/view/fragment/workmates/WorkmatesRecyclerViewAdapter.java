@@ -7,15 +7,15 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dimitri.remoiville.go4lunch.databinding.FragmentWorkmatesBinding;
-import com.dimitri.remoiville.go4lunch.model.Workmate;
+import com.dimitri.remoiville.go4lunch.model.User;
 
 import java.util.List;
 
 public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<WorkmatesRecyclerViewAdapter.ViewHolder> {
 
-    private final List<Workmate> mWorkmates;
+    private final List<User> mWorkmates;
 
-    public WorkmatesRecyclerViewAdapter(List<Workmate> items) {
+    public WorkmatesRecyclerViewAdapter(List<User> items) {
         mWorkmates = items;
     }
 

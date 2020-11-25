@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dimitri.remoiville.go4lunch.R;
-import com.dimitri.remoiville.go4lunch.model.Workmate;
+import com.dimitri.remoiville.go4lunch.model.User;
 import com.dimitri.remoiville.go4lunch.viewmodel.Injection;
 import com.dimitri.remoiville.go4lunch.viewmodel.MainViewModel;
 import com.dimitri.remoiville.go4lunch.viewmodel.ViewModelFactory;
@@ -27,7 +27,7 @@ public class WorkmatesFragment extends Fragment {
     private MainViewModel mMainViewModel;
     private RecyclerView mRecyclerView;
     private Context mContext;
-    private final List<Workmate> mWorkmates = new ArrayList<>();
+    private final List<User> mUsers = new ArrayList<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,7 +47,7 @@ public class WorkmatesFragment extends Fragment {
         return root;
     }
 
-    private void initList(List<Workmate> workmates) {
-        mRecyclerView.setAdapter(new WorkmatesRecyclerViewAdapter(workmates));
+    private void initList(List<User> users) {
+        mRecyclerView.setAdapter(new WorkmatesRecyclerViewAdapter(users));
     }
 }

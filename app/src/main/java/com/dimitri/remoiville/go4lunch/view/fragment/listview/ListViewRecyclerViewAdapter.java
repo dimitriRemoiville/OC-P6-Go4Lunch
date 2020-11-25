@@ -38,7 +38,7 @@ public class ListViewRecyclerViewAdapter  extends RecyclerView.Adapter<ListViewR
         holder.mFragmentListviewBinding.listPlacesName.setText(place.getName());
         holder.mFragmentListviewBinding.listPlacesDistance.setText(place.getDistance() + "m");
         holder.mFragmentListviewBinding.listPlacesTypeAddress.setText(place.getAddress());
-        int nbWorkmates = place.getWorkmateList().size();
+        int nbWorkmates = place.getUserList().size();
         String nbWorkmatesString = "" + nbWorkmates;
         holder.mFragmentListviewBinding.listPlacesNbWorkmates.setText(nbWorkmatesString);
         if (place.isOpen()) {

@@ -7,6 +7,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -24,11 +25,15 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.dimitri.remoiville.go4lunch.BuildConfig;
 import com.dimitri.remoiville.go4lunch.R;
 import com.dimitri.remoiville.go4lunch.databinding.ActivityMainBinding;
+import com.dimitri.remoiville.go4lunch.model.User;
 import com.dimitri.remoiville.go4lunch.view.fragment.listview.ListViewFragment;
 import com.dimitri.remoiville.go4lunch.view.fragment.mapview.MapViewFragment;
 import com.dimitri.remoiville.go4lunch.view.fragment.workmates.WorkmatesFragment;
@@ -58,6 +63,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NavController navController;
     private MainViewModel mMainViewModel;
     private final int REQUEST_LOCATION_PERMISSION = 1;
+    private final String API_KEY = BuildConfig.API_KEY;
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+    private Location mCurrentLocation;
+    private final int radius = 400;
+
+/*    private User currentUser;*/
     private static final String TAG = "MainActivity";
 
 
@@ -74,6 +85,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Managing permissions
         requestLocationPermission();
+
+        // Get current location
+        getLocation();
 
         // Bottom navigation
         initBottomNavigation();
@@ -101,6 +115,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    private void getLocation() {
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext);
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mFusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
+                        mCurrentLocation = location;
+                        loadDataRestaurants();
+                    }
+                }
+            });
+        } else {
+            requestLocationPermission();
+        }
+    }
+
+    private void loadDataRestaurants() {
+        mMainViewModel.setRestaurantsData(mCurrentLocation, radius, API_KEY);
     }
 
     @Override
@@ -171,13 +206,43 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 });
     }
 
-    protected FirebaseUser getCurrentUser() {
+/*    protected FirebaseUser getCurrentUser() {
         return FirebaseAuth.getInstance().getCurrentUser();
     }
 
     protected Boolean isCurrentUserLogged() {
         return (this.getCurrentUser() != null);
+    }*/
+
+/*    private void getCurrentUserFirestore() {
+        if (isCurrentUserLogged()) {
+            mMainViewModel.getCurrentUser(FirebaseAuth.getInstance().getUid())
+                    .observe(this, new Observer<User>() {
+                        @Override
+                        public void onChanged(User user) {
+                            currentUser = user;
+                            updateDrawerUI();
+                        }
+                    });
+        }
     }
+
+    private void updateDrawerUI() {
+        View header = mBinding.navViewDrawer.getHeaderView(0);
+        ImageView profilePicture = header.findViewById(R.id.drawer_picture);
+        TextView name = header.findViewById(R.id.drawer_name);
+        TextView eMail = header.findViewById(R.id.drawer_email);
+
+        Glide.with(this)
+                .load(currentUser.getURLProfilePicture())
+                .centerCrop()
+                .into(profilePicture);
+        String fullName = currentUser.getFirstName() + currentUser.getLastName();
+        name.setText(fullName);
+        eMail.setText(currentUser.getMail());
+
+    }*/
+
 
     /**
      * Used to navigate to this activity

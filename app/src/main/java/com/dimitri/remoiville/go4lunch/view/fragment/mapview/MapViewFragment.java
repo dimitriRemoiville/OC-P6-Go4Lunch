@@ -91,8 +91,7 @@ public class MapViewFragment extends Fragment
     }
 
     private void configureObserverPlacesRestaurants() {
-        mMainViewModel.getRestaurantsRepository(mCurrentLocation, radius, API_KEY).observe(getViewLifecycleOwner(), places -> {
-                    Log.d(TAG, "configureObserverPlacesRestaurants places.size() : " + places.size());
+        mMainViewModel.getRestaurantsRepository().observe(getViewLifecycleOwner(), places -> {
                     for (int i = 0; i < places.size(); i++) {
                         LatLng position = new LatLng(places.get(i).getLat(), places.get(i).getLng());
                         mMap.addMarker(new MarkerOptions().position(position)
@@ -101,42 +100,31 @@ public class MapViewFragment extends Fragment
                                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
                     }
                 });
-/*        mMainViewModel.streamFetchPlacesRestaurants(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), radius, API_KEY)
-                .observe(getViewLifecycleOwner(), new Observer<Observable<List<Place>>>() {
-                    @Override
-                    public void onChanged(Observable<List<Place>> listObservable) {
-                        Log.d(TAG, "onChanged: ");
-                        disposable = listObservable.subscribeWith(new DisposableObserver<List<Place>>() {
-                            @Override
-                            public void onNext(@NonNull List<Place> places) {
-                                Log.d(TAG, "onNext: ");
-                                for (int i = 0; i < places.size(); i++) {
-                                    LatLng position = new LatLng(places.get(i).getLat(), places.get(i).getLng());
-                                    mMap.addMarker(new MarkerOptions().position(position)
-                                            .title(places.get(i).getName())
-                                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-                                }
-                            }
-
-                            @Override
-                            public void onError(@NonNull Throwable e) {
-
-                            }
-
-                            @Override
-                            public void onComplete() {
-                            }
-                        });
-                    }
-                });*/
     }
+
+    private void loadDataRestaurantsNewLocation() {
+        if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mFusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
+                        mCurrentLocation = location;
+                        LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(currentLatLng, 15);
+                        mMap.moveCamera(update);
+                        mMainViewModel.setRestaurantsData(mCurrentLocation,radius,API_KEY);
+                        configureObserverPlacesRestaurants();
+                    }
+                }
+            });
+        }
+    }
+
 
     @Override
     public boolean onMyLocationButtonClick() {
         mMap.clear();
-        if (mCurrentLocation != null) {
-            configureObserverPlacesRestaurants();
-        }
+        loadDataRestaurantsNewLocation();
         return false;
     }
 

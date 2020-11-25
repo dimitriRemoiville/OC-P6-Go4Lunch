@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,10 +39,6 @@ public class ListViewFragment extends Fragment
     private MainViewModel mMainViewModel;
     private RecyclerView mRecyclerView;
     private Context mContext;
-    private final String API_KEY = BuildConfig.API_KEY;
-    private FusedLocationProviderClient mFusedLocationProviderClient;
-    private Location mCurrentLocation;
-    private final int radius = 400;
     private static final String TAG = "ListViewFragment";
 
     @Override
@@ -60,7 +57,7 @@ public class ListViewFragment extends Fragment
         mRecyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
 
         configureViewModel();
-        getLocation();
+        configureObserverPlacesRestaurants();
 
         return root;
     }
@@ -70,23 +67,10 @@ public class ListViewFragment extends Fragment
         mMainViewModel = new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
     }
 
-    private void getLocation() {
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext);
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            mFusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    if (location != null) {
-                        mCurrentLocation = location;
-                        configureObserverPlacesRestaurants();
-                    }
-                }
-            });
-        }
-    }
-
     private void configureObserverPlacesRestaurants() {
-        mMainViewModel.getRestaurantsRepository(mCurrentLocation,radius,API_KEY).observe(getViewLifecycleOwner(), places -> {
+        Log.d(TAG, "configureObserverPlacesRestaurants: observer OK");
+        mMainViewModel.getRestaurantsRepository().observe(getViewLifecycleOwner(), places -> {
+            Log.d(TAG, "configureObserverPlacesRestaurants: observer - observe something OK");
             Collections.sort(places, new Place.PlaceDistanceComparator());
             initList(places);
         });

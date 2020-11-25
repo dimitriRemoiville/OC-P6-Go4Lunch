@@ -7,7 +7,12 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.dimitri.remoiville.go4lunch.model.Place;
+import com.dimitri.remoiville.go4lunch.model.User;
 import com.dimitri.remoiville.go4lunch.source.repository.PlacesRepository;
+import com.dimitri.remoiville.go4lunch.source.repository.RestaurantFirestoreRepository;
+import com.dimitri.remoiville.go4lunch.source.repository.UserFirestoreRepository;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.List;
 
@@ -15,39 +20,58 @@ import java.util.List;
 public class MainViewModel extends ViewModel {
 
     private final PlacesRepository mPlacesRepository;
+    private final RestaurantFirestoreRepository mRestaurantFirestoreRepository;
+    private final UserFirestoreRepository mUserFirestoreRepository;
+
     private MutableLiveData<List<Place>> listRestaurants = new MutableLiveData<>();
     private MutableLiveData<Place> restaurantDetails = new MutableLiveData<>();
+
+    private MutableLiveData<User> currentUser = new MutableLiveData<>();
+    private MutableLiveData<List<User>> users = new MutableLiveData<>();
+
+    private MutableLiveData<Place> restaurantFirestore = new MutableLiveData<>();
+    private MutableLiveData<List<Place>> listRestaurantsFirestore = new MutableLiveData<>();
+
     private static final String TAG = "MainViewModel";
 
-    public MainViewModel(PlacesRepository placesRepository) {
+    // Constructor
+    public MainViewModel(PlacesRepository placesRepository, RestaurantFirestoreRepository restaurantFirestoreRepository, UserFirestoreRepository userFirestoreRepository) {
         this.mPlacesRepository = placesRepository;
+        this.mRestaurantFirestoreRepository = restaurantFirestoreRepository;
+        this.mUserFirestoreRepository = userFirestoreRepository;
     }
 
-    public MutableLiveData<List<Place>> getRestaurantsRepository(Location location, int radius, String key) {
-        return listRestaurants = loadRestaurantsData(location, radius, key);
+    // API Places
+    public MutableLiveData<List<Place>> getRestaurantsRepository() {
+        return listRestaurants;
     }
 
-    private  MutableLiveData<List<Place>> loadRestaurantsData(Location location, int radius, String key) {
-        return mPlacesRepository.getListRestaurants(location, radius, key);
+    public void setRestaurantsData(Location location, int radius, String key) {
+        listRestaurants.setValue(mPlacesRepository.getListRestaurants(location, radius, key));
     }
 
     public MutableLiveData<Place> getRestaurantDetailsRepository(String placeId, String key) {
-        return restaurantDetails = loadRestaurantDetailsData(placeId, key);
+        return restaurantDetails;
     }
 
-    private MutableLiveData<Place> loadRestaurantDetailsData(String placeId, String key) {
-        return mPlacesRepository.getRestaurantDetails(placeId,key);
+    public void setRestaurantDetailsData(String placeId, String key) {
+        restaurantDetails.setValue(mPlacesRepository.getRestaurantDetails(placeId,key));
     }
 
-/*    public MutableLiveData<Observable<List<Place>>> streamFetchPlacesRestaurants(Double lat, Double lng, int radius, String key) {
+    // Cloud Firestore
+    public MutableLiveData<User> getCurrentUser(String userID) {
+        mUserFirestoreRepository.getUser(userID).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot != null) {
+                    User user = documentSnapshot.toObject(User.class);
+                    currentUser.setValue(user);
+                }
 
-        Log.d(TAG, "streamFetchPlacesRestaurants: ici");
-        mListRestaurantsMutable.setValue(mPlacesRepository.streamFetchListPlacesRestaurants(lat,lng,radius,key));
-        return mListRestaurantsMutable;
+
+            }
+        });
+        return currentUser;
     }
 
-    public MutableLiveData<Observable<List<Integer>>> streamFetchDistances(Double lat, Double lng, String destinations, String key) {
-        mListDistanceMutable.setValue(mPlacesRepository.streamFetchListDistance(lat,lng,destinations,key));
-        return mListDistanceMutable;
-    }*/
 }
