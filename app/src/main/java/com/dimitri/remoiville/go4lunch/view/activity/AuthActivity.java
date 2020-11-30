@@ -3,25 +3,38 @@ package com.dimitri.remoiville.go4lunch.view.activity;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.dimitri.remoiville.go4lunch.R;
 import com.dimitri.remoiville.go4lunch.databinding.ActivityAuthBinding;
+import com.dimitri.remoiville.go4lunch.model.User;
+import com.dimitri.remoiville.go4lunch.viewmodel.Injection;
+import com.dimitri.remoiville.go4lunch.viewmodel.MainViewModel;
+import com.dimitri.remoiville.go4lunch.viewmodel.ViewModelFactory;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class AuthActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 123;
     private ConstraintLayout constraintLayout;
     private ActivityAuthBinding mBinding;
+    private MainViewModel mMainViewModel;
+
+    private static final String TAG = "AuthActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,10 +43,15 @@ public class AuthActivity extends AppCompatActivity {
         View view = mBinding.getRoot();
         setContentView(view);
         constraintLayout = mBinding.activityAuth;
+        configureViewModel();
 
         // Launch authentication screen
-/*        startSignIn();*/
-        MainActivity.navigate(this); // A SUPPRIMER
+        startSignIn();
+    }
+
+    private void configureViewModel() {
+        ViewModelFactory viewModelFactory = Injection.provideViewModelFactory();
+        mMainViewModel =  new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
     }
 
     private void startSignIn() {
@@ -65,6 +83,7 @@ public class AuthActivity extends AppCompatActivity {
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == RESULT_OK) { // SUCCESS
                 showSnackBar(constraintLayout, getString(R.string.connection_succeed));
+                managingCurrentUser();
                 MainActivity.navigate(this);
             } else { // ERRORS
                 if (response == null) {
@@ -77,6 +96,33 @@ public class AuthActivity extends AppCompatActivity {
             }
         }
     }
+
+    private void managingCurrentUser() {
+        Log.d(TAG, "managingCurrentUser: ");
+        mMainViewModel.getAllUsers().observe(this, new Observer<List<User>>() {
+            @Override
+            public void onChanged(List<User> users) {
+                boolean userFound = false;
+                for (User user : users) {
+                   if (user.getMail().equals(getCurrentUser().getEmail())) {
+                       Log.d(TAG, "onChanged: user found");
+                       userFound = true;
+                   }
+                }
+
+                if (!userFound) {
+                    Log.d(TAG, "onChanged: create user");
+                    FirebaseUser user = getCurrentUser();
+                    mMainViewModel.createNewUser(user.getUid(),user.getDisplayName(), user.getEmail());
+                }
+            }
+        });
+    }
+
+    protected FirebaseUser getCurrentUser() {
+        return FirebaseAuth.getInstance().getCurrentUser();
+    }
+
     // Show Snack Bar with a message
     private void showSnackBar(ConstraintLayout constraintLayout, String message){
         Snackbar.make(constraintLayout, message, Snackbar.LENGTH_SHORT).show();

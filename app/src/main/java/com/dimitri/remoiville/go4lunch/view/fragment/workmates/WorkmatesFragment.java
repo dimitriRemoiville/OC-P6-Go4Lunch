@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,7 +36,7 @@ public class WorkmatesFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory();
-        mMainViewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel.class);
+        mMainViewModel = new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
         View root = inflater.inflate(R.layout.fragment_workmates_list, container, false);
 
         mContext = root.getContext();

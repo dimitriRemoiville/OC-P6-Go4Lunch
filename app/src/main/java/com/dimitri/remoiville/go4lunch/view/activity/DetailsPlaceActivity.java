@@ -38,7 +38,7 @@ public class DetailsPlaceActivity extends AppCompatActivity {
         String placeId = getIntent().getStringExtra("placeId");
         Log.d(TAG, "onCreate: place id = " + placeId);
 
-        mMainViewModel.getRestaurantDetailsRepository(placeId, API_KEY)
+        mMainViewModel.getRestaurantDetailsData(placeId, API_KEY)
                 .observe(this, new Observer<Place>() {
                     @Override
                     public void onChanged(Place place) {
@@ -81,25 +81,26 @@ public class DetailsPlaceActivity extends AppCompatActivity {
 
         mBinding.activityDetailsAddress.setText(place.getAddress());
 
-        mBinding.activityDetailsCallImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_DIAL);
-                intent.setData(Uri.parse("tel:" + place.getPhoneNumbers()));
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivity(intent);
-                }
+        mBinding.activityDetailsCallImg.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_DIAL);
+            intent.setData(Uri.parse("tel:" + place.getPhoneNumbers()));
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivity(intent);
             }
         });
 
-        mBinding.activityDetailsWebsiteImg.setOnClickListener(new View.OnClickListener() {
+        mBinding.activityDetailsLikeImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
-                intent.putExtra(SearchManager.QUERY, place.getWebsite());
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivity(intent);
-                }
+
+            }
+        });
+
+        mBinding.activityDetailsWebsiteImg.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
+            intent.putExtra(SearchManager.QUERY, place.getWebsite());
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivity(intent);
             }
         });
     }

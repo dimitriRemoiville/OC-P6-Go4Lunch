@@ -1,8 +1,23 @@
 package com.dimitri.remoiville.go4lunch.view.activity;
 
+import android.Manifest;
+import android.app.SearchManager;
+import android.content.Context;
+import android.content.Intent;
+import android.location.Location;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -14,40 +29,21 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import android.Manifest;
-import android.app.SearchManager;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.dimitri.remoiville.go4lunch.BuildConfig;
 import com.dimitri.remoiville.go4lunch.R;
 import com.dimitri.remoiville.go4lunch.databinding.ActivityMainBinding;
 import com.dimitri.remoiville.go4lunch.model.User;
-import com.dimitri.remoiville.go4lunch.view.fragment.listview.ListViewFragment;
-import com.dimitri.remoiville.go4lunch.view.fragment.mapview.MapViewFragment;
-import com.dimitri.remoiville.go4lunch.view.fragment.workmates.WorkmatesFragment;
 import com.dimitri.remoiville.go4lunch.viewmodel.Injection;
 import com.dimitri.remoiville.go4lunch.viewmodel.MainViewModel;
 import com.dimitri.remoiville.go4lunch.viewmodel.ViewModelFactory;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -60,13 +56,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ActivityMainBinding mBinding;
     private DrawerLayout drawer;
     private Context mContext;
+    private ConstraintLayout constraintLayout;
     private NavController navController;
     private MainViewModel mMainViewModel;
     private final int REQUEST_LOCATION_PERMISSION = 1;
-    private final String API_KEY = BuildConfig.API_KEY;
-    private FusedLocationProviderClient mFusedLocationProviderClient;
-    private Location mCurrentLocation;
-    private final int radius = 400;
+    private User mCurrentUser;
 
 /*    private User currentUser;*/
     private static final String TAG = "MainActivity";
@@ -80,14 +74,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(view);
         setSupportActionBar(mBinding.appBarMain.toolbar);
         mContext = view.getContext();
+        constraintLayout = mBinding.appBarMain.contentMain.contentMain;
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         configureViewModel();
 
         // Managing permissions
         requestLocationPermission();
 
-/*        // Get current location
-        getLocation();*/
+        // Get current user information from Firestore and drawer's header
+        if (mCurrentUser == null) {
+            getCurrentUserFirestore();
+        }
 
         // Bottom navigation
         initBottomNavigation();
@@ -115,27 +112,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
-
-    private void getLocation() {
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext);
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            mFusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    if (location != null) {
-                        mCurrentLocation = location;
-                        loadDataRestaurants();
-                    }
-                }
-            });
-        } else {
-            requestLocationPermission();
-        }
-    }
-
-    private void loadDataRestaurants() {
-        mMainViewModel.setRestaurantsData(mCurrentLocation, radius, API_KEY);
     }
 
     @Override
@@ -206,24 +182,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 });
     }
 
-/*    protected FirebaseUser getCurrentUser() {
+    protected FirebaseUser getCurrentUser() {
         return FirebaseAuth.getInstance().getCurrentUser();
     }
 
     protected Boolean isCurrentUserLogged() {
         return (this.getCurrentUser() != null);
-    }*/
+    }
 
-/*    private void getCurrentUserFirestore() {
+    private void getCurrentUserFirestore() {
         if (isCurrentUserLogged()) {
+            Log.d(TAG, "getCurrentUserFirestore: ici");
             mMainViewModel.getCurrentUser(FirebaseAuth.getInstance().getUid())
-                    .observe(this, new Observer<User>() {
-                        @Override
-                        public void onChanged(User user) {
-                            currentUser = user;
-                            updateDrawerUI();
-                        }
+                    .observe(this, user -> {
+                        Log.d(TAG, "getCurrentUserFirestore: observe");
+                        Log.d(TAG, "onChanged: current user =  " + user.toString());
+                        mCurrentUser = user;
+                        updateDrawerUI();
                     });
+        } else {
+            showSnackBar(constraintLayout, "User is not logged");
         }
     }
 
@@ -234,14 +212,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         TextView eMail = header.findViewById(R.id.drawer_email);
 
         Glide.with(this)
-                .load(currentUser.getURLProfilePicture())
+                .load(mCurrentUser.getURLProfilePicture())
                 .centerCrop()
                 .into(profilePicture);
-        String fullName = currentUser.getFirstName() + currentUser.getLastName();
-        name.setText(fullName);
-        eMail.setText(currentUser.getMail());
+        name.setText(mCurrentUser.getName());
+        eMail.setText(mCurrentUser.getMail());
 
-    }*/
+    }
+
+
+    // Show Snack Bar with a message
+    private void showSnackBar(ConstraintLayout constraintLayout, String message){
+        Snackbar.make(constraintLayout, message, Snackbar.LENGTH_SHORT).show();
+    }
 
 
     /**

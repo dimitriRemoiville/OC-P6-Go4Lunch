@@ -5,6 +5,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 public class UserFirestoreRepository {
 
@@ -14,23 +15,24 @@ public class UserFirestoreRepository {
     }
 
     // Create
-    public Task<Void> createUser(String userID, String lastName, String firstName, String eMail, String urlProfilePicture) {
-        User user = new User(userID, lastName, firstName, eMail, urlProfilePicture);
+    public Task<Void> createUser(String userID, String name, String eMail) {
+        User user = new User(userID, name, eMail);
         return getUsersCollection().document(userID).set(user);
     }
 
     // Get
+    // User with userID
     public Task<DocumentSnapshot> getUser(String userID) {
         return getUsersCollection().document(userID).get();
     }
-
-    // Update
-    public Task<Void> updateLastName(String userID, String lastName) {
-        return getUsersCollection().document(userID).update("lastName", lastName);
+    // All users
+    public Task<QuerySnapshot> getAllUsers() {
+        return getUsersCollection().get();
     }
 
-    public Task<Void> updateFirstName(String userID, String firstName) {
-        return getUsersCollection().document(userID).update("firstName", firstName);
+    // Update
+    public Task<Void> updateName(String userID, String name) {
+        return getUsersCollection().document(userID).update("name", name);
     }
 
     public Task<Void> updateUsername(String userID, String eMail) {
@@ -38,7 +40,7 @@ public class UserFirestoreRepository {
     }
 
     public Task<Void> updateURLPicture(String userID, String urlPicture) {
-        return getUsersCollection().document(userID).update("urlPicture", urlPicture);
+        return getUsersCollection().document(userID).update("url_picture", urlPicture);
     }
 
     // Delete

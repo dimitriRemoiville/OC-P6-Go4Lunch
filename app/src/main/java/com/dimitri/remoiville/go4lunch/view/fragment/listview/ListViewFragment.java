@@ -90,7 +90,7 @@ public class ListViewFragment extends Fragment
 
     private void configureObserverPlacesRestaurants() {
         Log.d(TAG, "configureObserverPlacesRestaurants: observer OK");
-        mMainViewModel.setRestaurantsData(mCurrentLocation,radius,API_KEY).observe(getViewLifecycleOwner(), places -> {
+        mMainViewModel.getRestaurantsData(mCurrentLocation,radius,API_KEY).observe(getViewLifecycleOwner(), places -> {
             Log.d(TAG, "configureObserverPlacesRestaurants: observer - observe something OK");
             Collections.sort(places, new Place.PlaceDistanceComparator());
             initList(places);

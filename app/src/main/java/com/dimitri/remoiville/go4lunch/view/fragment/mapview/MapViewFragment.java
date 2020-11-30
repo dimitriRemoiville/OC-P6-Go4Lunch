@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -95,7 +94,7 @@ public class MapViewFragment extends Fragment
     }
 
     private void configureObserverPlacesRestaurants() {
-        mMainViewModel.setRestaurantsData(mCurrentLocation,radius,API_KEY).observe(getViewLifecycleOwner(), places -> {
+        mMainViewModel.getRestaurantsData(mCurrentLocation,radius,API_KEY).observe(getViewLifecycleOwner(), places -> {
                     for (int i = 0; i < places.size(); i++) {
                         LatLng position = new LatLng(places.get(i).getLat(), places.get(i).getLng());
                         mMap.addMarker(new MarkerOptions().position(position)
