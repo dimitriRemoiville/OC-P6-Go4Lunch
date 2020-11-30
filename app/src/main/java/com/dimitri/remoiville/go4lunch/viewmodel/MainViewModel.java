@@ -13,6 +13,7 @@ import com.dimitri.remoiville.go4lunch.model.User;
 import com.dimitri.remoiville.go4lunch.source.repository.PlacesRepository;
 import com.dimitri.remoiville.go4lunch.source.repository.UserFirestoreRepository;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -40,6 +41,7 @@ public class MainViewModel extends ViewModel {
 
     private static final String TAG = "MainViewModel";
 
+
     // Constructor
     public MainViewModel(PlacesRepository placesRepository, UserFirestoreRepository userFirestoreRepository) {
         this.mPlacesRepository = placesRepository;
@@ -62,10 +64,18 @@ public class MainViewModel extends ViewModel {
             if (documentSnapshot.exists()) {
                 User user = documentSnapshot.toObject(User.class);
                 currentUser.setValue(user);
+            } else {
+                currentUser.setValue(null);
             }
 
 
-        });
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        currentUser.setValue(null);
+                    }
+                });
         return currentUser;
     }
 
@@ -92,5 +102,6 @@ public class MainViewModel extends ViewModel {
     // Create new user
     public void createNewUser(String userID, String firstName, String lastName, String email) {
         mUserFirestoreRepository.createUser(userID, firstName, lastName, email);
+        mUserFirestoreRepository.getAllUsers().isSuccessful();
     }
 }

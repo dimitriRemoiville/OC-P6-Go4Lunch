@@ -62,7 +62,7 @@ public class PlacesRepository {
         return listRestaurantsMutableLiveData;
     }
 
-    private void getListRestaurantsNext(String token, Location location, String key) {
+/*    private void getListRestaurantsNext(String token, Location location, String key) {
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -88,7 +88,7 @@ public class PlacesRepository {
                 });
             }
         }, 2000);
-    }
+    }*/
 
     public MutableLiveData<Place> getRestaurantDetails(String placeId, String key) {
         Call<PlaceDetailsPOJO> restaurantDetailsPOJOOut = ServicePlacesApiGenerator.getRequestGoogleApi().getPlaceDetails(placeId,key);
