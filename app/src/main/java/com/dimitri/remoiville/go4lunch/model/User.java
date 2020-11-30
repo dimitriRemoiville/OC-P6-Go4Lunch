@@ -35,6 +35,19 @@ public class User {
         mIsLunchBooked = false;
     }
 
+
+    public User(String userID, String firstName, String lastName, String mail, String URLProfilePicture, List<String> likesList, String lunchRestaurantID, String restaurantName, Boolean isLunchBooked) {
+        mUserID = userID;
+        mFirstName = firstName;
+        mLastName = lastName;
+        mMail = mail;
+        mURLProfilePicture = URLProfilePicture;
+        mLikesList = likesList;
+        mLunchRestaurantID = lunchRestaurantID;
+        mRestaurantName = restaurantName;
+        mIsLunchBooked = isLunchBooked;
+    }
+
     public String getUserID() {
         return mUserID;
     }

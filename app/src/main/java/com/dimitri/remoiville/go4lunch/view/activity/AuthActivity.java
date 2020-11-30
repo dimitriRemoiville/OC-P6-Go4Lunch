@@ -84,7 +84,6 @@ public class AuthActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) { // SUCCESS
                 showSnackBar(constraintLayout, getString(R.string.connection_succeed));
                 managingCurrentUser();
-                MainActivity.navigate(this);
             } else { // ERRORS
                 if (response == null) {
                     showSnackBar(constraintLayout, getString(R.string.error_authentication_canceled));
@@ -99,21 +98,12 @@ public class AuthActivity extends AppCompatActivity {
 
     private void managingCurrentUser() {
         Log.d(TAG, "managingCurrentUser: ");
-        mMainViewModel.getAllUsers().observe(this, new Observer<List<User>>() {
-            @Override
-            public void onChanged(List<User> users) {
-                boolean userFound = false;
-                for (User user : users) {
-                   if (user.getMail().equals(getCurrentUser().getEmail())) {
-                       userFound = true;
-                   }
-                }
-
-                if (!userFound) {
-                    FirebaseUser user = getCurrentUser();
-                    mMainViewModel.createNewUser(user.getUid(),user.getDisplayName(), null, user.getEmail());
-                }
+        mMainViewModel.getCurrentUser(FirebaseAuth.getInstance().getUid()).observe(this, user -> {
+            if (user == null) {
+                FirebaseUser fUser = getCurrentUser();
+                mMainViewModel.createNewUser(fUser.getUid(),fUser.getDisplayName(), fUser.getDisplayName(), fUser.getEmail());
             }
+            MainActivity.navigate(this);
         });
     }
 

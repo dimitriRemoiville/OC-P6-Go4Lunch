@@ -143,7 +143,8 @@ public class Place {
 
     private String getPlacesPhoto(String photoReference, String key) {
         int maxWidth = 400;
-        return "https://maps.googleapis.com/maps/api/place/photo?maxwidth=" + maxWidth + "&photoreference=" + photoReference + "&key=" + key;
+        //return "https://maps.googleapis.com/maps/api/place/photo?maxwidth=" + maxWidth + "&photoreference=" + photoReference + "&key=" + key;
+        return null;
     }
 
     public String getPlaceId() {
