@@ -23,7 +23,7 @@ public class MainViewModel extends ViewModel {
     private final RestaurantFirestoreRepository mRestaurantFirestoreRepository;
     private final UserFirestoreRepository mUserFirestoreRepository;
 
-    private MutableLiveData<List<Place>> listRestaurants = new MutableLiveData<>();
+    private MutableLiveData<List<Place>> listRestaurants;
     private MutableLiveData<Place> restaurantDetails = new MutableLiveData<>();
 
     private MutableLiveData<User> currentUser = new MutableLiveData<>();
@@ -43,11 +43,11 @@ public class MainViewModel extends ViewModel {
 
     // API Places
     public MutableLiveData<List<Place>> getRestaurantsRepository() {
-        return listRestaurants;
+        return mPlacesRepository.getMutablePlace();
     }
 
     public void setRestaurantsData(Location location, int radius, String key) {
-        listRestaurants.setValue(mPlacesRepository.getListRestaurants(location, radius, key));
+        mPlacesRepository.getListRestaurants(location, radius, key);
     }
 
     public MutableLiveData<Place> getRestaurantDetailsRepository(String placeId, String key) {

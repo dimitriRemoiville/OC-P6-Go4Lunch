@@ -4,18 +4,20 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.dimitri.remoiville.go4lunch.BuildConfig;
 import com.dimitri.remoiville.go4lunch.R;
+import com.dimitri.remoiville.go4lunch.model.Place;
 import com.dimitri.remoiville.go4lunch.viewmodel.Injection;
 import com.dimitri.remoiville.go4lunch.viewmodel.MainViewModel;
 import com.dimitri.remoiville.go4lunch.viewmodel.ViewModelFactory;
@@ -30,6 +32,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+
+import java.util.List;
 
 public class MapViewFragment extends Fragment
         implements
@@ -91,16 +95,35 @@ public class MapViewFragment extends Fragment
     }
 
     private void configureObserverPlacesRestaurants() {
-        mMainViewModel.getRestaurantsRepository().observe(getViewLifecycleOwner(), places -> {
-                    for (int i = 0; i < places.size(); i++) {
-                        LatLng position = new LatLng(places.get(i).getLat(), places.get(i).getLng());
-                        mMap.addMarker(new MarkerOptions().position(position)
-                                .title(places.get(i).getName())
-                                .alpha(0.9f)
-                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-                    }
-                });
+        // Create the observer which updates the UI.
+        final Observer<List<Place>> nameObserver = new Observer<List<Place>>() {
+            @Override
+            public void onChanged(@Nullable final List<Place> places) {
+                // Update the UI, in this case, a TextView.
+                for (int i = 0; i < places.size(); i++) {
+                    LatLng position = new LatLng(places.get(i).getLat(), places.get(i).getLng());
+                    mMap.addMarker(new MarkerOptions().position(position)
+                            .title(places.get(i).getName())
+                            .alpha(0.9f)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                }
+            }
+        };          // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        mMainViewModel.getRestaurantsRepository().observe(this, nameObserver);
     }
+
+
+
+/*        mMainViewModel.getRestaurantsRepository().observe(getViewLifecycleOwner(), places -> {
+            for (int i = 0; i < places.size(); i++) {
+                LatLng position = new LatLng(places.get(i).getLat(), places.get(i).getLng());
+                mMap.addMarker(new MarkerOptions().position(position)
+                        .title(places.get(i).getName())
+                        .alpha(0.9f)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+            }
+        });*/
+    /*    }*/
 
     private void loadDataRestaurantsNewLocation() {
         if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -112,7 +135,7 @@ public class MapViewFragment extends Fragment
                         LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                         CameraUpdate update = CameraUpdateFactory.newLatLngZoom(currentLatLng, 15);
                         mMap.moveCamera(update);
-                        mMainViewModel.setRestaurantsData(mCurrentLocation,radius,API_KEY);
+                        mMainViewModel.setRestaurantsData(mCurrentLocation, radius, API_KEY);
                         configureObserverPlacesRestaurants();
                     }
                 }

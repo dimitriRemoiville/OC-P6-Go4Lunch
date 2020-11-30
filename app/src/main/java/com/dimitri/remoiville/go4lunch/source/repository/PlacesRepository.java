@@ -3,6 +3,8 @@ package com.dimitri.remoiville.go4lunch.source.repository;
 import android.location.Location;
 import android.os.Handler;
 
+import androidx.lifecycle.MutableLiveData;
+
 import com.dimitri.remoiville.go4lunch.model.Place;
 import com.dimitri.remoiville.go4lunch.model.PlaceDetailsPOJO;
 import com.dimitri.remoiville.go4lunch.model.PlacesPOJO;
@@ -19,7 +21,7 @@ import retrofit2.Response;
 public class PlacesRepository {
 
     private final String mType = "restaurant";
-    private final List<Place> listRestaurants = new ArrayList<>();
+    private final MutableLiveData<List<Place>> listRestaurants = new MutableLiveData<>();
 
     private static PlacesRepository sPlacesRepository;
 
@@ -32,7 +34,7 @@ public class PlacesRepository {
         return sPlacesRepository;
     }
 
-    public List<Place> getListRestaurants(Location location, int radius, String key) {
+    public void getListRestaurants(Location location, int radius, String key) {
         Double lat = location.getLatitude();
         Double lng = location.getLongitude();
         String latLng = lat + "," + lng;
@@ -40,24 +42,29 @@ public class PlacesRepository {
         listRestaurantsPOJOOut.enqueue(new Callback<PlacesPOJO>() {
             @Override
             public void onResponse(Call<PlacesPOJO> call, Response<PlacesPOJO> response) {
+                List<Place> list = new ArrayList<>();
                 for (int i = 0; i < response.body().getResults().size(); i++) {
                     Place place = new Place(response.body().getResults().get(i), location, key);
-                    listRestaurants.add(place);
+                    list.add(place);
                 }
 /*                if (response.body().getNextPageToken() != null) {
                     getListRestaurantsNext(response.body().getNextPageToken(), location, key);
                 }*/
+                listRestaurants.setValue(list);
             }
 
             @Override
             public void onFailure(Call<PlacesPOJO> call, Throwable t) {
-                listRestaurants.clear();
+                listRestaurants.postValue(null);
             }
         });
+    }
+
+    public MutableLiveData<List<Place>> getMutablePlace() {
         return listRestaurants;
     }
 
-    private void getListRestaurantsNext(String token, Location location, String key) {
+/*    private void getListRestaurantsNext(String token, Location location, String key) {
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -83,7 +90,7 @@ public class PlacesRepository {
                 });
             }
         }, 2000);
-    }
+    }*/
 
     public Place getRestaurantDetails(String placeId, String key) {
         final Place[] restaurantDetail = new Place[1];
