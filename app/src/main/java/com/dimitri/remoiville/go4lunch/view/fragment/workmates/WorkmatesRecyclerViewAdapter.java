@@ -4,10 +4,13 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.dimitri.remoiville.go4lunch.databinding.FragmentWorkmatesBinding;
 import com.dimitri.remoiville.go4lunch.model.User;
+import com.dimitri.remoiville.go4lunch.R;
 
 import java.util.List;
 
@@ -27,6 +30,20 @@ public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<Workmates
 
     @Override
     public void onBindViewHolder(@NonNull WorkmatesRecyclerViewAdapter.ViewHolder holder, int position) {
+        final User user = mWorkmates.get(position);
+        Glide.with(holder.itemView)
+                .load(user.getURLProfilePicture())
+                .into(holder.mFragmentWorkmatesBinding.listWorkmatesImg);
+        String name = user.getFirstName();
+        if (user.getLunchBooked()) {
+            name = name + " ";
+            // TODO
+        } else {
+            name = name + " hasn't decided yet";
+            int grey = ContextCompat.getColor(holder.itemView.getContext(), R.color.colorTextGrey);
+            holder.mFragmentWorkmatesBinding.listWorkmatesTxt.setTextColor(grey);
+        }
+        holder.mFragmentWorkmatesBinding.listWorkmatesTxt.setText(name);
     }
 
     @Override

@@ -90,7 +90,7 @@ public class MainViewModel extends ViewModel {
     }
 
     // Create new user
-    public void createNewUser(String userID, String name, String email) {
-        mUserFirestoreRepository.createUser(userID, name, email);
+    public void createNewUser(String userID, String firstName, String lastName, String email) {
+        mUserFirestoreRepository.createUser(userID, firstName, lastName, email);
     }
 }

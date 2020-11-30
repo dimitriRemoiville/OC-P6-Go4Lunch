@@ -19,19 +19,7 @@
 
     <fragment
         android:id="@+id/nav_workmates"
-        android:name="com.dimitri.remoiville.go4lunch.view.fragment.users.WorkmatesFragment"
+        android:name="com.dimitri.remoiville.go4lunch.view.fragment.workmates.WorkmatesFragment"
         android:label="@string/title_workmates"
         tools:layout="@layout/fragment_workmates" />
-
-    <fragment
-        android:id="@+id/nav_yourLunch"
-        android:name="com.dimitri.remoiville.go4lunch.view.fragment.yourlunch.YourLunchFragment"
-        android:label="@string/menu_yourLunch"
-        tools:layout="@layout/fragment_yourlunch" />
-
-    <fragment
-        android:id="@+id/nav_settings"
-        android:name="com.dimitri.remoiville.go4lunch.view.fragment.settings.SettingsFragment"
-        android:label="@string/menu_settings"
-        tools:layout="@layout/fragment_settings" />
 </navigation>

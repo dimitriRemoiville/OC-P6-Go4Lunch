@@ -33,7 +33,6 @@ public class ListViewRecyclerViewAdapter  extends RecyclerView.Adapter<ListViewR
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Log.d(TAG, "onBindViewHolder: ici");
         final Place place = mPlaces.get(position);
         holder.mFragmentListviewBinding.listPlacesName.setText(place.getName());
         holder.mFragmentListviewBinding.listPlacesDistance.setText(place.getDistance() + "m");
@@ -69,7 +68,6 @@ public class ListViewRecyclerViewAdapter  extends RecyclerView.Adapter<ListViewR
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(holder.itemView.getContext(), DetailsPlaceActivity.class);
-            Log.d(TAG, "onBindViewHolder: place id" + place.getPlaceId());
             intent.putExtra("placeId", mPlaces.get(position).getPlaceId());
             holder.itemView.getContext().startActivity(intent);
         });

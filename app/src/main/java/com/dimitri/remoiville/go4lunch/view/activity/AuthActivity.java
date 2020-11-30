@@ -105,15 +105,13 @@ public class AuthActivity extends AppCompatActivity {
                 boolean userFound = false;
                 for (User user : users) {
                    if (user.getMail().equals(getCurrentUser().getEmail())) {
-                       Log.d(TAG, "onChanged: user found");
                        userFound = true;
                    }
                 }
 
                 if (!userFound) {
-                    Log.d(TAG, "onChanged: create user");
                     FirebaseUser user = getCurrentUser();
-                    mMainViewModel.createNewUser(user.getUid(),user.getDisplayName(), user.getEmail());
+                    mMainViewModel.createNewUser(user.getUid(),user.getDisplayName(), null, user.getEmail());
                 }
             }
         });

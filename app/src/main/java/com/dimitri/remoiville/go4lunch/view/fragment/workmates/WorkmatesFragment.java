@@ -19,8 +19,10 @@ import com.dimitri.remoiville.go4lunch.model.User;
 import com.dimitri.remoiville.go4lunch.viewmodel.Injection;
 import com.dimitri.remoiville.go4lunch.viewmodel.MainViewModel;
 import com.dimitri.remoiville.go4lunch.viewmodel.ViewModelFactory;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class WorkmatesFragment extends Fragment {
@@ -44,7 +46,22 @@ public class WorkmatesFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.HORIZONTAL));
 
+        getWorkmateList();
+
         return root;
+    }
+
+    private void getWorkmateList() {
+        mMainViewModel.getAllUsers().observe(getViewLifecycleOwner(), users -> {
+            Collections.sort(users, new User.UserLunchIsBookedComparator());
+            String uid = FirebaseAuth.getInstance().getUid();
+            for(int i = 0; i < users.size(); i++){
+                if (users.get(i).getUserID().equals(uid)) {
+                    users.remove(users.get(i));
+                }
+            }
+            initList(users);
+        });
     }
 
     private void initList(List<User> users) {

@@ -4,9 +4,7 @@ import android.Manifest;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,7 +20,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -30,7 +27,6 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.bumptech.glide.Glide;
-import com.dimitri.remoiville.go4lunch.BuildConfig;
 import com.dimitri.remoiville.go4lunch.R;
 import com.dimitri.remoiville.go4lunch.databinding.ActivityMainBinding;
 import com.dimitri.remoiville.go4lunch.model.User;
@@ -38,7 +34,6 @@ import com.dimitri.remoiville.go4lunch.viewmodel.Injection;
 import com.dimitri.remoiville.go4lunch.viewmodel.MainViewModel;
 import com.dimitri.remoiville.go4lunch.viewmodel.ViewModelFactory;
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -192,11 +187,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void getCurrentUserFirestore() {
         if (isCurrentUserLogged()) {
-            Log.d(TAG, "getCurrentUserFirestore: ici");
             mMainViewModel.getCurrentUser(FirebaseAuth.getInstance().getUid())
                     .observe(this, user -> {
-                        Log.d(TAG, "getCurrentUserFirestore: observe");
-                        Log.d(TAG, "onChanged: current user =  " + user.toString());
                         mCurrentUser = user;
                         updateDrawerUI();
                     });
@@ -215,7 +207,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .load(mCurrentUser.getURLProfilePicture())
                 .centerCrop()
                 .into(profilePicture);
-        name.setText(mCurrentUser.getName());
+        String fullName = mCurrentUser.getFirstName() + " " + mCurrentUser.getLastName();
+        name.setText(fullName);
         eMail.setText(mCurrentUser.getMail());
 
     }
