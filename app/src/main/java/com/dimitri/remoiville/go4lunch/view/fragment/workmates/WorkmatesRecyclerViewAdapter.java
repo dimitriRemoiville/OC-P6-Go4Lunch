@@ -33,17 +33,18 @@ public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<Workmates
         final User user = mWorkmates.get(position);
         Glide.with(holder.itemView)
                 .load(user.getURLProfilePicture())
+                .circleCrop()
                 .into(holder.mFragmentWorkmatesBinding.listWorkmatesImg);
-        String name = user.getFirstName();
-        if (user.getLunchBooked()) {
-            name = name + " ";
+        String workmateTxt = user.getFirstName();
+        if (user.getRestaurantID() != null) {
+            workmateTxt = workmateTxt + " is eating at " + user.getRestaurantName();
             // TODO
         } else {
-            name = name + " hasn't decided yet";
+            workmateTxt = workmateTxt + " hasn't decided yet";
             int grey = ContextCompat.getColor(holder.itemView.getContext(), R.color.colorTextGrey);
             holder.mFragmentWorkmatesBinding.listWorkmatesTxt.setTextColor(grey);
         }
-        holder.mFragmentWorkmatesBinding.listWorkmatesTxt.setText(name);
+        holder.mFragmentWorkmatesBinding.listWorkmatesTxt.setText(workmateTxt);
     }
 
     @Override

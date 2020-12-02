@@ -1,21 +1,27 @@
 package com.dimitri.remoiville.go4lunch.view.activity;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.dimitri.remoiville.go4lunch.R;
 import com.dimitri.remoiville.go4lunch.databinding.ActivityAuthBinding;
 import com.dimitri.remoiville.go4lunch.model.User;
 import com.dimitri.remoiville.go4lunch.viewmodel.Injection;
 import com.dimitri.remoiville.go4lunch.viewmodel.MainViewModel;
+import com.dimitri.remoiville.go4lunch.viewmodel.SingletonCurrentUser;
 import com.dimitri.remoiville.go4lunch.viewmodel.ViewModelFactory;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
@@ -25,7 +31,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class AuthActivity extends AppCompatActivity {
 
@@ -96,18 +101,26 @@ public class AuthActivity extends AppCompatActivity {
         }
     }
 
+
     private void managingCurrentUser() {
         Log.d(TAG, "managingCurrentUser: ");
+
         mMainViewModel.getCurrentUser(FirebaseAuth.getInstance().getUid()).observe(this, user -> {
             if (user == null) {
-                FirebaseUser fUser = getCurrentUser();
-                mMainViewModel.createNewUser(fUser.getUid(),fUser.getDisplayName(), fUser.getDisplayName(), fUser.getEmail());
+                FirebaseUser fUser = getCurrentUserFirebase();
+                User userToCreate = new User(fUser.getUid(), fUser.getDisplayName(), fUser.getDisplayName(), fUser.getEmail());
+                mMainViewModel.createNewUser(userToCreate);
+                SingletonCurrentUser.getInstance().setCurrentUser(userToCreate);
+                Toast.makeText(this, "Please enter your name in the settings", Toast.LENGTH_LONG).show();
+                SettingsActivity.navigate(this);
+            } else {
+                SingletonCurrentUser.getInstance().setCurrentUser(user);
+                MainActivity.navigate(this);
             }
-            MainActivity.navigate(this);
         });
     }
 
-    protected FirebaseUser getCurrentUser() {
+    protected FirebaseUser getCurrentUserFirebase() {
         return FirebaseAuth.getInstance().getCurrentUser();
     }
 

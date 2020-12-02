@@ -36,9 +36,6 @@ public class MainViewModel extends ViewModel {
     private MutableLiveData<List<User>> usersMutableLiveData = new MutableLiveData<>();
     private List<User> userList = new ArrayList<>();
 
-    private MutableLiveData<Place> restaurantFirestore = new MutableLiveData<>();
-    private MutableLiveData<List<Place>> listRestaurantsFirestore = new MutableLiveData<>();
-
     private static final String TAG = "MainViewModel";
 
 
@@ -79,29 +76,39 @@ public class MainViewModel extends ViewModel {
         return currentUser;
     }
 
+    // Create new user
+    public void createNewUser(User user) {
+        mUserFirestoreRepository.createUser(user);
+    }
+
     // Get all users
     public MutableLiveData<List<User>> getAllUsers() {
-        mUserFirestoreRepository.getAllUsers().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    List<DocumentSnapshot> documents = task.getResult().getDocuments();
-                    for (int i = 0; i < documents.size(); i++) {
-                        User user = documents.get(i).toObject(User.class);
-                        userList.add(user);
-                    }
-                    usersMutableLiveData.setValue(userList);
-                } else {
-                    Log.d(TAG, "Error getting documents: ", task.getException());
-                }
-            }
-        });
+        mUserFirestoreRepository.getAllUsers().addOnCompleteListener(this::createUsersList);
         return usersMutableLiveData;
     }
 
-    // Create new user
-    public void createNewUser(String userID, String firstName, String lastName, String email) {
-        mUserFirestoreRepository.createUser(userID, firstName, lastName, email);
-        mUserFirestoreRepository.getAllUsers().isSuccessful();
+    // Get all users sort by restaurant ID
+    public MutableLiveData<List<User>> getAllUsersSortByRestaurantID() {
+        mUserFirestoreRepository.getAllUsersSortByRestaurantID().addOnCompleteListener(this::createUsersList);
+        return usersMutableLiveData;
+    }
+
+
+    private void createUsersList(@NonNull Task<QuerySnapshot> task) {
+        if (task.isSuccessful()) {
+            List<DocumentSnapshot> documents = task.getResult().getDocuments();
+            userList.clear();
+            for (int i = 0; i < documents.size(); i++) {
+                User user = documents.get(i).toObject(User.class);
+                userList.add(user);
+            }
+            usersMutableLiveData.setValue(userList);
+        } else {
+            Log.d(TAG, "Error getting documents: ", task.getException());
+        }
+    }
+
+    public void updateUserData(String userID, String firstName, String lastName, String email, String urlProfilePicture) {
+        mUserFirestoreRepository.updateUserData(userID, firstName, lastName, email, urlProfilePicture);
     }
 }

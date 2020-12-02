@@ -52,11 +52,12 @@ public class WorkmatesFragment extends Fragment {
     }
 
     private void getWorkmateList() {
-        mMainViewModel.getAllUsers().observe(getViewLifecycleOwner(), users -> {
-            Collections.sort(users, new User.UserLunchIsBookedComparator());
+        mMainViewModel.getAllUsersSortByRestaurantID().observe(getViewLifecycleOwner(), users -> {
             String uid = FirebaseAuth.getInstance().getUid();
             for(int i = 0; i < users.size(); i++){
-                if (users.get(i).getUserID().equals(uid)) {
+                if (users.get(i).getUserID().equals(uid)
+                        || users.get(i).getFirstName() == null
+                        || users.get(i).getLastName() == null) {
                     users.remove(users.get(i));
                 }
             }

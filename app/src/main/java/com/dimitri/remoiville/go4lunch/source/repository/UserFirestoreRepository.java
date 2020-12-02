@@ -5,6 +5,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
@@ -18,9 +19,8 @@ public class UserFirestoreRepository {
 
     // Insert
     // Create
-    public Task<Void> createUser(String userID, String firstName, String lastName, String eMail) {
-        User user = new User(userID, firstName, lastName, eMail);
-        return getUsersCollection().document(userID).set(user);
+    public Task<Void> createUser(User user) {
+        return getUsersCollection().document(user.getUserID()).set(user);
     }
 
     // Fetch
@@ -28,21 +28,32 @@ public class UserFirestoreRepository {
     public Task<DocumentSnapshot> getUser(String userID) {
         return getUsersCollection().document(userID).get();
     }
+
     // All users
     public Task<QuerySnapshot> getAllUsers() {
         return getUsersCollection().get();
     }
 
+    // All users sort by restaurant ID
+    public Task<QuerySnapshot> getAllUsersSortByRestaurantID() {
+        return getUsersCollection().orderBy("restaurantID", Query.Direction.DESCENDING).get();
+    }
+
+    // All users with lunch booked
+    public Task<QuerySnapshot> getAllUsersWithLunchBooked() {
+        return getUsersCollection().whereEqualTo("restaurantID", true).get();
+    }
+
 
     // Update
-    public Task<Void> updateUserData(String userID, String lastName, String firstName, String mail, String urlPicture) {
+    public Task<Void> updateUserData(String userID, String firstName, String lastName, String mail, String urlPicture) {
         return getUsersCollection().document(userID).update("firstName", firstName,
                 "lastName", lastName,
                 "mail", mail,
-                "url_picture", urlPicture);
+                "urlprofilePicture", urlPicture);
     }
 
-    public Task<Void> updateName(String userID, String lastName, String firstName) {
+    public Task<Void> updateName(String userID, String firstName, String lastName) {
         return getUsersCollection().document(userID).update("firstName", firstName,
                 "lastName", lastName);
     }
@@ -67,6 +78,7 @@ public class UserFirestoreRepository {
     public Task<Void> updateLikesList(String userID, List<String> likesList) {
         return getUsersCollection().document(userID).update("likesList", likesList);
     }
+
 
     // Delete
     public Task<Void> deleteUser(String userID) {

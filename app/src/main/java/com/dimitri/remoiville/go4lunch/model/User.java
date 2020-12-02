@@ -1,9 +1,6 @@
 package com.dimitri.remoiville.go4lunch.model;
 
-import androidx.annotation.NonNull;
-
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class User {
@@ -14,9 +11,8 @@ public class User {
     private String mMail;
     private String mURLProfilePicture;
     private List<String> mLikesList;
-    private String mLunchRestaurantID;
+    private String mRestaurantID;
     private String mRestaurantName;
-    private Boolean mIsLunchBooked;
 
     private String defaultURLPicture = "https://firebasestorage.googleapis.com/v0/b/go4lunch-63219/o/default_picture.png?alt=media&token=421a8985-e6ce-4d7c-a0cb-da1d2bc93799";
 
@@ -28,24 +24,22 @@ public class User {
         mFirstName = firstName;
         mLastName = lastName;
         mMail = mail;
-        mURLProfilePicture = defaultURLPicture;
+        mURLProfilePicture = randomImage();
         mLikesList = new ArrayList<>();
-        mLunchRestaurantID = "";
-        mRestaurantName = "";
-        mIsLunchBooked = false;
+        mRestaurantID = null;
+        mRestaurantName = null;
     }
 
 
-    public User(String userID, String firstName, String lastName, String mail, String URLProfilePicture, List<String> likesList, String lunchRestaurantID, String restaurantName, Boolean isLunchBooked) {
+    public User(String userID, String firstName, String lastName, String mail, String URLProfilePicture, List<String> likesList, String restaurantID, String restaurantName) {
         mUserID = userID;
         mFirstName = firstName;
         mLastName = lastName;
         mMail = mail;
         mURLProfilePicture = URLProfilePicture;
         mLikesList = likesList;
-        mLunchRestaurantID = lunchRestaurantID;
+        mRestaurantID = restaurantID;
         mRestaurantName = restaurantName;
-        mIsLunchBooked = isLunchBooked;
     }
 
     public String getUserID() {
@@ -96,20 +90,12 @@ public class User {
         mLikesList = likesList;
     }
 
-    public String getLunchRestaurantID() {
-        return mLunchRestaurantID;
+    public String getRestaurantID() {
+        return mRestaurantID;
     }
 
-    public void setLunchRestaurantID(String lunchRestaurantID) {
-        this.mLunchRestaurantID = lunchRestaurantID;
-    }
-
-    public Boolean getLunchBooked() {
-        return mIsLunchBooked;
-    }
-
-    public void setLunchBooked(Boolean lunchBooked) {
-        mIsLunchBooked = lunchBooked;
+    public void setRestaurantID(String restaurantID) {
+        this.mRestaurantID = restaurantID;
     }
 
     public String getRestaurantName() {
@@ -129,18 +115,12 @@ public class User {
                 ", mMail='" + mMail + '\'' +
                 ", mURLProfilePicture='" + mURLProfilePicture + '\'' +
                 ", mLikesList=" + mLikesList +
-                ", mLunchRestaurantID='" + mLunchRestaurantID + '\'' +
+                ", mLunchRestaurantID='" + mRestaurantID + '\'' +
                 ", mRestaurantName='" + mRestaurantName + '\'' +
-                ", mIsLunchBooked=" + mIsLunchBooked +
                 '}';
     }
 
-    public static class UserLunchIsBookedComparator implements Comparator<User> {
-        @Override
-        public int compare(User o1, User o2) {
-            boolean b1 = o1.getLunchBooked();
-            boolean b2 = o2.getLunchBooked();
-            return Boolean.compare(b2,b1);
-        }
+    private String randomImage() {
+        return "https://i.pravatar.cc/300?u="+ System.currentTimeMillis();
     }
 }

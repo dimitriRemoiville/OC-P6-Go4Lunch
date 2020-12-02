@@ -18,9 +18,7 @@ public class SingletonCurrentUser {
     }
 
     public void setCurrentUser(User user) {
-        if (CURRENT_USER == null) {
-            CURRENT_USER = user;
-        }
+        CURRENT_USER = user;
     }
 
     public User getCurrentUser() {

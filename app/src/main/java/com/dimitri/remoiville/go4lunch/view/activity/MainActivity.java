@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void requestLocationPermission() {
         String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION};
         if (EasyPermissions.hasPermissions(mContext, perms)) {
-            Toast.makeText(mContext, "Permission alrea  dy granted", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "Permission already granted", Toast.LENGTH_SHORT).show();
         } else {
             EasyPermissions.requestPermissions(this, "Please grant the location permission", REQUEST_LOCATION_PERMISSION, perms);
         }
@@ -207,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         Glide.with(this)
                 .load(mCurrentUser.getURLProfilePicture())
-                .centerCrop()
+                .circleCrop()
                 .into(profilePicture);
         String fullName = mCurrentUser.getFirstName() + " " + mCurrentUser.getLastName();
         name.setText(fullName);
