@@ -1,6 +1,8 @@
 package com.dimitri.remoiville.go4lunch.view.fragment.workmates;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -8,9 +10,10 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.dimitri.remoiville.go4lunch.R;
 import com.dimitri.remoiville.go4lunch.databinding.FragmentWorkmatesBinding;
 import com.dimitri.remoiville.go4lunch.model.User;
-import com.dimitri.remoiville.go4lunch.R;
+import com.dimitri.remoiville.go4lunch.view.activity.DetailsPlaceActivity;
 
 import java.util.List;
 
@@ -45,6 +48,14 @@ public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<Workmates
             holder.mFragmentWorkmatesBinding.listWorkmatesTxt.setTextColor(grey);
         }
         holder.mFragmentWorkmatesBinding.listWorkmatesTxt.setText(workmateTxt);
+
+        holder.itemView.setOnClickListener(v -> {
+            if (mWorkmates.get(position).getRestaurantID() != null) {
+                Intent intent = new Intent(holder.itemView.getContext(), DetailsPlaceActivity.class);
+                intent.putExtra("placeId", mWorkmates.get(position).getRestaurantID());
+                holder.itemView.getContext().startActivity(intent);
+            }
+        });
     }
 
     @Override

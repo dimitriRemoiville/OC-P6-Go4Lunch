@@ -8,15 +8,17 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.dimitri.remoiville.go4lunch.BuildConfig;
+import com.dimitri.remoiville.go4lunch.R;
 import com.dimitri.remoiville.go4lunch.databinding.ActivityDetailsPlaceBinding;
 import com.dimitri.remoiville.go4lunch.model.Place;
+import com.dimitri.remoiville.go4lunch.model.User;
 import com.dimitri.remoiville.go4lunch.viewmodel.Injection;
 import com.dimitri.remoiville.go4lunch.viewmodel.MainViewModel;
+import com.dimitri.remoiville.go4lunch.viewmodel.SingletonCurrentUser;
 import com.dimitri.remoiville.go4lunch.viewmodel.ViewModelFactory;
 
 public class DetailsPlaceActivity extends AppCompatActivity {
@@ -24,6 +26,10 @@ public class DetailsPlaceActivity extends AppCompatActivity {
     private ActivityDetailsPlaceBinding mBinding;
     private MainViewModel mMainViewModel;
     private final String API_KEY = BuildConfig.API_KEY;
+    private User mCurrentUser;
+    private boolean lunchBooked = false;
+    private boolean favoriteRestaurant = false;
+    private String placeID;
     private static final String TAG = "DetailsPlaceActivity";
 
     @Override
@@ -35,17 +41,20 @@ public class DetailsPlaceActivity extends AppCompatActivity {
         configureViewModel();
 
         // place to display
-        String placeId = getIntent().getStringExtra("placeId");
-        Log.d(TAG, "onCreate: place id = " + placeId);
+        placeID = getIntent().getStringExtra("placeId");
 
-        mMainViewModel.getRestaurantDetailsData(placeId, API_KEY)
-                .observe(this, new Observer<Place>() {
-                    @Override
-                    public void onChanged(Place place) {
-                        updateUI(place);
-                    }
+        // get the current user
+        mCurrentUser = SingletonCurrentUser.getInstance().getCurrentUser();
+
+        // start display
+        startDisplay();
+
+        // get place details
+        mMainViewModel.getRestaurantDetailsData(placeID, API_KEY)
+                .observe(this, place -> {
+                    place.setPlaceId(placeID);
+                    updateUI(place);
                 });
-
     }
 
     private void configureViewModel() {
@@ -53,6 +62,30 @@ public class DetailsPlaceActivity extends AppCompatActivity {
         mMainViewModel = new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
     }
 
+    private void startDisplay() {
+
+        // Booking action button
+        if (mCurrentUser.getRestaurantID() != null && mCurrentUser.getRestaurantID().equals(placeID)) {
+            mBinding.activityDetailsActBtn.setImageResource(R.drawable.check_circle_green_24);
+            lunchBooked = true;
+        } else {
+            mBinding.activityDetailsActBtn.setImageResource(R.drawable.check_circle_outline_grey_24);
+            lunchBooked = false;
+        }
+
+        // like button
+        for (int i = 0; i < mCurrentUser.getLikesList().size(); i++) {
+            if (mCurrentUser.getLikesList().get(i).equals(placeID)) {
+                mBinding.activityDetailsLikeImg.setImageResource(R.drawable.star_orange_24);
+                favoriteRestaurant = true;
+            }
+        }
+        if (!favoriteRestaurant) {
+            mBinding.activityDetailsLikeImg.setImageResource(R.drawable.star_border_orange_24);
+        }
+
+
+    }
     private void updateUI(Place place) {
         Log.d(TAG, "onCreate: place.getUrlPicture() " + place.getUrlPicture());
         Glide.with(this)
@@ -81,6 +114,22 @@ public class DetailsPlaceActivity extends AppCompatActivity {
 
         mBinding.activityDetailsAddress.setText(place.getAddress());
 
+        mBinding.activityDetailsActBtn.setOnClickListener(v -> {
+            if (lunchBooked) {
+                mCurrentUser.setRestaurantID(null);
+                mCurrentUser.setRestaurantName(null);
+                mMainViewModel.updateLunchID(mCurrentUser.getUserID(), null, null);
+                lunchBooked = false;
+                mBinding.activityDetailsActBtn.setImageResource(R.drawable.check_circle_outline_grey_24);
+            } else {
+                mCurrentUser.setRestaurantID(place.getPlaceId());
+                mCurrentUser.setRestaurantName(place.getName());
+                mMainViewModel.updateLunchID(mCurrentUser.getUserID(), place.getPlaceId(), place.getName());
+                lunchBooked = true;
+                mBinding.activityDetailsActBtn.setImageResource(R.drawable.check_circle_green_24);
+            }
+        });
+
         mBinding.activityDetailsCallImg.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_DIAL);
             intent.setData(Uri.parse("tel:" + place.getPhoneNumbers()));
@@ -89,10 +138,22 @@ public class DetailsPlaceActivity extends AppCompatActivity {
             }
         });
 
-        mBinding.activityDetailsLikeImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        mBinding.activityDetailsLikeImg.setOnClickListener(v -> {
+            if (favoriteRestaurant) {
+                for (int i = 0; i < mCurrentUser.getLikesList().size(); i++) {
+                    if (mCurrentUser.getLikesList().get(i).equals(placeID)) {
+                        mCurrentUser.getLikesList().remove(i);
+                        mMainViewModel.updateLikesList(mCurrentUser.getUserID(),mCurrentUser.getLikesList());
+                        mBinding.activityDetailsLikeImg.setImageResource(R.drawable.star_border_orange_24);
+                        favoriteRestaurant = false;
+                    }
+                }
 
+            } else {
+                mCurrentUser.getLikesList().add(placeID);
+                mMainViewModel.updateLikesList(mCurrentUser.getUserID(),mCurrentUser.getLikesList());
+                mBinding.activityDetailsLikeImg.setImageResource(R.drawable.star_orange_24);
+                favoriteRestaurant = true;
             }
         });
 

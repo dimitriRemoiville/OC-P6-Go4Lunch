@@ -53,26 +53,9 @@ public class UserFirestoreRepository {
                 "urlprofilePicture", urlPicture);
     }
 
-    public Task<Void> updateName(String userID, String firstName, String lastName) {
-        return getUsersCollection().document(userID).update("firstName", firstName,
-                "lastName", lastName);
-    }
-
-    public Task<Void> updateMail(String userID, String mail) {
-        return getUsersCollection().document(userID).update("mail", mail);
-    }
-
-    public Task<Void> updateURLPicture(String userID, String urlPicture) {
-        return getUsersCollection().document(userID).update("url_picture", urlPicture);
-    }
-
-    public Task<Void> updateLunchID(String userID, String lunchID, String restaurantName) {
-        return getUsersCollection().document(userID).update("lunchRestaurantID", lunchID,
+    public Task<Void> updateLunchID(String userID, String placeID, String restaurantName) {
+        return getUsersCollection().document(userID).update("restaurantID", placeID,
                 "restaurantName",restaurantName);
-    }
-
-    public Task<Void> updateIsBooked(String userID, String lunchBooked) {
-        return getUsersCollection().document(userID).update("lunchBooked", lunchBooked);
     }
 
     public Task<Void> updateLikesList(String userID, List<String> likesList) {

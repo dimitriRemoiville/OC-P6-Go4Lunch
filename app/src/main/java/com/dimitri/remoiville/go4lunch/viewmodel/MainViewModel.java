@@ -108,7 +108,20 @@ public class MainViewModel extends ViewModel {
         }
     }
 
+    // Update user name, email and/or profile picture in Firestore
     public void updateUserData(String userID, String firstName, String lastName, String email, String urlProfilePicture) {
         mUserFirestoreRepository.updateUserData(userID, firstName, lastName, email, urlProfilePicture);
     }
+
+    // Update in the user collections where the user wants to go for the lunch
+    public void updateLunchID(String userID, String placeID, String restaurantName) {
+        mUserFirestoreRepository.updateLunchID(userID,placeID,restaurantName);
+    }
+
+    // Update the list of restaurant liked by the use
+    public void updateLikesList(String userID, List<String> likesList) {
+        mUserFirestoreRepository.updateLikesList(userID, likesList);
+    }
+
+
 }
