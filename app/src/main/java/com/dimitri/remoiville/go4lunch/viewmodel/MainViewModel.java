@@ -93,6 +93,11 @@ public class MainViewModel extends ViewModel {
         return usersMutableLiveData;
     }
 
+    // Get users eating at a specific place
+    public MutableLiveData<List<User>> getUsersWithPlaceID(String placeID) {
+        mUserFirestoreRepository.getUsersWithPlaceID(placeID).addOnCompleteListener(this::createUsersList);
+        return usersMutableLiveData;
+    }
 
     private void createUsersList(@NonNull Task<QuerySnapshot> task) {
         if (task.isSuccessful()) {

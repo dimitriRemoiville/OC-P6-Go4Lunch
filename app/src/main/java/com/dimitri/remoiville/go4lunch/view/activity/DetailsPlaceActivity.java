@@ -1,6 +1,7 @@
 package com.dimitri.remoiville.go4lunch.view.activity;
 
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,7 +9,11 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.dimitri.remoiville.go4lunch.BuildConfig;
@@ -16,20 +21,25 @@ import com.dimitri.remoiville.go4lunch.R;
 import com.dimitri.remoiville.go4lunch.databinding.ActivityDetailsPlaceBinding;
 import com.dimitri.remoiville.go4lunch.model.Place;
 import com.dimitri.remoiville.go4lunch.model.User;
+import com.dimitri.remoiville.go4lunch.view.fragment.workmates.WorkmatesRecyclerViewAdapter;
 import com.dimitri.remoiville.go4lunch.viewmodel.Injection;
 import com.dimitri.remoiville.go4lunch.viewmodel.MainViewModel;
 import com.dimitri.remoiville.go4lunch.viewmodel.SingletonCurrentUser;
 import com.dimitri.remoiville.go4lunch.viewmodel.ViewModelFactory;
+
+import java.util.List;
 
 public class DetailsPlaceActivity extends AppCompatActivity {
 
     private ActivityDetailsPlaceBinding mBinding;
     private MainViewModel mMainViewModel;
     private final String API_KEY = BuildConfig.API_KEY;
-    private User mCurrentUser;
+    private User currentUser;
     private boolean lunchBooked = false;
     private boolean favoriteRestaurant = false;
     private String placeID;
+    private RecyclerView mRecyclerView;
+    private Context mContext;
     private static final String TAG = "DetailsPlaceActivity";
 
     @Override
@@ -38,13 +48,19 @@ public class DetailsPlaceActivity extends AppCompatActivity {
         mBinding = ActivityDetailsPlaceBinding.inflate(getLayoutInflater());
         View view = mBinding.getRoot();
         setContentView(view);
+
+        mContext = view.getContext();
+        mRecyclerView = mBinding.activityDetailsRecyclerviewList;
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.HORIZONTAL));
+
         configureViewModel();
 
         // place to display
         placeID = getIntent().getStringExtra("placeId");
 
         // get the current user
-        mCurrentUser = SingletonCurrentUser.getInstance().getCurrentUser();
+        currentUser = SingletonCurrentUser.getInstance().getCurrentUser();
 
         // start display
         startDisplay();
@@ -65,7 +81,7 @@ public class DetailsPlaceActivity extends AppCompatActivity {
     private void startDisplay() {
 
         // Booking action button
-        if (mCurrentUser.getRestaurantID() != null && mCurrentUser.getRestaurantID().equals(placeID)) {
+        if (currentUser.getRestaurantID() != null && currentUser.getRestaurantID().equals(placeID)) {
             mBinding.activityDetailsActBtn.setImageResource(R.drawable.check_circle_green_24);
             lunchBooked = true;
         } else {
@@ -74,8 +90,8 @@ public class DetailsPlaceActivity extends AppCompatActivity {
         }
 
         // like button
-        for (int i = 0; i < mCurrentUser.getLikesList().size(); i++) {
-            if (mCurrentUser.getLikesList().get(i).equals(placeID)) {
+        for (int i = 0; i < currentUser.getLikesList().size(); i++) {
+            if (currentUser.getLikesList().get(i).equals(placeID)) {
                 mBinding.activityDetailsLikeImg.setImageResource(R.drawable.star_orange_24);
                 favoriteRestaurant = true;
             }
@@ -86,6 +102,7 @@ public class DetailsPlaceActivity extends AppCompatActivity {
 
 
     }
+
     private void updateUI(Place place) {
         Log.d(TAG, "onCreate: place.getUrlPicture() " + place.getUrlPicture());
         Glide.with(this)
@@ -116,15 +133,15 @@ public class DetailsPlaceActivity extends AppCompatActivity {
 
         mBinding.activityDetailsActBtn.setOnClickListener(v -> {
             if (lunchBooked) {
-                mCurrentUser.setRestaurantID(null);
-                mCurrentUser.setRestaurantName(null);
-                mMainViewModel.updateLunchID(mCurrentUser.getUserID(), null, null);
+                currentUser.setRestaurantID(null);
+                currentUser.setRestaurantName(null);
+                mMainViewModel.updateLunchID(currentUser.getUserID(), null, null);
                 lunchBooked = false;
                 mBinding.activityDetailsActBtn.setImageResource(R.drawable.check_circle_outline_grey_24);
             } else {
-                mCurrentUser.setRestaurantID(place.getPlaceId());
-                mCurrentUser.setRestaurantName(place.getName());
-                mMainViewModel.updateLunchID(mCurrentUser.getUserID(), place.getPlaceId(), place.getName());
+                currentUser.setRestaurantID(place.getPlaceId());
+                currentUser.setRestaurantName(place.getName());
+                mMainViewModel.updateLunchID(currentUser.getUserID(), place.getPlaceId(), place.getName());
                 lunchBooked = true;
                 mBinding.activityDetailsActBtn.setImageResource(R.drawable.check_circle_green_24);
             }
@@ -140,18 +157,18 @@ public class DetailsPlaceActivity extends AppCompatActivity {
 
         mBinding.activityDetailsLikeImg.setOnClickListener(v -> {
             if (favoriteRestaurant) {
-                for (int i = 0; i < mCurrentUser.getLikesList().size(); i++) {
-                    if (mCurrentUser.getLikesList().get(i).equals(placeID)) {
-                        mCurrentUser.getLikesList().remove(i);
-                        mMainViewModel.updateLikesList(mCurrentUser.getUserID(),mCurrentUser.getLikesList());
+                for (int i = 0; i < currentUser.getLikesList().size(); i++) {
+                    if (currentUser.getLikesList().get(i).equals(placeID)) {
+                        currentUser.getLikesList().remove(i);
+                        mMainViewModel.updateLikesList(currentUser.getUserID(), currentUser.getLikesList());
                         mBinding.activityDetailsLikeImg.setImageResource(R.drawable.star_border_orange_24);
                         favoriteRestaurant = false;
                     }
                 }
 
             } else {
-                mCurrentUser.getLikesList().add(placeID);
-                mMainViewModel.updateLikesList(mCurrentUser.getUserID(),mCurrentUser.getLikesList());
+                currentUser.getLikesList().add(placeID);
+                mMainViewModel.updateLikesList(currentUser.getUserID(), currentUser.getLikesList());
                 mBinding.activityDetailsLikeImg.setImageResource(R.drawable.star_orange_24);
                 favoriteRestaurant = true;
             }
@@ -164,5 +181,25 @@ public class DetailsPlaceActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        loadWorkmatesLists();
+    }
+
+    private void loadWorkmatesLists() {
+        mMainViewModel.getUsersWithPlaceID(placeID).observe(this, users -> {
+            String uid = currentUser.getUserID();
+            for (int i = 0; i < users.size(); i++) {
+                if (users.get(i).getUserID().equals(uid)
+                        || users.get(i).getFirstName() == null
+                        || users.get(i).getLastName() == null) {
+                    users.remove(users.get(i));
+                }
+            }
+            initList(users);
+        });
+    }
+
+    private void initList(List<User> users) {
+        mRecyclerView.setAdapter(new WorkmatesRecyclerViewAdapter(users));
     }
 }

@@ -18,6 +18,7 @@ import com.dimitri.remoiville.go4lunch.R;
 import com.dimitri.remoiville.go4lunch.model.User;
 import com.dimitri.remoiville.go4lunch.viewmodel.Injection;
 import com.dimitri.remoiville.go4lunch.viewmodel.MainViewModel;
+import com.dimitri.remoiville.go4lunch.viewmodel.SingletonCurrentUser;
 import com.dimitri.remoiville.go4lunch.viewmodel.ViewModelFactory;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -29,6 +30,7 @@ public class WorkmatesFragment extends Fragment {
     private MainViewModel mMainViewModel;
     private RecyclerView mRecyclerView;
     private Context mContext;
+    private User currentUser;
     private final List<User> mUsers = new ArrayList<>();
 
     @Override
@@ -46,6 +48,8 @@ public class WorkmatesFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.HORIZONTAL));
 
+        currentUser = SingletonCurrentUser.getInstance().getCurrentUser();
+
         getWorkmateList();
 
         return root;
@@ -53,7 +57,7 @@ public class WorkmatesFragment extends Fragment {
 
     private void getWorkmateList() {
         mMainViewModel.getAllUsersSortByRestaurantID().observe(getViewLifecycleOwner(), users -> {
-            String uid = FirebaseAuth.getInstance().getUid();
+            String uid = currentUser.getUserID();
             for(int i = 0; i < users.size(); i++){
                 if (users.get(i).getUserID().equals(uid)
                         || users.get(i).getFirstName() == null
