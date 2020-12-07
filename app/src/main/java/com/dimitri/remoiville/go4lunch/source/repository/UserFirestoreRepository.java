@@ -29,20 +29,11 @@ public class UserFirestoreRepository {
         return getUsersCollection().document(userID).get();
     }
 
-    // All users
-    public Task<QuerySnapshot> getAllUsers() {
-        return getUsersCollection().get();
-    }
-
     // All users sort by restaurant ID
     public Task<QuerySnapshot> getAllUsersSortByRestaurantID() {
         return getUsersCollection().orderBy("restaurantID", Query.Direction.DESCENDING).get();
     }
 
-    // Get users with a lunch booked
-    public Task<QuerySnapshot> getUsersWithLunchBooked() {
-        return getUsersCollection().whereEqualTo("restaurantID", true).get();
-    }
 
     // Get all users with eating at specific restaurant
     public Task<QuerySnapshot> getUsersWithPlaceID(String placeID) {

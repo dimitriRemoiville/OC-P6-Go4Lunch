@@ -16,7 +16,8 @@
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:layout_margin="8dp"
-            android:id="@+id/activity_details_list_workmates_img"/>
+            android:id="@+id/activity_details_list_workmates_img"
+            android:contentDescription="TODO" />
 
         <TextView
             android:id="@+id/activity_details_list_workmates_txt"
@@ -27,7 +28,6 @@
             android:layout_marginEnd="8dp"
             android:gravity="center_vertical"
             android:ellipsize="end"
-            android:text="Scarlett is joining !"
             android:maxLines="1"
             android:textColor="@android:color/black" />
     </LinearLayout>

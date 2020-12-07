@@ -98,7 +98,6 @@ public class Place {
     }
 
     public Place(PlaceDetailsPOJO.Result detailsPOJO , String key) {
-        // name,formatted_address,international_phone_number,website,photos
         placeId = "";
 
         mName = "";
@@ -143,8 +142,7 @@ public class Place {
 
     private String getPlacesPhoto(String photoReference, String key) {
         int maxWidth = 400;
-        //return "https://maps.googleapis.com/maps/api/place/photo?maxwidth=" + maxWidth + "&photoreference=" + photoReference + "&key=" + key;
-        return null;
+        return "https://maps.googleapis.com/maps/api/place/photo?maxwidth=" + maxWidth + "&photoreference=" + photoReference + "&key=" + key;
     }
 
     public String getPlaceId() {
@@ -277,5 +275,3 @@ public class Place {
         }
     }
 }
-
-

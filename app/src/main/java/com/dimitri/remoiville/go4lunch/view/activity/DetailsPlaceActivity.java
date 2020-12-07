@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -59,18 +58,24 @@ public class DetailsPlaceActivity extends AppCompatActivity {
         // place to display
         placeID = getIntent().getStringExtra("placeId");
 
-        // get the current user
-        currentUser = SingletonCurrentUser.getInstance().getCurrentUser();
+        if (placeID == null) {
+            mBinding.activityDetailsMessage.setVisibility(View.VISIBLE);
+            mBinding.activityDetailsScrollview.setVisibility(View.INVISIBLE);
+        } else {
+            mBinding.activityDetailsMessage.setVisibility(View.INVISIBLE);
+            mBinding.activityDetailsScrollview.setVisibility(View.VISIBLE);
+            // get the current user
+            currentUser = SingletonCurrentUser.getInstance().getCurrentUser();
+            // start display
+            startDisplay();
+            // get place details
+            mMainViewModel.getRestaurantDetailsData(placeID, API_KEY)
+                    .observe(this, place -> {
+                        place.setPlaceId(placeID);
+                        updateUI(place);
+                    });
 
-        // start display
-        startDisplay();
-
-        // get place details
-        mMainViewModel.getRestaurantDetailsData(placeID, API_KEY)
-                .observe(this, place -> {
-                    place.setPlaceId(placeID);
-                    updateUI(place);
-                });
+        }
     }
 
     private void configureViewModel() {

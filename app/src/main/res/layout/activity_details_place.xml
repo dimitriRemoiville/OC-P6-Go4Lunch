@@ -1,17 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_details_scrollview"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:fillViewport="false">
+    android:layout_height="match_parent"
+     android:layout_width="match_parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/activity_details"
+    <TextView
+        android:id="@+id/activity_details_message"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible"
+        android:gravity="center"
+        android:text="@string/activity_details_message"
+        android:textColor="@android:color/black"
+        android:textSize="20sp">
+    </TextView>
+
+    <ScrollView
+        android:id="@+id/activity_details_scrollview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
+        android:fillViewport="false"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="visible">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/activity_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
         tools:context=".view.activity.DetailsPlaceActivity">
 
         <ImageView
@@ -22,7 +43,8 @@
             app:layout_constraintDimensionRatio="1.66:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="TODO" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/activity_details_act_btn"
@@ -71,7 +93,8 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="8dp"
                     android:visibility="invisible"
-                    app:srcCompat="@drawable/star_yellow_24" />
+                    app:srcCompat="@drawable/star_yellow_24"
+                    android:contentDescription="TODO" />
 
                 <ImageView
                     android:id="@+id/activity_details_star2"
@@ -80,7 +103,8 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="8dp"
                     android:visibility="invisible"
-                    app:srcCompat="@drawable/star_yellow_24" />
+                    app:srcCompat="@drawable/star_yellow_24"
+                    android:contentDescription="TODO" />
 
                 <ImageView
                     android:id="@+id/activity_details_star3"
@@ -89,7 +113,8 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="8dp"
                     android:visibility="invisible"
-                    app:srcCompat="@drawable/star_yellow_24" />
+                    app:srcCompat="@drawable/star_yellow_24"
+                    android:contentDescription="TODO" />
 
 
             </LinearLayout>
@@ -126,7 +151,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/activity_details_like_img"
             app:layout_constraintTop_toBottomOf="@id/activity_details_restaurant_card"
-            app:layout_constraintBottom_toTopOf="@id/activity_details_call_txt"/>
+            app:layout_constraintBottom_toTopOf="@id/activity_details_call_txt"
+            android:contentDescription="TODO" />
 
         <TextView
             android:id="@+id/activity_details_call_txt"
@@ -136,7 +162,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="16dp"
-            android:text="CALL"
+            android:text="@string/call_txt"
             android:textColor="@color/colorPrimary"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@id/activity_details_call_img"
@@ -153,7 +179,8 @@
             app:layout_constraintStart_toEndOf="@id/activity_details_call_img"
             app:layout_constraintEnd_toStartOf="@id/activity_details_website_img"
             app:layout_constraintTop_toBottomOf="@id/activity_details_restaurant_card"
-            app:layout_constraintBottom_toTopOf="@id/activity_details_like_txt"/>
+            app:layout_constraintBottom_toTopOf="@id/activity_details_like_txt"
+            android:contentDescription="TODO" />
 
         <TextView
             android:id="@+id/activity_details_like_txt"
@@ -163,7 +190,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="16dp"
-            android:text="LIKE"
+            android:text="@string/like_txt"
             android:textColor="@color/colorPrimary"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@id/activity_details_like_img"
@@ -180,7 +207,8 @@
             app:layout_constraintStart_toEndOf="@id/activity_details_like_img"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/activity_details_restaurant_card"
-            app:layout_constraintBottom_toTopOf="@id/activity_details_website_txt"/>
+            app:layout_constraintBottom_toTopOf="@id/activity_details_website_txt"
+            android:contentDescription="TODO" />
 
         <TextView
             android:id="@+id/activity_details_website_txt"
@@ -190,7 +218,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="16dp"
-            android:text="WEBSITE"
+            android:text="@string/website_txt"
             android:textColor="@color/colorPrimary"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@id/activity_details_website_img"
@@ -211,5 +239,6 @@
             tools:listitem="@layout/activity_details_place_item">
 
         </androidx.recyclerview.widget.RecyclerView>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

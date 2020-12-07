@@ -81,12 +81,6 @@ public class MainViewModel extends ViewModel {
         mUserFirestoreRepository.createUser(user);
     }
 
-    // Get all users
-    public MutableLiveData<List<User>> getAllUsers() {
-        mUserFirestoreRepository.getAllUsers().addOnCompleteListener(this::createUsersList);
-        return usersMutableLiveData;
-    }
-
     // Get all users sort by restaurant ID
     public MutableLiveData<List<User>> getAllUsersSortByRestaurantID() {
         mUserFirestoreRepository.getAllUsersSortByRestaurantID().addOnCompleteListener(this::createUsersList);
