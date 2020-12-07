@@ -112,4 +112,10 @@ dependencies {
 
     // OKHttp profiler
     implementation 'com.itkacher.okhttpprofiler:okhttpprofiler:1.0.7'
+
+    //OkHttp
+    implementation ("com.squareup.okhttp3:okhttp:3.12.12"){
+        force = true //API 19 support
+    }
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.12.12'
 }
