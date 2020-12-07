@@ -77,10 +77,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Managing permissions
         requestLocationPermission();
 
-        // Get current user information from Firestore and drawer's header
-        if (mCurrentUser == null) {
-            getCurrentUserFirestore();
-        }
+        // Get current user and update drawer's header
+        mCurrentUser = SingletonCurrentUser.getInstance().getCurrentUser();
+        updateDrawerUI();
 
         // Bottom navigation
         initBottomNavigation();
@@ -160,7 +159,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             SettingsActivity.navigate(this);
         }
         if (item.getItemId() == R.id.nav_yourLunch) {
-            SettingsActivity.navigate(this);
+            Intent intent = new Intent(this, DetailsPlaceActivity.class);
+            intent.putExtra("placeId", mCurrentUser.getRestaurantID());
+            startActivity(intent);
         }
         //close navigation drawer
         drawer.closeDrawer(GravityCompat.START);
@@ -177,26 +178,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         finish();
                     }
                 });
-    }
-
-    protected FirebaseUser getCurrentUser() {
-        return FirebaseAuth.getInstance().getCurrentUser();
-    }
-
-    protected Boolean isCurrentUserLogged() {
-        return (this.getCurrentUser() != null);
-    }
-
-    private void getCurrentUserFirestore() {
-        if (isCurrentUserLogged()) {
-            mMainViewModel.getCurrentUser(FirebaseAuth.getInstance().getUid())
-                    .observe(this, user -> {
-                        mCurrentUser = user;
-                        updateDrawerUI();
-                    });
-        } else {
-            showSnackBar(constraintLayout, "User is not logged");
-        }
     }
 
     private void updateDrawerUI() {
