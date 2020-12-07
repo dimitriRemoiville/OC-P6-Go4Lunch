@@ -17,6 +17,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,6 +42,14 @@ public class SettingsActivity extends AppCompatActivity {
 
         mCurrentUser = SingletonCurrentUser.getInstance().getCurrentUser();
 
+        if(mCurrentUser.getLastName() != null) {
+            mBinding.settingsLastNameInput.setText(mCurrentUser.getLastName());
+        }
+
+        if(mCurrentUser.getFirstName() != null) {
+            mBinding.settingsFirstNameInput.setText(mCurrentUser.getFirstName());
+        }
+
         Glide.with(this)
                 .load(mCurrentUser.getURLProfilePicture())
                 .circleCrop()
@@ -58,9 +67,9 @@ public class SettingsActivity extends AppCompatActivity {
     private void updateUserData() {
 
         mBinding.settingsSaveButton.setOnClickListener(v -> {
-            String firstName = mBinding.settingsFirstNameLayout.getEditText().getText().toString();
-            String lastName = mBinding.settingsLastNameLayout.getEditText().getText().toString();
-            String email = mBinding.settingsEmailLayout.getEditText().getText().toString();
+            String firstName = Objects.requireNonNull(mBinding.settingsFirstNameLayout.getEditText()).getText().toString();
+            String lastName = Objects.requireNonNull(mBinding.settingsLastNameLayout.getEditText()).getText().toString();
+            String email = Objects.requireNonNull(mBinding.settingsEmailLayout.getEditText()).getText().toString();
 
             mBinding.settingsEmailLayout.setErrorEnabled(false);
             mBinding.settingsFirstNameLayout.setErrorEnabled(false);
