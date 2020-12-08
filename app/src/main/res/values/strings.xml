@@ -33,4 +33,8 @@
     <string name="like_txt">LIKE</string>
     <string name="website_txt">WEBSITE</string>
     <string name="activity_details_message">You haven\'t chosen a restaurant yet</string>
+
+    // Notifications
+    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
+    <string name="notification_title">Your lunch</string>
 </resources>
