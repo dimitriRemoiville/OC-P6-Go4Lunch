@@ -33,8 +33,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.List;
-
 public class MapViewFragment extends Fragment
         implements
         OnMapReadyCallback,
@@ -107,7 +105,8 @@ public class MapViewFragment extends Fragment
         mMainViewModel.getRestaurantsData(mCurrentLocation,radius,API_KEY).observe(getViewLifecycleOwner(), places -> {
             for (int i = 0; i < places.size(); i++) {
                 LatLng position = new LatLng(places.get(i).getLat(), places.get(i).getLng());
-                if (currentUser.getRestaurantID().equals(places.get(i).getPlaceId())) {
+                if (currentUser.getRestaurantID() != null &&
+                        currentUser.getRestaurantID().equals(places.get(i).getPlaceId())) {
                     mMap.addMarker(new MarkerOptions().position(position)
                             .title(places.get(i).getName())
                             .alpha(0.9f)
