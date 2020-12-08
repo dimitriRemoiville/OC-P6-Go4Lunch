@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,8 +21,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.dimitri.remoiville.go4lunch.BuildConfig;
 import com.dimitri.remoiville.go4lunch.R;
 import com.dimitri.remoiville.go4lunch.model.Place;
+import com.dimitri.remoiville.go4lunch.model.User;
 import com.dimitri.remoiville.go4lunch.viewmodel.Injection;
 import com.dimitri.remoiville.go4lunch.viewmodel.MainViewModel;
+import com.dimitri.remoiville.go4lunch.viewmodel.SingletonCurrentUser;
 import com.dimitri.remoiville.go4lunch.viewmodel.ViewModelFactory;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -43,6 +44,7 @@ public class ListViewFragment extends Fragment
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private Location mCurrentLocation;
     private final int radius = 400;
+    private User currentUser;
     private static final String TAG = "ListViewFragment";
 
     @Override
@@ -59,6 +61,8 @@ public class ListViewFragment extends Fragment
         mRecyclerView = (RecyclerView) root;
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
+
+        currentUser = SingletonCurrentUser.getInstance().getCurrentUser();
 
         configureViewModel();
 
@@ -89,64 +93,33 @@ public class ListViewFragment extends Fragment
     }
 
     private void configureObserverPlacesRestaurants() {
-        Log.d(TAG, "configureObserverPlacesRestaurants: observer OK");
-        mMainViewModel.getRestaurantsData(mCurrentLocation,radius,API_KEY).observe(getViewLifecycleOwner(), places -> {
-            Log.d(TAG, "configureObserverPlacesRestaurants: observer - observe something OK");
+        mMainViewModel.getRestaurantsData(mCurrentLocation, radius, API_KEY).observe(getViewLifecycleOwner(), places -> {
             Collections.sort(places, new Place.PlaceDistanceComparator());
+            loadWorkmatesLists(places);
+        });
+    }
+
+    private void loadWorkmatesLists(List<Place> places) {
+        mMainViewModel.getUsersPlaceIDNotNull().observe(this, users -> {
+            String uid = currentUser.getUserID();
+
+            for (int i = 0; i < users.size(); i++) {
+                if (users.get(i).getUserID().equals(uid)
+                        || users.get(i).getFirstName() == null
+                        || users.get(i).getLastName() == null) {
+                    users.remove(users.get(i));
+                }
+            }
+
+            for (int i = 0; i < places.size(); i++) {
+                for (int j = 0; j < users.size(); j++) {
+                    if (places.get(i).getPlaceId().equals(users.get(j).getRestaurantID())) {
+                        places.get(i).getUserList().add(users.get(j));
+                    }
+                }
+            }
             initList(places);
         });
-/*        mMainViewModel.streamFetchPlacesRestaurants(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), radius, API_KEY)
-                .observe(getViewLifecycleOwner(), new Observer<Observable<List<Place>>>() {
-                    @Override
-                    public void onChanged(Observable<List<Place>> listObservable) {
-                        Log.d(TAG, "onChanged: ici");
-                        disposable = listObservable.subscribeWith(new DisposableObserver<List<Place>>() {
-                            @Override
-                            public void onNext(@NonNull List<Place> places) {
-                                Log.d(TAG, "onNext 1 : " + places);
-                                StringBuilder destinations = new StringBuilder();
-                                for (int i = 0; i < places.size();i++) {
-                                    destinations.append(places.get(i).getLat().toString()).append(",").append(places.get(i).getLng().toString());
-                                    if (i != places.size() - 1 ) {
-                                        destinations.append("|");
-                                    }
-                                }
-                                Log.d(TAG, "onNext: " + destinations);
-                                mMainViewModel.streamFetchDistances(mCurrentLocation.getLatitude(),mCurrentLocation.getLongitude(), destinations.toString(),API_KEY)
-                                        .observe(getViewLifecycleOwner(), new Observer<Observable<List<Integer>>>() {
-                                            @Override
-                                            public void onChanged(Observable<List<Integer>> listObservable) {
-                                                disposable = listObservable.subscribeWith(new DisposableObserver<List<Integer>>() {
-                                                    @Override
-                                                    public void onNext(@io.reactivex.annotations.NonNull List<Integer> integers) {
-                                                        initList(places, integers);
-                                                    }
-
-                                                    @Override
-                                                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
-
-                                                    }
-
-                                                    @Override
-                                                    public void onComplete() {
-
-                                                    }
-                                                });
-                                            }
-                                        });
-                            }
-
-                            @Override
-                            public void onError(@NonNull Throwable e) {
-
-                            }
-
-                            @Override
-                            public void onComplete() {
-                            }
-                        });
-                    }
-                });*/
     }
 
     private void initList(List<Place> places) {

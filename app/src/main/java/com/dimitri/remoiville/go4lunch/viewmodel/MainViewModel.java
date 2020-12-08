@@ -87,6 +87,12 @@ public class MainViewModel extends ViewModel {
         return usersMutableLiveData;
     }
 
+    // Get users with a placeID not null
+    public MutableLiveData<List<User>> getUsersPlaceIDNotNull() {
+        mUserFirestoreRepository.getUsersPlaceIDNotNull().addOnCompleteListener(this::createUsersList);
+        return usersMutableLiveData;
+    }
+
     // Get users eating at a specific place
     public MutableLiveData<List<User>> getUsersWithPlaceID(String placeID) {
         mUserFirestoreRepository.getUsersWithPlaceID(placeID).addOnCompleteListener(this::createUsersList);

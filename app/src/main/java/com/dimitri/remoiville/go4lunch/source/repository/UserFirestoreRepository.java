@@ -34,8 +34,13 @@ public class UserFirestoreRepository {
         return getUsersCollection().orderBy("restaurantID", Query.Direction.DESCENDING).get();
     }
 
+    // Get users with a placeID not null
+    public Task<QuerySnapshot> getUsersPlaceIDNotNull() {
+        return getUsersCollection().whereNotEqualTo("restaurantID", null).get();
+    }
 
-    // Get all users with eating at specific restaurant
+
+    // Get all users eating at specific restaurant
     public Task<QuerySnapshot> getUsersWithPlaceID(String placeID) {
         return getUsersCollection().whereEqualTo("restaurantID", placeID).get();
     }
