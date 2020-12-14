@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -40,20 +41,18 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private AppBarConfiguration mNavigationDrawer;
+    private AppBarConfiguration bottomNavigationBar;
     private ActivityMainBinding mBinding;
     private DrawerLayout drawer;
     private Context mContext;
     private ConstraintLayout constraintLayout;
-    private NavController navController;
+    private NavController navControllerBottom;
     private MainViewModel mMainViewModel;
     private final int REQUEST_LOCATION_PERMISSION = 1;
     private User mCurrentUser;
@@ -71,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar(mBinding.appBarMain.toolbar);
         mContext = view.getContext();
         constraintLayout = mBinding.appBarMain.contentMain.contentMain;
-        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        navControllerBottom = Navigation.findNavController(this, R.id.nav_host_fragment);
         configureViewModel();
 
         // Managing permissions
@@ -112,8 +111,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onSupportNavigateUp() {
-        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        return NavigationUI.navigateUp(navController, mNavigationDrawer)
+        navControllerBottom = Navigation.findNavController(this, R.id.nav_host_fragment);
+        return NavigationUI.navigateUp(navControllerBottom, bottomNavigationBar)
                 || super.onSupportNavigateUp();
     }
 
@@ -130,23 +129,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void initBottomNavigation() {
         BottomNavigationView navView = mBinding.appBarMain.contentMain.navView;
-        AppBarConfiguration bottomNavigationBar = new AppBarConfiguration.Builder(
+        bottomNavigationBar = new AppBarConfiguration.Builder(
                 R.id.nav_mapview, R.id.nav_listview, R.id.nav_workmates)
                 .build();
-        NavigationUI.setupActionBarWithNavController(this, navController, bottomNavigationBar);
-        NavigationUI.setupWithNavController(navView, navController);
+        NavigationUI.setupActionBarWithNavController(this, navControllerBottom, bottomNavigationBar);
+        NavigationUI.setupWithNavController(navView, navControllerBottom);
     }
 
     private void initDrawerNavigation() {
         drawer = mBinding.drawerLayout;
-        NavigationView navigationView = mBinding.navViewDrawer;
-        mNavigationDrawer = new AppBarConfiguration.Builder(
-                R.id.nav_yourLunch, R.id.nav_settings, R.id.nav_logout)
-                .setOpenableLayout(drawer)
-                .build();
-        NavigationUI.setupActionBarWithNavController(this, navController, mNavigationDrawer);
-        NavigationUI.setupWithNavController(navigationView, navController);
-        navigationView.setNavigationItemSelectedListener(this);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, mBinding.appBarMain.toolbar,
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
     }
 
     @Override
