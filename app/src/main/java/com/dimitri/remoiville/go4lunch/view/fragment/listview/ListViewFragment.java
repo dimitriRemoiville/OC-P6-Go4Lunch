@@ -3,6 +3,7 @@ package com.dimitri.remoiville.go4lunch.view.fragment.listview;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,7 +21,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.dimitri.remoiville.go4lunch.BuildConfig;
 import com.dimitri.remoiville.go4lunch.R;
-import com.dimitri.remoiville.go4lunch.model.Place;
+import com.dimitri.remoiville.go4lunch.event.AutocompleteEvent;
+import com.dimitri.remoiville.go4lunch.model.PlaceRestaurant;
 import com.dimitri.remoiville.go4lunch.model.User;
 import com.dimitri.remoiville.go4lunch.viewmodel.Injection;
 import com.dimitri.remoiville.go4lunch.viewmodel.MainViewModel;
@@ -29,7 +31,15 @@ import com.dimitri.remoiville.go4lunch.viewmodel.ViewModelFactory;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.net.FetchPhotoRequest;
+import com.google.android.libraries.places.api.net.FetchPhotoResponse;
+import com.google.android.libraries.places.api.net.PlacesClient;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -45,6 +55,7 @@ public class ListViewFragment extends Fragment
     private Location mCurrentLocation;
     private final int radius = 400;
     private User currentUser;
+    PlacesClient placesClient;
     private static final String TAG = "ListViewFragment";
 
     @Override
@@ -61,6 +72,11 @@ public class ListViewFragment extends Fragment
         mRecyclerView = (RecyclerView) root;
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
+
+        // Initialize Place SDK
+        Places.initialize(mContext, API_KEY);
+        // Create a new PlacesClient instance
+        placesClient = Places.createClient(mContext);
 
         currentUser = SingletonCurrentUser.getInstance().getCurrentUser();
 
@@ -94,12 +110,12 @@ public class ListViewFragment extends Fragment
 
     private void configureObserverPlacesRestaurants() {
         mMainViewModel.getRestaurantsData(mCurrentLocation, radius, API_KEY).observe(getViewLifecycleOwner(), places -> {
-            Collections.sort(places, new Place.PlaceDistanceComparator());
+            Collections.sort(places, new PlaceRestaurant.PlaceDistanceComparator());
             loadWorkmatesLists(places);
         });
     }
 
-    private void loadWorkmatesLists(List<Place> places) {
+    private void loadWorkmatesLists(List<PlaceRestaurant> places) {
         mMainViewModel.getUsersPlaceIDNotNull().observe(this, users -> {
             String uid = currentUser.getUserID();
 
@@ -122,7 +138,41 @@ public class ListViewFragment extends Fragment
         });
     }
 
-    private void initList(List<Place> places) {
+    private void initList(List<PlaceRestaurant> places) {
         mRecyclerView.setAdapter(new ListViewRecyclerViewAdapter(places));
+    }
+
+    private void initListAutocomplete(List<PlaceRestaurant> places, Bitmap bitmap) {
+        mRecyclerView.setAdapter(new ListViewRecyclerViewAdapter(places, bitmap));
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe
+    public void onAutocompletePlace(AutocompleteEvent event) {
+        PlaceRestaurant placeRestaurant = new PlaceRestaurant(event.place, mCurrentLocation, API_KEY);
+
+        final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(event.place.getPhotoMetadatas().get(0))
+                .setMaxWidth(400)
+                .build();
+        placesClient.fetchPhoto(photoRequest).addOnSuccessListener(new OnSuccessListener<FetchPhotoResponse>() {
+            @Override
+            public void onSuccess(FetchPhotoResponse fetchPhotoResponse) {
+                Bitmap bitmap = fetchPhotoResponse.getBitmap();
+                List<PlaceRestaurant> placeRestaurants = new ArrayList<>();
+                placeRestaurants.add(placeRestaurant);
+                initListAutocomplete(placeRestaurants, bitmap);
+            }
+        });
     }
 }

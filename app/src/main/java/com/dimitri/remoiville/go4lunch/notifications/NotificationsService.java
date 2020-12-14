@@ -13,7 +13,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.dimitri.remoiville.go4lunch.BuildConfig;
 import com.dimitri.remoiville.go4lunch.R;
-import com.dimitri.remoiville.go4lunch.model.Place;
+import com.dimitri.remoiville.go4lunch.model.PlaceRestaurant;
 import com.dimitri.remoiville.go4lunch.model.PlaceDetailsPOJO;
 import com.dimitri.remoiville.go4lunch.model.User;
 import com.dimitri.remoiville.go4lunch.source.remote.ServicePlacesApiGenerator;
@@ -75,7 +75,7 @@ public class NotificationsService extends FirebaseMessagingService {
         });
     }
 
-    private void sendNotification(Place currentPlace) {
+    private void sendNotification(PlaceRestaurant currentPlace) {
 
         // Create an Intent that will be shown when user will click on the Notification
         Intent intent = new Intent(this, DetailsPlaceActivity.class);
@@ -125,7 +125,7 @@ public class NotificationsService extends FirebaseMessagingService {
         restaurantDetailsPOJOOut.enqueue(new Callback<PlaceDetailsPOJO>() {
             @Override
             public void onResponse(Call<PlaceDetailsPOJO> call, Response<PlaceDetailsPOJO> response) {
-                Place currentPlace = new Place(response.body().getResult(), API_KEY);
+                PlaceRestaurant currentPlace = new PlaceRestaurant(response.body().getResult(), API_KEY);
                 sendNotification(currentPlace);
             }
 

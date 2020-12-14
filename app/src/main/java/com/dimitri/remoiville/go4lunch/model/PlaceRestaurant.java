@@ -5,12 +5,14 @@ import android.location.LocationManager;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.libraries.places.api.model.Place;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-public class Place {
+public class PlaceRestaurant {
 
     private String placeId;
     private String mName;
@@ -24,9 +26,8 @@ public class Place {
     private String mPhoneNumbers;
     private String mWebsite;
     private int mDistance;
-    private String mIcon;
 
-    public Place(String placeId, String name, String address, Double lat, Double lng, int rating, String urlPicture, List<User> userList, boolean open, String phoneNumbers, String website, int distance, String icon) {
+    public PlaceRestaurant(String placeId, String name, String address, Double lat, Double lng, int rating, String urlPicture, List<User> userList, boolean open, String phoneNumbers, String website, int distance) {
         this.placeId = placeId;
         mName = name;
         mAddress = address;
@@ -39,10 +40,9 @@ public class Place {
         mPhoneNumbers = phoneNumbers;
         mWebsite = website;
         mDistance = distance;
-        mIcon = icon;
     }
 
-    public Place(@NonNull PlacesPOJO.Result POJOResult, Location location, String key) {
+    public PlaceRestaurant(@NonNull PlacesPOJO.Result POJOResult, Location location, String key) {
         placeId = "";
         if (POJOResult.getPlaceId() != null) {
             placeId = POJOResult.getPlaceId();
@@ -90,14 +90,9 @@ public class Place {
 
         mPhoneNumbers = "";
         mWebsite = "";
-
-        mIcon = "";
-        if (POJOResult.getIcon() != null) {
-            mIcon = POJOResult.getIcon();
-        }
     }
 
-    public Place(PlaceDetailsPOJO.Result detailsPOJO , String key) {
+    public PlaceRestaurant(PlaceDetailsPOJO.Result detailsPOJO , String key) {
         placeId = "";
 
         mName = "";
@@ -137,7 +132,59 @@ public class Place {
             mWebsite = detailsPOJO.getWebsite();
         }
 
-        mIcon = "";
+    }
+
+    public PlaceRestaurant(Place place, Location location, String key) {
+        placeId = "";
+        if (place.getId() != null) {
+            placeId = place.getId();
+        }
+
+        mName = "";
+        if (place.getName() != null) {
+            mName = place.getName();
+        }
+
+        mAddress = "";
+        if (place.getAddress() != null) {
+            mAddress = place.getAddress() ;
+        }
+
+        mLat = 0.0;
+        mLng = 0.0;
+        mDistance = 0;
+        if (place.getLatLng() != null) {
+            mLat = place.getLatLng().latitude;
+            mLng = place.getLatLng().longitude;
+
+            Location locationDestination = new Location(LocationManager.GPS_PROVIDER);
+            locationDestination.setLatitude(mLat);
+            locationDestination.setLongitude(mLng);
+            mDistance = (int) location.distanceTo(locationDestination);
+        }
+
+        mRating = 0;
+        if (place.getRating() != null) {
+            mRating = (int) Math.round((place.getRating() * 3) / 5);
+        }
+
+        mUrlPicture = "";
+        if (place.getPhotoMetadatas() != null) {
+            mUrlPicture = place.getPhotoMetadatas().get(0).getAttributions();
+        }
+
+        mUserList = new ArrayList<>();
+
+        mOpen = false;
+
+        mPhoneNumbers = "";
+        if (place.getPhoneNumber() != null) {
+            mPhoneNumbers = place.getPhoneNumber();
+        }
+        mWebsite = "";
+        if (place.getWebsiteUri() != null) {
+            mWebsite = place.getPhoneNumber();
+        }
     }
 
     private String getPlacesPhoto(String photoReference, String key) {
@@ -241,14 +288,6 @@ public class Place {
         mDistance = distance;
     }
 
-    public String getIcon() {
-        return mIcon;
-    }
-
-    public void setIcon(String icon) {
-        mIcon = icon;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -259,7 +298,7 @@ public class Place {
             return false;
         }
 
-        Place place = (Place) o;
+        PlaceRestaurant place = (PlaceRestaurant) o;
         return Objects.equals(placeId, place.placeId);
     }
 
@@ -268,9 +307,9 @@ public class Place {
         return Objects.hash(placeId);
     }
 
-    public static class PlaceDistanceComparator implements Comparator<Place> {
+    public static class PlaceDistanceComparator implements Comparator<PlaceRestaurant> {
         @Override
-        public int compare(Place left, Place right) {
+        public int compare(PlaceRestaurant left, PlaceRestaurant right) {
             return (int) (left.mDistance - right.mDistance);
         }
     }

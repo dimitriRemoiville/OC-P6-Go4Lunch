@@ -18,7 +18,7 @@ import com.bumptech.glide.Glide;
 import com.dimitri.remoiville.go4lunch.BuildConfig;
 import com.dimitri.remoiville.go4lunch.R;
 import com.dimitri.remoiville.go4lunch.databinding.ActivityDetailsPlaceBinding;
-import com.dimitri.remoiville.go4lunch.model.Place;
+import com.dimitri.remoiville.go4lunch.model.PlaceRestaurant;
 import com.dimitri.remoiville.go4lunch.model.User;
 import com.dimitri.remoiville.go4lunch.view.fragment.workmates.WorkmatesRecyclerViewAdapter;
 import com.dimitri.remoiville.go4lunch.viewmodel.Injection;
@@ -108,7 +108,7 @@ public class DetailsPlaceActivity extends AppCompatActivity {
 
     }
 
-    private void updateUI(Place place) {
+    private void updateUI(PlaceRestaurant place) {
         Log.d(TAG, "onCreate: place.getUrlPicture() " + place.getUrlPicture());
         Glide.with(this)
                 .load(place.getUrlPicture())

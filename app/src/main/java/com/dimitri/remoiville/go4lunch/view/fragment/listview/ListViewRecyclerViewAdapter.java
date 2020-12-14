@@ -1,7 +1,7 @@
 package com.dimitri.remoiville.go4lunch.view.fragment.listview;
 
 import android.content.Intent;
-import android.util.Log;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,18 +11,25 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.dimitri.remoiville.go4lunch.databinding.FragmentListviewBinding;
-import com.dimitri.remoiville.go4lunch.model.Place;
+import com.dimitri.remoiville.go4lunch.model.PlaceRestaurant;
 import com.dimitri.remoiville.go4lunch.view.activity.DetailsPlaceActivity;
 
 import java.util.List;
 
 public class ListViewRecyclerViewAdapter  extends RecyclerView.Adapter<ListViewRecyclerViewAdapter.ViewHolder> {
 
-    private final List<Place> mPlaces;
+    private final List<PlaceRestaurant> mPlaceRestaurants;
+    private final Bitmap mBitmap;
     private static final String TAG = "ListViewRecyclerViewAda";
 
-    public ListViewRecyclerViewAdapter(List<Place> items) {
-        mPlaces = items;
+    public ListViewRecyclerViewAdapter(List<PlaceRestaurant> items) {
+        mPlaceRestaurants = items;
+        mBitmap = null;
+    }
+
+    public ListViewRecyclerViewAdapter(List<PlaceRestaurant> items, Bitmap bitmap) {
+        mPlaceRestaurants = items;
+        mBitmap = bitmap;
     }
 
     @NonNull
@@ -33,7 +40,7 @@ public class ListViewRecyclerViewAdapter  extends RecyclerView.Adapter<ListViewR
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        final Place place = mPlaces.get(position);
+        final PlaceRestaurant place = mPlaceRestaurants.get(position);
         holder.mFragmentListviewBinding.listPlacesName.setText(place.getName());
         holder.mFragmentListviewBinding.listPlacesDistance.setText(place.getDistance() + "m");
         holder.mFragmentListviewBinding.listPlacesTypeAddress.setText(place.getAddress());
@@ -62,20 +69,26 @@ public class ListViewRecyclerViewAdapter  extends RecyclerView.Adapter<ListViewR
                 holder.mFragmentListviewBinding.listPlacesStar3.setVisibility(View.VISIBLE);
                 break;
         }
-        Glide.with(holder.itemView)
-                .load(place.getUrlPicture())
-                .into(holder.mFragmentListviewBinding.listPlacesImg);
+        if (mBitmap == null) {
+            Glide.with(holder.itemView)
+                    .load(place.getUrlPicture())
+                    .into(holder.mFragmentListviewBinding.listPlacesImg);
+        } else {
+            Glide.with(holder.itemView)
+                    .load(mBitmap)
+                    .into(holder.mFragmentListviewBinding.listPlacesImg);
+        }
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(holder.itemView.getContext(), DetailsPlaceActivity.class);
-            intent.putExtra("placeId", mPlaces.get(position).getPlaceId());
+            intent.putExtra("placeId", mPlaceRestaurants.get(position).getPlaceId());
             holder.itemView.getContext().startActivity(intent);
         });
     }
 
     @Override
     public int getItemCount() {
-        return mPlaces.size();
+        return mPlaceRestaurants.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

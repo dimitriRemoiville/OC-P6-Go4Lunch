@@ -1,10 +1,10 @@
 package com.dimitri.remoiville.go4lunch.view.activity;
 
 import android.Manifest;
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,10 +13,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -28,36 +27,55 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.bumptech.glide.Glide;
+import com.dimitri.remoiville.go4lunch.BuildConfig;
 import com.dimitri.remoiville.go4lunch.R;
 import com.dimitri.remoiville.go4lunch.databinding.ActivityMainBinding;
+import com.dimitri.remoiville.go4lunch.event.AutocompleteEvent;
+import com.dimitri.remoiville.go4lunch.model.PlaceRestaurant;
 import com.dimitri.remoiville.go4lunch.model.User;
 import com.dimitri.remoiville.go4lunch.viewmodel.Injection;
 import com.dimitri.remoiville.go4lunch.viewmodel.MainViewModel;
 import com.dimitri.remoiville.go4lunch.viewmodel.SingletonCurrentUser;
 import com.dimitri.remoiville.go4lunch.viewmodel.ViewModelFactory;
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.RectangularBounds;
+import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
+
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private AppBarConfiguration bottomNavigationBar;
     private ActivityMainBinding mBinding;
     private DrawerLayout drawer;
     private Context mContext;
-    private ConstraintLayout constraintLayout;
     private NavController navControllerBottom;
+    private AppBarConfiguration bottomNavigationBar;
     private MainViewModel mMainViewModel;
-    private final int REQUEST_LOCATION_PERMISSION = 1;
-    private User mCurrentUser;
+    private MenuItem searchItem;
 
-/*    private User currentUser;*/
+    private final String API_KEY = BuildConfig.API_KEY;
+    private final int REQUEST_LOCATION_PERMISSION = 1;
+    private static final int AUTOCOMPLETE_REQUEST_CODE = 2;
+
+    private User mCurrentUser;
     private static final String TAG = "MainActivity";
 
 
@@ -69,8 +87,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(view);
         setSupportActionBar(mBinding.appBarMain.toolbar);
         mContext = view.getContext();
-        constraintLayout = mBinding.appBarMain.contentMain.contentMain;
         navControllerBottom = Navigation.findNavController(this, R.id.nav_host_fragment);
+        // Initialize Place SDK
+        Places.initialize(getApplicationContext(), API_KEY);
+
+        // Create a new PlacesClient instance
+        PlacesClient placesClient = Places.createClient(this);
+
         configureViewModel();
 
         // Managing permissions
@@ -120,10 +143,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.action_bar_menu, menu);
         // Retrieve the SearchView and plug it into SearchManager
-        MenuItem menuItem = menu.findItem(R.id.action_search);
-        final SearchView searchView = (SearchView) menuItem.getActionView();
-        SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchItem = menu.findItem(R.id.action_search);
+        configureAutocomplete();
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -191,15 +212,45 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
+    private void configureAutocomplete() {
+        searchItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                // Set the fields to specify which types of place data to
+                // return after the user has made a selection.
+                List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS,
+                        Place.Field.LAT_LNG, Place.Field.RATING, Place.Field.PHOTO_METADATAS, Place.Field.WEBSITE_URI);
 
-    // Show Snack Bar with a message
-    private void showSnackBar(ConstraintLayout constraintLayout, String message){
-        Snackbar.make(constraintLayout, message, Snackbar.LENGTH_SHORT).show();
+                // Start the autocomplete intent.
+                Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
+                        .setCountry("AU")
+                        .setTypeFilter(TypeFilter.ESTABLISHMENT)
+                        .build(mContext);
+                startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
+
+                return false;
+            }
+        });
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                EventBus.getDefault().post(new AutocompleteEvent(place));
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                Status status = Autocomplete.getStatusFromIntent(data);
+                Log.i(TAG, status.getStatusMessage());
+            }
+            return;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 
     /**
      * Used to navigate to this activity
+     *
      * @param activity
      */
     public static void navigate(FragmentActivity activity) {

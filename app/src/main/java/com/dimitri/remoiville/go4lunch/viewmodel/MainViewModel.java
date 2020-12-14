@@ -8,16 +8,13 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.dimitri.remoiville.go4lunch.model.Place;
+import com.dimitri.remoiville.go4lunch.model.PlaceRestaurant;
 import com.dimitri.remoiville.go4lunch.model.User;
 import com.dimitri.remoiville.go4lunch.source.repository.PlacesRepository;
 import com.dimitri.remoiville.go4lunch.source.repository.UserFirestoreRepository;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -29,8 +26,8 @@ public class MainViewModel extends ViewModel {
     private final PlacesRepository mPlacesRepository;
     private final UserFirestoreRepository mUserFirestoreRepository;
 
-    private MutableLiveData<List<Place>> listRestaurants = new MutableLiveData<>();
-    private MutableLiveData<Place> restaurantDetails = new MutableLiveData<>();
+    private MutableLiveData<List<PlaceRestaurant>> listRestaurants = new MutableLiveData<>();
+    private MutableLiveData<PlaceRestaurant> restaurantDetails = new MutableLiveData<>();
 
     private MutableLiveData<User> currentUser = new MutableLiveData<>();
     private MutableLiveData<List<User>> usersMutableLiveData = new MutableLiveData<>();
@@ -46,11 +43,11 @@ public class MainViewModel extends ViewModel {
     }
 
     // API Places
-    public MutableLiveData<List<Place>> getRestaurantsData(Location location, int radius, String key) {
+    public MutableLiveData<List<PlaceRestaurant>> getRestaurantsData(Location location, int radius, String key) {
         return listRestaurants = mPlacesRepository.getListRestaurants(location, radius, key);
     }
 
-    public MutableLiveData<Place> getRestaurantDetailsData(String placeId, String key) {
+    public MutableLiveData<PlaceRestaurant> getRestaurantDetailsData(String placeId, String key) {
         return restaurantDetails = mPlacesRepository.getRestaurantDetails(placeId,key);
     }
 

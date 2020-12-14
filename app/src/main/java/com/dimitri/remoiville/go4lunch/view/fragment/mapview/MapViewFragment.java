@@ -17,6 +17,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.dimitri.remoiville.go4lunch.BuildConfig;
 import com.dimitri.remoiville.go4lunch.R;
+import com.dimitri.remoiville.go4lunch.event.AutocompleteEvent;
+import com.dimitri.remoiville.go4lunch.model.PlaceRestaurant;
 import com.dimitri.remoiville.go4lunch.model.User;
 import com.dimitri.remoiville.go4lunch.viewmodel.Injection;
 import com.dimitri.remoiville.go4lunch.viewmodel.MainViewModel;
@@ -32,6 +34,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.libraries.places.api.model.Place;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 public class MapViewFragment extends Fragment
         implements
@@ -92,7 +98,7 @@ public class MapViewFragment extends Fragment
                     mCurrentLocation = location;
                     LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                     CameraUpdate update = CameraUpdateFactory.newLatLngZoom(currentLatLng, 15);
-                    mMap.animateCamera(update);
+                    mMap.moveCamera(update);
                     configureObserverPlacesRestaurants();
                 } else {
                     Toast.makeText(mContext, "Location not found", Toast.LENGTH_SHORT).show();
@@ -132,4 +138,31 @@ public class MapViewFragment extends Fragment
     public void onMyLocationClick(@NonNull Location location) {
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe
+    public void onAutocompletePlace(AutocompleteEvent event) {
+        if (event.place.getLatLng() != null && event.place.getName() != null && mMap != null) {
+            Place place = event.place;
+            LatLng position = new LatLng(place.getLatLng().latitude, place.getLatLng().longitude);
+            mMap.addMarker(new MarkerOptions().position(position)
+                    .title(place.getName())
+                    .alpha(0.9f)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+
+            LatLng currentLatLng = new LatLng(place.getLatLng().latitude, place.getLatLng().longitude);
+            CameraUpdate update = CameraUpdateFactory.newLatLngZoom(currentLatLng, 15);
+            mMap.animateCamera(update);
+        }
+    }
 }
