@@ -2,6 +2,7 @@ package com.dimitri.remoiville.go4lunch.view.fragment.mapview;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import com.dimitri.remoiville.go4lunch.R;
 import com.dimitri.remoiville.go4lunch.event.AutocompleteEvent;
 import com.dimitri.remoiville.go4lunch.model.PlaceRestaurant;
 import com.dimitri.remoiville.go4lunch.model.User;
+import com.dimitri.remoiville.go4lunch.view.activity.DetailsPlaceActivity;
 import com.dimitri.remoiville.go4lunch.viewmodel.Injection;
 import com.dimitri.remoiville.go4lunch.viewmodel.MainViewModel;
 import com.dimitri.remoiville.go4lunch.viewmodel.SingletonCurrentUser;
@@ -33,11 +35,14 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.model.Place;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+
+import java.util.List;
 
 public class MapViewFragment extends Fragment
         implements
@@ -99,7 +104,7 @@ public class MapViewFragment extends Fragment
                     LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                     CameraUpdate update = CameraUpdateFactory.newLatLngZoom(currentLatLng, 15);
                     mMap.moveCamera(update);
-                    configureObserverPlacesRestaurants();
+                    addMarkersOnMap();
                 } else {
                     Toast.makeText(mContext, "Location not found", Toast.LENGTH_SHORT).show();
                 }
@@ -107,23 +112,47 @@ public class MapViewFragment extends Fragment
         }
     }
 
-    private void configureObserverPlacesRestaurants() {
-        mMainViewModel.getRestaurantsData(mCurrentLocation,radius,API_KEY).observe(getViewLifecycleOwner(), places -> {
-            for (int i = 0; i < places.size(); i++) {
-                LatLng position = new LatLng(places.get(i).getLat(), places.get(i).getLng());
-                if (currentUser.getRestaurantID() != null &&
-                        currentUser.getRestaurantID().equals(places.get(i).getPlaceId())) {
-                    mMap.addMarker(new MarkerOptions().position(position)
-                            .title(places.get(i).getName())
-                            .alpha(0.9f)
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
-                } else {
-                    mMap.addMarker(new MarkerOptions().position(position)
-                            .title(places.get(i).getName())
-                            .alpha(0.9f)
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+    private void addMarkersOnMap() {
+        // get users with a place ID != null
+        mMainViewModel.getUsersPlaceIDNotNull().observe(this, users -> {
+            // load restaurants nearby
+            mMainViewModel.getRestaurantsData(mCurrentLocation,radius,API_KEY).observe(getViewLifecycleOwner(), places -> {
+                for (int i = 0; i < places.size(); i++) {
+                    for (int j = 0; j < users.size(); j++) {
+                        if (places.get(i).getPlaceId().equals(users.get(j).getRestaurantID())) {
+                            places.get(i).getUserList().add(users.get(j));
+                        }
+                    }
                 }
-            }
+
+                for (int i = 0; i < places.size(); i++) {
+                    LatLng position = new LatLng(places.get(i).getLat(), places.get(i).getLng());
+                    MarkerOptions markerOptions = new MarkerOptions().position(position)
+                            .title(places.get(i).getName())
+                            .alpha(0.9f);
+
+                    if (currentUser.getRestaurantID() != null && currentUser.getRestaurantID().equals(places.get(i).getPlaceId())) {
+                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
+                    } else {
+                        if (places.get(i).getUserList().size() > 0) {
+                            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                        } else {
+                            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                        }
+                    }
+                    mMap.addMarker(markerOptions).setTag(places.get(i).getPlaceId());
+                }
+            });
+            configureClickOnMarker();
+        });
+    }
+
+    private void configureClickOnMarker() {
+        mMap.setOnMarkerClickListener(marker -> {
+            Intent intent = new Intent(mContext, DetailsPlaceActivity.class);
+            intent.putExtra("placeId", marker.getTag().toString());
+            startActivity(intent);
+            return false;
         });
     }
 
@@ -158,7 +187,8 @@ public class MapViewFragment extends Fragment
             mMap.addMarker(new MarkerOptions().position(position)
                     .title(place.getName())
                     .alpha(0.9f)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))
+            .setTag(place.getId());
 
             LatLng currentLatLng = new LatLng(place.getLatLng().latitude, place.getLatLng().longitude);
             CameraUpdate update = CameraUpdateFactory.newLatLngZoom(currentLatLng, 15);
