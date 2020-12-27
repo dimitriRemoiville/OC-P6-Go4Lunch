@@ -8,8 +8,10 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.dimitri.remoiville.go4lunch.model.Message;
 import com.dimitri.remoiville.go4lunch.model.PlaceRestaurant;
 import com.dimitri.remoiville.go4lunch.model.User;
+import com.dimitri.remoiville.go4lunch.source.repository.MessageFirestoreRepository;
 import com.dimitri.remoiville.go4lunch.source.repository.PlacesRepository;
 import com.dimitri.remoiville.go4lunch.source.repository.UserFirestoreRepository;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -25,21 +27,23 @@ public class MainViewModel extends ViewModel {
 
     private final PlacesRepository mPlacesRepository;
     private final UserFirestoreRepository mUserFirestoreRepository;
+    private final MessageFirestoreRepository mMessageFirestoreRepository;
 
     private MutableLiveData<List<PlaceRestaurant>> listRestaurants = new MutableLiveData<>();
     private MutableLiveData<PlaceRestaurant> restaurantDetails = new MutableLiveData<>();
 
-    private MutableLiveData<User> currentUser = new MutableLiveData<>();
-    private MutableLiveData<List<User>> usersMutableLiveData = new MutableLiveData<>();
-    private List<User> userList = new ArrayList<>();
+    private final MutableLiveData<User> currentUser = new MutableLiveData<>();
+    private final MutableLiveData<List<User>> usersMutableLiveData = new MutableLiveData<>();
+    private final List<User> users = new ArrayList<>();
 
     private static final String TAG = "MainViewModel";
 
 
     // Constructor
-    public MainViewModel(PlacesRepository placesRepository, UserFirestoreRepository userFirestoreRepository) {
+    public MainViewModel(PlacesRepository placesRepository, UserFirestoreRepository userFirestoreRepository, MessageFirestoreRepository messageFirestoreRepository) {
         this.mPlacesRepository = placesRepository;
         this.mUserFirestoreRepository = userFirestoreRepository;
+        this.mMessageFirestoreRepository = messageFirestoreRepository;
     }
 
     // API Places
@@ -99,12 +103,12 @@ public class MainViewModel extends ViewModel {
     private void createUsersList(@NonNull Task<QuerySnapshot> task) {
         if (task.isSuccessful()) {
             List<DocumentSnapshot> documents = task.getResult().getDocuments();
-            userList.clear();
+            users.clear();
             for (int i = 0; i < documents.size(); i++) {
                 User user = documents.get(i).toObject(User.class);
-                userList.add(user);
+                users.add(user);
             }
-            usersMutableLiveData.setValue(userList);
+            usersMutableLiveData.setValue(users);
         } else {
             Log.d(TAG, "Error getting documents: ", task.getException());
         }
@@ -117,7 +121,7 @@ public class MainViewModel extends ViewModel {
 
     // Update in the user collections where the user wants to go for the lunch
     public void updateLunchID(String userID, String placeID, String restaurantName) {
-        mUserFirestoreRepository.updateLunchID(userID,placeID,restaurantName);
+        mUserFirestoreRepository.updateLunchID(userID, placeID, restaurantName);
     }
 
     // Update the list of restaurant liked by the use
@@ -125,5 +129,13 @@ public class MainViewModel extends ViewModel {
         mUserFirestoreRepository.updateLikesList(userID, likesList);
     }
 
+    // Update the boolean who signal if a user subscribe to the notifications services
+    public void updateHasChosenNotification(String userID, boolean hasChosenNotification) {
+        mUserFirestoreRepository.updateHasChosenNotification(userID, hasChosenNotification);
+    }
 
+    // Delete the specified user
+    public Task<Void> deleteUser(String userID) {
+        return mUserFirestoreRepository.deleteUser(userID);
+    }
 }

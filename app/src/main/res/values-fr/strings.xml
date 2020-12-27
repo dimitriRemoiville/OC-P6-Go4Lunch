@@ -10,9 +10,17 @@
     <string name="title_workmates">Collègues</string>
     <string name="navigation_drawer_open">Ouvrir le volet de navigation</string>
     <string name="navigation_drawer_close">Fermer le volet de navigation</string>
-    <string name="action_settings">Réglages</string>
     <string name="menu_yourLunch">Ton déjeuner</string>
     <string name="menu_settings">Réglages</string>
     <string name="menu_logout">Déconnexion</string>
     <string name="nav_header_desc">En-tête de navigation</string>
+    <string name="notification_title">Votre déjeuner</string>
+    <string name="activity_details_message">Vous n\'avez pas encore sélectionné de restaurant</string>
+    <string name="website_txt">SITE INTERNET</string>
+    <string name="like_txt">J\'AIME</string>
+    <string name="call_txt">APPEL</string>
+    <string name="sort_title">Tri</string>
+    <string name="sort_distance">Distance</string>
+    <string name="sort_rating">Note</string>
+    <string name="sort_workmates">Collègue</string>
 </resources>

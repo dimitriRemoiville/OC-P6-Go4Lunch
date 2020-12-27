@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.activity.SettingsActivity">
+    tools:context=".view.activity.SettingsActivity"
+    android:id="@+id/settings_constraint_layout">
 
     <ImageView
         android:id="@+id/settings_profile_img"
@@ -67,9 +68,60 @@
             android:id="@+id/settings_email_input"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:maxLines="1"/>
+            android:maxLines="1" />
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/settings_layout_notif"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/settings_email_layout">
+
+        <TextView
+            android:id="@+id/settings_txt_notif"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:text="Notifications "
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/settings_switch_notif"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:checked="true"
+            android:switchMinWidth="32dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:switchPadding="@dimen/activity_horizontal_margin" />
+
+        <TextView
+            android:id="@+id/settings_txt2_notif"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="4dp"
+            android:text="Notifiy me eyery day with my lunch informations"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/settings_txt_notif"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+        </TextView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/settings_save_button"
@@ -77,9 +129,37 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/settings_email_layout"
+        app:layout_constraintTop_toBottomOf="@id/settings_layout_notif"
         android:layout_margin="@dimen/activity_horizontal_margin"
         android:text="Save changes">
+    </androidx.appcompat.widget.AppCompatButton>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/settings_reset_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/settings_save_button"
+        app:layout_constraintEnd_toStartOf="@id/settings_delete_account"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:text="Reset password">
+    </androidx.appcompat.widget.AppCompatButton>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/settings_delete_account"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/settings_reset_password"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/settings_save_button"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:text="Delete account">
     </androidx.appcompat.widget.AppCompatButton>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

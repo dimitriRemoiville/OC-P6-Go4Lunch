@@ -3,6 +3,8 @@ package com.dimitri.remoiville.go4lunch.view.fragment.workmates;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -20,10 +22,7 @@ import com.dimitri.remoiville.go4lunch.viewmodel.Injection;
 import com.dimitri.remoiville.go4lunch.viewmodel.MainViewModel;
 import com.dimitri.remoiville.go4lunch.viewmodel.SingletonCurrentUser;
 import com.dimitri.remoiville.go4lunch.viewmodel.ViewModelFactory;
-import com.google.firebase.auth.FirebaseAuth;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class WorkmatesFragment extends Fragment {
@@ -31,11 +30,19 @@ public class WorkmatesFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private Context mContext;
     private User currentUser;
-    private final List<User> mUsers = new ArrayList<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        MenuItem search = menu.findItem(R.id.action_search);
+        if(search!=null) {
+            search.setVisible(false);
+        }
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

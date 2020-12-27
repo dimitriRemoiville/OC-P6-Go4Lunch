@@ -95,7 +95,7 @@ public class PlacesRepository {
             @Override
             public void onResponse(Call<PlaceDetailsPOJO> call, Response<PlaceDetailsPOJO> response) {
                 PlaceRestaurant place = new PlaceRestaurant(response.body().getResult(), key);
-                restaurantDetail.setValue(place); ;
+                restaurantDetail.setValue(place);
             }
 
             @Override

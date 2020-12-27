@@ -13,25 +13,31 @@ public class User {
     private List<String> mLikesList;
     private String mRestaurantID;
     private String mRestaurantName;
+    private boolean mHasChosenNotification;
 
-    private String defaultURLPicture = "https://firebasestorage.googleapis.com/v0/b/go4lunch-63219/o/default_picture.png?alt=media&token=421a8985-e6ce-4d7c-a0cb-da1d2bc93799";
+    private final String defaultURLPicture = "https://firebasestorage.googleapis.com/v0/b/go4lunch-ee885.appspot.com/o/avatars%2Fdefault%2Fdefault_picture.jpg?alt=media&token=8c100d65-cb26-4c6f-8319-470ac3627c42";
 
     public User() {
     }
 
-    public User(String userID, String firstName, String lastName, String mail) {
+    public User(String userID, String firstName, String lastName, String mail, String photoURL) {
         mUserID = userID;
         mFirstName = firstName;
         mLastName = lastName;
         mMail = mail;
-        mURLProfilePicture = randomImage();
+        if (photoURL == null) {
+            mURLProfilePicture = randomImage();
+        } else {
+            mURLProfilePicture = photoURL;
+        }
         mLikesList = new ArrayList<>();
         mRestaurantID = null;
         mRestaurantName = null;
+        mHasChosenNotification = false;
     }
 
 
-    public User(String userID, String firstName, String lastName, String mail, String URLProfilePicture, List<String> likesList, String restaurantID, String restaurantName) {
+    public User(String userID, String firstName, String lastName, String mail, String URLProfilePicture, List<String> likesList, String restaurantID, String restaurantName, boolean hasChosenNotification) {
         mUserID = userID;
         mFirstName = firstName;
         mLastName = lastName;
@@ -40,6 +46,7 @@ public class User {
         mLikesList = likesList;
         mRestaurantID = restaurantID;
         mRestaurantName = restaurantName;
+        mHasChosenNotification = hasChosenNotification;
     }
 
     public String getUserID() {
@@ -104,6 +111,14 @@ public class User {
 
     public void setRestaurantName(String restaurantName) {
         mRestaurantName = restaurantName;
+    }
+
+    public boolean hasChosenNotification() {
+        return mHasChosenNotification;
+    }
+
+    public void setHasChosenNotification(boolean hasChosenNotification) {
+        mHasChosenNotification = hasChosenNotification;
     }
 
     @Override

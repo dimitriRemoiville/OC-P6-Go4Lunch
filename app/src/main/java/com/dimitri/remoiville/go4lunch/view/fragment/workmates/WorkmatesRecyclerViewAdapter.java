@@ -41,7 +41,6 @@ public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<Workmates
         String workmateTxt = user.getFirstName();
         if (user.getRestaurantID() != null) {
             workmateTxt = workmateTxt + " is eating at " + user.getRestaurantName();
-            // TODO
         } else {
             workmateTxt = workmateTxt + " hasn't decided yet";
             int grey = ContextCompat.getColor(holder.itemView.getContext(), R.color.colorTextGrey);

@@ -63,8 +63,11 @@ public class UserFirestoreRepository {
         return getUsersCollection().document(userID).update("likesList", likesList);
     }
 
+    public Task<Void> updateHasChosenNotification(String userID, boolean HasChosenNotification) {
+        return getUsersCollection().document(userID).update("hasChosenNotification", HasChosenNotification);
+    }
 
-    // Delete
+    // Delete a specific user
     public Task<Void> deleteUser(String userID) {
         return getUsersCollection().document(userID).delete();
     }

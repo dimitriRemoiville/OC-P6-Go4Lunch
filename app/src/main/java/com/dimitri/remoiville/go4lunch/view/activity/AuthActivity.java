@@ -1,19 +1,15 @@
 package com.dimitri.remoiville.go4lunch.view.activity;
 
-import android.content.DialogInterface;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.InputType;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.dimitri.remoiville.go4lunch.R;
@@ -38,6 +34,7 @@ public class AuthActivity extends AppCompatActivity {
     private ConstraintLayout constraintLayout;
     private ActivityAuthBinding mBinding;
     private MainViewModel mMainViewModel;
+    private Context mContext;
 
     private static final String TAG = "AuthActivity";
 
@@ -48,6 +45,7 @@ public class AuthActivity extends AppCompatActivity {
         View view = mBinding.getRoot();
         setContentView(view);
         constraintLayout = mBinding.activityAuth;
+        mContext = view.getContext();
         configureViewModel();
 
         // Launch authentication screen
@@ -105,17 +103,21 @@ public class AuthActivity extends AppCompatActivity {
     private void managingCurrentUser() {
         Log.d(TAG, "managingCurrentUser: ");
 
-        mMainViewModel.getCurrentUser(FirebaseAuth.getInstance().getUid()).observe(this, user -> {
-            if (user == null) {
-                FirebaseUser fUser = getCurrentUserFirebase();
-                User userToCreate = new User(fUser.getUid(), fUser.getDisplayName(), fUser.getDisplayName(), fUser.getEmail());
-                mMainViewModel.createNewUser(userToCreate);
-                SingletonCurrentUser.getInstance().setCurrentUser(userToCreate);
-                Toast.makeText(this, "Please enter your name in the settings", Toast.LENGTH_LONG).show();
-                SettingsActivity.navigate(this);
-            } else {
-                SingletonCurrentUser.getInstance().setCurrentUser(user);
-                MainActivity.navigate(this);
+        mMainViewModel.getCurrentUser(FirebaseAuth.getInstance().getUid()).observe(this, new Observer<User>() {
+            @Override
+            public void onChanged(User user) {
+                if (user == null) {
+                    FirebaseUser fUser = getCurrentUserFirebase();
+                    User userToCreate = new User(fUser.getUid(), null, fUser.getDisplayName(), fUser.getEmail(), fUser.getPhotoUrl().toString());
+                    mMainViewModel.createNewUser(userToCreate);
+                    SingletonCurrentUser.getInstance().setCurrentUser(userToCreate);
+                    Intent intent = new Intent(mContext, SettingsActivity.class);
+                    intent.putExtra("creation", true);
+                    startActivity(intent);
+                } else {
+                    SingletonCurrentUser.getInstance().setCurrentUser(user);
+                    MainActivity.navigate(AuthActivity.this);
+                }
             }
         });
     }

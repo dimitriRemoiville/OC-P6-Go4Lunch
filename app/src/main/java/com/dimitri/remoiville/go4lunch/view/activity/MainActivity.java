@@ -31,19 +31,16 @@ import com.dimitri.remoiville.go4lunch.BuildConfig;
 import com.dimitri.remoiville.go4lunch.R;
 import com.dimitri.remoiville.go4lunch.databinding.ActivityMainBinding;
 import com.dimitri.remoiville.go4lunch.event.AutocompleteEvent;
-import com.dimitri.remoiville.go4lunch.model.PlaceRestaurant;
 import com.dimitri.remoiville.go4lunch.model.User;
+import com.dimitri.remoiville.go4lunch.view.activity.chat.ChatActivity;
 import com.dimitri.remoiville.go4lunch.viewmodel.Injection;
 import com.dimitri.remoiville.go4lunch.viewmodel.MainViewModel;
 import com.dimitri.remoiville.go4lunch.viewmodel.SingletonCurrentUser;
 import com.dimitri.remoiville.go4lunch.viewmodel.ViewModelFactory;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.api.model.TypeFilter;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
@@ -55,7 +52,6 @@ import com.google.android.material.navigation.NavigationView;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
@@ -66,10 +62,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ActivityMainBinding mBinding;
     private DrawerLayout drawer;
     private Context mContext;
-    private NavController navControllerBottom;
+    private NavController navController;
     private AppBarConfiguration bottomNavigationBar;
     private MainViewModel mMainViewModel;
     private MenuItem searchItem;
+    private MenuItem chatItem;
 
     private final String API_KEY = BuildConfig.API_KEY;
     private final int REQUEST_LOCATION_PERMISSION = 1;
@@ -87,10 +84,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(view);
         setSupportActionBar(mBinding.appBarMain.toolbar);
         mContext = view.getContext();
-        navControllerBottom = Navigation.findNavController(this, R.id.nav_host_fragment);
+        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         // Initialize Place SDK
         Places.initialize(getApplicationContext(), API_KEY);
-
         // Create a new PlacesClient instance
         PlacesClient placesClient = Places.createClient(this);
 
@@ -133,18 +129,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public boolean onSupportNavigateUp() {
-        navControllerBottom = Navigation.findNavController(this, R.id.nav_host_fragment);
-        return NavigationUI.navigateUp(navControllerBottom, bottomNavigationBar)
-                || super.onSupportNavigateUp();
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.action_bar_menu, menu);
         // Retrieve the SearchView and plug it into SearchManager
         searchItem = menu.findItem(R.id.action_search);
+        chatItem = menu.findItem(R.id.action_chat);
         configureAutocomplete();
+        configureChatItemClick();
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -153,8 +144,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         bottomNavigationBar = new AppBarConfiguration.Builder(
                 R.id.nav_mapview, R.id.nav_listview, R.id.nav_workmates)
                 .build();
-        NavigationUI.setupActionBarWithNavController(this, navControllerBottom, bottomNavigationBar);
-        NavigationUI.setupWithNavController(navView, navControllerBottom);
+        NavigationUI.setupActionBarWithNavController(this, navController, bottomNavigationBar);
+        NavigationUI.setupWithNavController(navView, navController);
     }
 
     private void initDrawerNavigation() {
@@ -163,36 +154,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        // Handle navigation view item clicks here.
-        if (item.getItemId() == R.id.nav_logout) {
-            logOut();
-        }
-        if (item.getItemId() == R.id.nav_settings) {
-            SettingsActivity.navigate(this);
-        }
-        if (item.getItemId() == R.id.nav_yourLunch) {
-            Intent intent = new Intent(this, DetailsPlaceActivity.class);
-            intent.putExtra("placeId", mCurrentUser.getRestaurantID());
-            startActivity(intent);
-        }
-        //close navigation drawer
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
+        mBinding.navViewDrawer.setNavigationItemSelectedListener(this);
     }
 
     private void logOut() {
         AuthUI.getInstance()
                 .signOut(this)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        startActivity(new Intent(mContext, AuthActivity.class));
-                        finish();
-                    }
+                .addOnCompleteListener(task -> {
+                    startActivity(new Intent(mContext, AuthActivity.class));
+                    finish();
                 });
     }
 
@@ -233,6 +203,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
+    private void configureChatItemClick() {
+        chatItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Intent intent = new Intent(mContext, ChatActivity.class);
+                startActivity(intent);
+                return false;
+            }
+        });
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
@@ -256,5 +237,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static void navigate(FragmentActivity activity) {
         Intent intent = new Intent(activity, MainActivity.class);
         ActivityCompat.startActivity(activity, intent, null);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.nav_logout) {
+            logOut();
+        }
+        if (item.getItemId() == R.id.nav_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            intent.putExtra("creation", false);
+            startActivity(intent);
+        }
+        if (item.getItemId() == R.id.nav_yourLunch) {
+            Intent intent = new Intent(this, DetailsPlaceActivity.class);
+            intent.putExtra("placeId", mCurrentUser.getRestaurantID());
+            startActivity(intent);
+        }
+        //close navigation drawer
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 }

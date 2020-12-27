@@ -1,4 +1,4 @@
-package com.dimitri.remoiville.go4lunch.notifications;
+package com.dimitri.remoiville.go4lunch.services;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -34,8 +34,8 @@ public class NotificationsService extends FirebaseMessagingService {
     private final String NOTIFICATION_TAG = "GO4LUNCH";
     private final String API_KEY = BuildConfig.API_KEY;
 
-    private PlacesRepository placesRepository = new PlacesRepository();
-    private UserFirestoreRepository userFirestoreRepository = new UserFirestoreRepository();
+    private final PlacesRepository placesRepository = new PlacesRepository();
+    private final UserFirestoreRepository userFirestoreRepository = new UserFirestoreRepository();
 
     private User currentUser;
 
@@ -49,28 +49,36 @@ public class NotificationsService extends FirebaseMessagingService {
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
-        setCurrentUser();
-        if (remoteMessage.getNotification() != null && currentUser != null) {
-            if (remoteMessage.getNotification().getTitle() != null) {
-                String title = remoteMessage.getNotification().getTitle();
-                if (title.equals("Today lunch") && currentUser.getRestaurantID() != null) {
-                    getRestaurantDetails(currentUser.getRestaurantID());
-                }
-            }
-        }
-    }
-
-    @Override
-    public void onNewToken(@NonNull String s) {
-        super.onNewToken(s);
-    }
-
-    private void setCurrentUser() {
+        // set current user
         userFirestoreRepository.getUser(FirebaseAuth.getInstance().getUid()).addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
                 currentUser = documentSnapshot.toObject(User.class);
+                if (remoteMessage.getNotification() != null && currentUser != null) {
+                    if (remoteMessage.getNotification().getTitle() != null) {
+                        String title = remoteMessage.getNotification().getTitle();
+                        if (title.equals("Today lunch") && currentUser.getRestaurantID() != null) {
+                            getRestaurantDetails(currentUser.getRestaurantID());
+                        }
+                    }
+                }
             } else {
                 currentUser = null;
+            }
+        });
+    }
+
+    private void getRestaurantDetails(String placeId) {
+        Call<PlaceDetailsPOJO> restaurantDetailsPOJOOut = ServicePlacesApiGenerator.getRequestGoogleApi().getPlaceDetails(placeId,API_KEY);
+        restaurantDetailsPOJOOut.enqueue(new Callback<PlaceDetailsPOJO>() {
+            @Override
+            public void onResponse(Call<PlaceDetailsPOJO> call, Response<PlaceDetailsPOJO> response) {
+                PlaceRestaurant currentPlace = new PlaceRestaurant(response.body().getResult(), API_KEY);
+                sendNotification(currentPlace);
+            }
+
+            @Override
+            public void onFailure(Call<PlaceDetailsPOJO> call, Throwable t) {
+                Log.d(TAG, "onFailure: Error call API Places Details " + t.getMessage());
             }
         });
     }
@@ -108,8 +116,8 @@ public class NotificationsService extends FirebaseMessagingService {
         // Create the notification channel Version >= Android 8
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence channelName = "Channel Go4Lunch";
-            String description = "Today lunch Go4Lunch";
+            CharSequence channelName = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel(channelId, channelName, importance);
             channel.setDescription(description);
@@ -118,21 +126,5 @@ public class NotificationsService extends FirebaseMessagingService {
 
         // Show notification
         notificationManager.notify(NOTIFICATION_TAG, NOTIFICATION_ID, notificationBuilder.build());
-    }
-
-    private void getRestaurantDetails(String placeId) {
-        Call<PlaceDetailsPOJO> restaurantDetailsPOJOOut = ServicePlacesApiGenerator.getRequestGoogleApi().getPlaceDetails(placeId,API_KEY);
-        restaurantDetailsPOJOOut.enqueue(new Callback<PlaceDetailsPOJO>() {
-            @Override
-            public void onResponse(Call<PlaceDetailsPOJO> call, Response<PlaceDetailsPOJO> response) {
-                PlaceRestaurant currentPlace = new PlaceRestaurant(response.body().getResult(), API_KEY);
-                sendNotification(currentPlace);
-            }
-
-            @Override
-            public void onFailure(Call<PlaceDetailsPOJO> call, Throwable t) {
-                Log.d(TAG, "onFailure: Error call API Places Details " + t.getMessage());
-            }
-        });
     }
 }
