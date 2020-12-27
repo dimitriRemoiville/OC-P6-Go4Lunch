@@ -170,34 +170,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void configureAutocomplete() {
-        searchItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                // Set the fields to specify which types of place data to
-                // return after the user has made a selection.
-                List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS,
-                        Place.Field.LAT_LNG, Place.Field.RATING, Place.Field.PHOTO_METADATAS, Place.Field.WEBSITE_URI);
+        searchItem.setOnMenuItemClickListener(item -> {
+            // Set the fields to specify which types of place data to
+            // return after the user has made a selection.
+            List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS,
+                    Place.Field.LAT_LNG, Place.Field.RATING, Place.Field.PHOTO_METADATAS, Place.Field.WEBSITE_URI);
 
-                // Start the autocomplete intent.
-                Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
-                        .setCountry("AU")
-                        .setTypeFilter(TypeFilter.ESTABLISHMENT)
-                        .build(mContext);
-                startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
+            // Start the autocomplete intent.
+            Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
+                    .setCountry("AU")
+                    .setTypeFilter(TypeFilter.ESTABLISHMENT)
+                    .build(mContext);
+            startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
 
-                return false;
-            }
+            return false;
         });
     }
 
     private void configureChatItemClick() {
-        chatItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                Intent intent = new Intent(mContext, ChatActivity.class);
-                startActivity(intent);
-                return false;
-            }
+        chatItem.setOnMenuItemClickListener(item -> {
+            Intent intent = new Intent(mContext, ChatActivity.class);
+            startActivity(intent);
+            return false;
         });
     }
 

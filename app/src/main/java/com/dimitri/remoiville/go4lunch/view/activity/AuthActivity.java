@@ -3,13 +3,11 @@ package com.dimitri.remoiville.go4lunch.view.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.dimitri.remoiville.go4lunch.R;
@@ -35,8 +33,6 @@ public class AuthActivity extends AppCompatActivity {
     private ActivityAuthBinding mBinding;
     private MainViewModel mMainViewModel;
     private Context mContext;
-
-    private static final String TAG = "AuthActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,23 +97,18 @@ public class AuthActivity extends AppCompatActivity {
 
 
     private void managingCurrentUser() {
-        Log.d(TAG, "managingCurrentUser: ");
-
-        mMainViewModel.getCurrentUser(FirebaseAuth.getInstance().getUid()).observe(this, new Observer<User>() {
-            @Override
-            public void onChanged(User user) {
-                if (user == null) {
-                    FirebaseUser fUser = getCurrentUserFirebase();
-                    User userToCreate = new User(fUser.getUid(), null, fUser.getDisplayName(), fUser.getEmail(), fUser.getPhotoUrl().toString());
-                    mMainViewModel.createNewUser(userToCreate);
-                    SingletonCurrentUser.getInstance().setCurrentUser(userToCreate);
-                    Intent intent = new Intent(mContext, SettingsActivity.class);
-                    intent.putExtra("creation", true);
-                    startActivity(intent);
-                } else {
-                    SingletonCurrentUser.getInstance().setCurrentUser(user);
-                    MainActivity.navigate(AuthActivity.this);
-                }
+        mMainViewModel.getCurrentUser(FirebaseAuth.getInstance().getUid()).observe(this, user -> {
+            if (user == null) {
+                FirebaseUser fUser = getCurrentUserFirebase();
+                User userToCreate = new User(fUser.getUid(), null, fUser.getDisplayName(), fUser.getEmail(), fUser.getPhotoUrl().toString());
+                mMainViewModel.createNewUser(userToCreate);
+                SingletonCurrentUser.getInstance().setCurrentUser(userToCreate);
+                Intent intent = new Intent(mContext, SettingsActivity.class);
+                intent.putExtra("creation", true);
+                startActivity(intent);
+            } else {
+                SingletonCurrentUser.getInstance().setCurrentUser(user);
+                MainActivity.navigate(AuthActivity.this);
             }
         });
     }

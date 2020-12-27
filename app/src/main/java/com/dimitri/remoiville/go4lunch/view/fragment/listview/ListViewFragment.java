@@ -30,10 +30,8 @@ import com.dimitri.remoiville.go4lunch.viewmodel.SingletonCurrentUser;
 import com.dimitri.remoiville.go4lunch.viewmodel.ViewModelFactory;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.net.FetchPhotoRequest;
-import com.google.android.libraries.places.api.net.FetchPhotoResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
 
 import org.greenrobot.eventbus.EventBus;
@@ -94,13 +92,10 @@ public class ListViewFragment extends Fragment
     private void getLocation() {
         FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext);
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    if (location != null) {
-                        mCurrentLocation = location;
-                        configureObserverPlacesRestaurants();
-                    }
+            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(location -> {
+                if (location != null) {
+                    mCurrentLocation = location;
+                    configureObserverPlacesRestaurants();
                 }
             });
         }
@@ -164,14 +159,11 @@ public class ListViewFragment extends Fragment
         final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(event.place.getPhotoMetadatas().get(0))
                 .setMaxWidth(400)
                 .build();
-        mPlacesClient.fetchPhoto(photoRequest).addOnSuccessListener(new OnSuccessListener<FetchPhotoResponse>() {
-            @Override
-            public void onSuccess(FetchPhotoResponse fetchPhotoResponse) {
-                Bitmap bitmap = fetchPhotoResponse.getBitmap();
-                List<PlaceRestaurant> placeRestaurants = new ArrayList<>();
-                placeRestaurants.add(placeRestaurant);
-                initListAutocomplete(placeRestaurants, bitmap);
-            }
+        mPlacesClient.fetchPhoto(photoRequest).addOnSuccessListener(fetchPhotoResponse -> {
+            Bitmap bitmap = fetchPhotoResponse.getBitmap();
+            List<PlaceRestaurant> placeRestaurants = new ArrayList<>();
+            placeRestaurants.add(placeRestaurant);
+            initListAutocomplete(placeRestaurants, bitmap);
         });
     }
 }

@@ -13,7 +13,6 @@ import com.dimitri.remoiville.go4lunch.model.User;
 import com.dimitri.remoiville.go4lunch.source.repository.MessageFirestoreRepository;
 import com.dimitri.remoiville.go4lunch.source.repository.PlacesRepository;
 import com.dimitri.remoiville.go4lunch.source.repository.UserFirestoreRepository;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -67,12 +66,7 @@ public class MainViewModel extends ViewModel {
 
 
         })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        currentUser.setValue(null);
-                    }
-                });
+                .addOnFailureListener(e -> currentUser.setValue(null));
         return currentUser;
     }
 

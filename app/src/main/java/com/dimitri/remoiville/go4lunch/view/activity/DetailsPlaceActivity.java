@@ -39,7 +39,6 @@ public class DetailsPlaceActivity extends AppCompatActivity {
     private String mPlaceID;
     private RecyclerView mRecyclerView;
     private Context mContext;
-    private static final String TAG = "DetailsPlaceActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,25 +108,20 @@ public class DetailsPlaceActivity extends AppCompatActivity {
     }
 
     private void updateUI(PlaceRestaurant place) {
-        Log.d(TAG, "onCreate: place.getUrlPicture() " + place.getUrlPicture());
         Glide.with(this)
                 .load(place.getUrlPicture())
                 .into(mBinding.activityDetailsImg);
 
         mBinding.activityDetailsName.setText(place.getName());
-        Log.d(TAG, "onCreate: place.getRating() " + place.getRating());
         switch (place.getRating()) {
             case 1:
                 mBinding.activityDetailsStar1.setVisibility(View.VISIBLE);
-                Log.d(TAG, "onCreate: place.getRating() 1 " + place.getRating());
                 break;
             case 2:
                 mBinding.activityDetailsStar1.setVisibility(View.VISIBLE);
                 mBinding.activityDetailsStar2.setVisibility(View.VISIBLE);
-                Log.d(TAG, "onCreate: place.getRating() 2 " + place.getRating());
                 break;
             case 3:
-                Log.d(TAG, "onCreate: place.getRating() 3 " + place.getRating());
                 mBinding.activityDetailsStar1.setVisibility(View.VISIBLE);
                 mBinding.activityDetailsStar2.setVisibility(View.VISIBLE);
                 mBinding.activityDetailsStar3.setVisibility(View.VISIBLE);

@@ -5,7 +5,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,7 +15,6 @@ import com.dimitri.remoiville.go4lunch.model.User;
 import com.dimitri.remoiville.go4lunch.source.repository.MessageFirestoreRepository;
 import com.dimitri.remoiville.go4lunch.viewmodel.SingletonCurrentUser;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.firestore.Query;
 
 public class ChatActivity extends AppCompatActivity {
@@ -52,20 +50,12 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void onClickSendMessage() {
-        mBinding.messageSendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!TextUtils.isEmpty(mBinding.messageEditText.getText())) {
-                    // SEND A TEXT MESSAGE
-                    mMessageFirestoreRepository.createMessageForChat(mBinding.messageEditText.getText().toString(), mCurrentUser)
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.d(TAG, "onFailure: " + e.getMessage());
-                                }
-                            });
-                    mBinding.messageEditText.setText("");
-                }
+        mBinding.messageSendButton.setOnClickListener(v -> {
+            if (!TextUtils.isEmpty(mBinding.messageEditText.getText())) {
+                // SEND A TEXT MESSAGE
+                mMessageFirestoreRepository.createMessageForChat(mBinding.messageEditText.getText().toString(), mCurrentUser)
+                        .addOnFailureListener(e -> Log.d(TAG, "onFailure: " + e.getMessage()));
+                mBinding.messageEditText.setText("");
             }
         });
     }
