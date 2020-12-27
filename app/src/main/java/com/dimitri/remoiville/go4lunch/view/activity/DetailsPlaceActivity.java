@@ -33,10 +33,10 @@ public class DetailsPlaceActivity extends AppCompatActivity {
     private ActivityDetailsPlaceBinding mBinding;
     private MainViewModel mMainViewModel;
     private final String API_KEY = BuildConfig.API_KEY;
-    private User currentUser;
-    private boolean lunchBooked = false;
-    private boolean favoriteRestaurant = false;
-    private String placeID;
+    private User mCurrentUser;
+    private boolean mLunchBooked = false;
+    private boolean mFavoriteRestaurant = false;
+    private String mPlaceID;
     private RecyclerView mRecyclerView;
     private Context mContext;
     private static final String TAG = "DetailsPlaceActivity";
@@ -56,22 +56,22 @@ public class DetailsPlaceActivity extends AppCompatActivity {
         configureViewModel();
 
         // place to display
-        placeID = getIntent().getStringExtra("placeId");
+        mPlaceID = getIntent().getStringExtra("placeId");
 
-        if (placeID == null) {
+        if (mPlaceID == null) {
             mBinding.activityDetailsMessage.setVisibility(View.VISIBLE);
             mBinding.activityDetailsScrollview.setVisibility(View.INVISIBLE);
         } else {
             mBinding.activityDetailsMessage.setVisibility(View.INVISIBLE);
             mBinding.activityDetailsScrollview.setVisibility(View.VISIBLE);
             // get the current user
-            currentUser = SingletonCurrentUser.getInstance().getCurrentUser();
+            mCurrentUser = SingletonCurrentUser.getInstance().getCurrentUser();
             // start display
             startDisplay();
             // get place details
-            mMainViewModel.getRestaurantDetailsData(placeID, API_KEY)
+            mMainViewModel.getRestaurantDetailsData(mPlaceID, API_KEY)
                     .observe(this, place -> {
-                        place.setPlaceId(placeID);
+                        place.setPlaceId(mPlaceID);
                         updateUI(place);
                     });
 
@@ -86,22 +86,22 @@ public class DetailsPlaceActivity extends AppCompatActivity {
     private void startDisplay() {
 
         // Booking action button
-        if (currentUser.getRestaurantID() != null && currentUser.getRestaurantID().equals(placeID)) {
+        if (mCurrentUser.getRestaurantID() != null && mCurrentUser.getRestaurantID().equals(mPlaceID)) {
             mBinding.activityDetailsActBtn.setImageResource(R.drawable.check_circle_green_24);
-            lunchBooked = true;
+            mLunchBooked = true;
         } else {
             mBinding.activityDetailsActBtn.setImageResource(R.drawable.check_circle_outline_grey_24);
-            lunchBooked = false;
+            mLunchBooked = false;
         }
 
         // like button
-        for (int i = 0; i < currentUser.getLikesList().size(); i++) {
-            if (currentUser.getLikesList().get(i).equals(placeID)) {
+        for (int i = 0; i < mCurrentUser.getLikesList().size(); i++) {
+            if (mCurrentUser.getLikesList().get(i).equals(mPlaceID)) {
                 mBinding.activityDetailsLikeImg.setImageResource(R.drawable.star_orange_24);
-                favoriteRestaurant = true;
+                mFavoriteRestaurant = true;
             }
         }
-        if (!favoriteRestaurant) {
+        if (!mFavoriteRestaurant) {
             mBinding.activityDetailsLikeImg.setImageResource(R.drawable.star_border_orange_24);
         }
 
@@ -137,17 +137,17 @@ public class DetailsPlaceActivity extends AppCompatActivity {
         mBinding.activityDetailsAddress.setText(place.getAddress());
 
         mBinding.activityDetailsActBtn.setOnClickListener(v -> {
-            if (lunchBooked) {
-                currentUser.setRestaurantID(null);
-                currentUser.setRestaurantName(null);
-                mMainViewModel.updateLunchID(currentUser.getUserID(), null, null);
-                lunchBooked = false;
+            if (mLunchBooked) {
+                mCurrentUser.setRestaurantID(null);
+                mCurrentUser.setRestaurantName(null);
+                mMainViewModel.updateLunchID(mCurrentUser.getUserID(), null, null);
+                mLunchBooked = false;
                 mBinding.activityDetailsActBtn.setImageResource(R.drawable.check_circle_outline_grey_24);
             } else {
-                currentUser.setRestaurantID(place.getPlaceId());
-                currentUser.setRestaurantName(place.getName());
-                mMainViewModel.updateLunchID(currentUser.getUserID(), place.getPlaceId(), place.getName());
-                lunchBooked = true;
+                mCurrentUser.setRestaurantID(place.getPlaceId());
+                mCurrentUser.setRestaurantName(place.getName());
+                mMainViewModel.updateLunchID(mCurrentUser.getUserID(), place.getPlaceId(), place.getName());
+                mLunchBooked = true;
                 mBinding.activityDetailsActBtn.setImageResource(R.drawable.check_circle_green_24);
             }
         });
@@ -161,21 +161,21 @@ public class DetailsPlaceActivity extends AppCompatActivity {
         });
 
         mBinding.activityDetailsLikeImg.setOnClickListener(v -> {
-            if (favoriteRestaurant) {
-                for (int i = 0; i < currentUser.getLikesList().size(); i++) {
-                    if (currentUser.getLikesList().get(i).equals(placeID)) {
-                        currentUser.getLikesList().remove(i);
-                        mMainViewModel.updateLikesList(currentUser.getUserID(), currentUser.getLikesList());
+            if (mFavoriteRestaurant) {
+                for (int i = 0; i < mCurrentUser.getLikesList().size(); i++) {
+                    if (mCurrentUser.getLikesList().get(i).equals(mPlaceID)) {
+                        mCurrentUser.getLikesList().remove(i);
+                        mMainViewModel.updateLikesList(mCurrentUser.getUserID(), mCurrentUser.getLikesList());
                         mBinding.activityDetailsLikeImg.setImageResource(R.drawable.star_border_orange_24);
-                        favoriteRestaurant = false;
+                        mFavoriteRestaurant = false;
                     }
                 }
 
             } else {
-                currentUser.getLikesList().add(placeID);
-                mMainViewModel.updateLikesList(currentUser.getUserID(), currentUser.getLikesList());
+                mCurrentUser.getLikesList().add(mPlaceID);
+                mMainViewModel.updateLikesList(mCurrentUser.getUserID(), mCurrentUser.getLikesList());
                 mBinding.activityDetailsLikeImg.setImageResource(R.drawable.star_orange_24);
-                favoriteRestaurant = true;
+                mFavoriteRestaurant = true;
             }
         });
 
@@ -191,8 +191,8 @@ public class DetailsPlaceActivity extends AppCompatActivity {
     }
 
     private void loadWorkmatesLists() {
-        mMainViewModel.getUsersWithPlaceID(placeID).observe(this, users -> {
-            String uid = currentUser.getUserID();
+        mMainViewModel.getUsersWithPlaceID(mPlaceID).observe(this, users -> {
+            String uid = mCurrentUser.getUserID();
             for (int i = 0; i < users.size(); i++) {
                 if (users.get(i).getUserID().equals(uid)
                         || users.get(i).getFirstName() == null

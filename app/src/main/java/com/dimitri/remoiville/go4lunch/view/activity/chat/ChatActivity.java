@@ -24,7 +24,7 @@ public class ChatActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private ActivityChatBinding mBinding;
     private ChatActivityRecyclerViewAdapter mChatActivityRecyclerViewAdapter;
-    private MessageFirestoreRepository mMessageFirestoreRepository = new MessageFirestoreRepository();
+    private final MessageFirestoreRepository mMessageFirestoreRepository = new MessageFirestoreRepository();
     private User mCurrentUser;
     private static final String TAG = "ChatActivity";
 

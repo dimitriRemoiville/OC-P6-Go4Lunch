@@ -41,7 +41,7 @@ public class SettingsActivity extends AppCompatActivity {
     private final Pattern pattern = Pattern.compile(EMAIL_PATTERN);
     private ConstraintLayout constraintLayout;
     private Context mContext;
-    private boolean isCreation;
+    private boolean mIsCreation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,11 +54,11 @@ public class SettingsActivity extends AppCompatActivity {
         configureViewModel();
 
         // is it the first connexion
-        isCreation = getIntent().getBooleanExtra("creation", false);
+        mIsCreation = getIntent().getBooleanExtra("creation", false);
 
         mCurrentUser = SingletonCurrentUser.getInstance().getCurrentUser();
 
-        if (isCreation) {
+        if (mIsCreation) {
             setFirstConnexionUI();
         } else {
             setSettingsUI();
@@ -72,7 +72,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         updateUserData();
 
-        if (!isCreation) {
+        if (!mIsCreation) {
             sendPasswordResetEmail();
             deleteUserOnClick();
         }
@@ -142,7 +142,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         if (mBinding.settingsSwitchNotif.isChecked() != mCurrentUser.hasChosenNotification()) {
             if (mBinding.settingsSwitchNotif.isChecked()) {
-                subcribeToTopic();
+                subscribeToTopic();
             } else {
                 unsubscribeToTopic();
             }
@@ -154,7 +154,7 @@ public class SettingsActivity extends AppCompatActivity {
         finish();
     }
 
-    private void subcribeToTopic() {
+    private void subscribeToTopic() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             String channelId = getString(R.string.default_notification_channel_id);
@@ -188,9 +188,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void deleteUserOnClick() {
-        mBinding.settingsDeleteAccount.setOnClickListener(v -> {
-            deleteUserWithAlert();
-        });
+        mBinding.settingsDeleteAccount.setOnClickListener(v -> deleteUserWithAlert());
     }
 
     private void deleteUserWithAlert() {
@@ -226,7 +224,7 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        if (isCreation) {
+        if (mIsCreation) {
             deleteUser();
             startActivity(new Intent(mContext, AuthActivity.class));
             finish();

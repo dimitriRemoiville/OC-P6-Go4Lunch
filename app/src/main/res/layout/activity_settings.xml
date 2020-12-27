@@ -18,7 +18,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="@dimen/activity_vertical_margin"/>
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:contentDescription="@string/description_settings_profile_picture" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/settings_last_name_layout"
@@ -27,7 +28,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/settings_profile_img"
         android:layout_margin="@dimen/activity_horizontal_margin"
-        android:hint="Last name">
+        android:hint="@string/settings_hint_last_name">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/settings_last_name_input"
@@ -45,7 +46,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/settings_last_name_layout"
         android:layout_margin="@dimen/activity_horizontal_margin"
-        android:hint="First name">
+        android:hint="@string/settings_hint_first_name">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/settings_first_name_input"
@@ -62,7 +63,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/settings_first_name_layout"
         android:layout_margin="@dimen/activity_horizontal_margin"
-        android:hint="Email">
+        android:hint="@string/settings_hint_email">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/settings_email_input"
@@ -87,7 +88,7 @@
             android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:layout_marginTop="@dimen/activity_horizontal_margin"
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
-            android:text="Notifications "
+            android:text="@string/settings_title_notifications"
             android:textColor="@android:color/black"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
@@ -113,7 +114,7 @@
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
             android:layout_marginBottom="@dimen/activity_horizontal_margin"
             android:layout_marginTop="4dp"
-            android:text="Notifiy me eyery day with my lunch informations"
+            android:text="@string/settings_description_notifications_switch"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/settings_txt_notif"
             app:layout_constraintBottom_toBottomOf="parent">
@@ -131,7 +132,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/settings_layout_notif"
         android:layout_margin="@dimen/activity_horizontal_margin"
-        android:text="Save changes">
+        android:text="@string/settings_button_save">
     </androidx.appcompat.widget.AppCompatButton>
 
     <androidx.appcompat.widget.AppCompatButton
@@ -145,7 +146,7 @@
         android:layout_marginStart="@dimen/activity_horizontal_margin"
         android:layout_marginBottom="@dimen/activity_horizontal_margin"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:text="Reset password">
+        android:text="@string/settings_button_reset_password">
     </androidx.appcompat.widget.AppCompatButton>
 
     <androidx.appcompat.widget.AppCompatButton
@@ -159,7 +160,7 @@
         android:layout_marginStart="@dimen/activity_horizontal_margin"
         android:layout_marginBottom="@dimen/activity_horizontal_margin"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:text="Delete account">
+        android:text="@string/settings_button_delete_account">
     </androidx.appcompat.widget.AppCompatButton>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

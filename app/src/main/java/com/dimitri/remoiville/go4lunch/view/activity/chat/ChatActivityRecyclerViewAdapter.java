@@ -15,10 +15,6 @@ import com.dimitri.remoiville.go4lunch.viewmodel.SingletonCurrentUser;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class ChatActivityRecyclerViewAdapter extends FirestoreRecyclerAdapter<Message, RecyclerView.ViewHolder> {
 
     private static final int VIEW_TYPE_MESSAGE_SENT = 1;

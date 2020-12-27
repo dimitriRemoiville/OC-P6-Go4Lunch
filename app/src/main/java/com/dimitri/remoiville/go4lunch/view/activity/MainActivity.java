@@ -20,7 +20,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -33,10 +32,7 @@ import com.dimitri.remoiville.go4lunch.databinding.ActivityMainBinding;
 import com.dimitri.remoiville.go4lunch.event.AutocompleteEvent;
 import com.dimitri.remoiville.go4lunch.model.User;
 import com.dimitri.remoiville.go4lunch.view.activity.chat.ChatActivity;
-import com.dimitri.remoiville.go4lunch.viewmodel.Injection;
-import com.dimitri.remoiville.go4lunch.viewmodel.MainViewModel;
 import com.dimitri.remoiville.go4lunch.viewmodel.SingletonCurrentUser;
-import com.dimitri.remoiville.go4lunch.viewmodel.ViewModelFactory;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.common.api.Status;
 import com.google.android.libraries.places.api.Places;
@@ -63,8 +59,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawer;
     private Context mContext;
     private NavController navController;
-    private AppBarConfiguration bottomNavigationBar;
-    private MainViewModel mMainViewModel;
     private MenuItem searchItem;
     private MenuItem chatItem;
 
@@ -90,8 +84,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Create a new PlacesClient instance
         PlacesClient placesClient = Places.createClient(this);
 
-        configureViewModel();
-
         // Managing permissions
         requestLocationPermission();
 
@@ -105,11 +97,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Drawer navigation
         initDrawerNavigation();
 
-    }
-
-    private void configureViewModel() {
-        ViewModelFactory viewModelFactory = Injection.provideViewModelFactory();
-        mMainViewModel =  new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
     }
 
     @AfterPermissionGranted(REQUEST_LOCATION_PERMISSION)
@@ -141,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void initBottomNavigation() {
         BottomNavigationView navView = mBinding.appBarMain.contentMain.navView;
-        bottomNavigationBar = new AppBarConfiguration.Builder(
+        AppBarConfiguration bottomNavigationBar = new AppBarConfiguration.Builder(
                 R.id.nav_mapview, R.id.nav_listview, R.id.nav_workmates)
                 .build();
         NavigationUI.setupActionBarWithNavController(this, navController, bottomNavigationBar);

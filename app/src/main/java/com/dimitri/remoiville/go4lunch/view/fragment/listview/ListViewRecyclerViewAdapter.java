@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.dimitri.remoiville.go4lunch.R;
 import com.dimitri.remoiville.go4lunch.databinding.FragmentListviewBinding;
 import com.dimitri.remoiville.go4lunch.model.PlaceRestaurant;
 import com.dimitri.remoiville.go4lunch.view.activity.DetailsPlaceActivity;
@@ -42,15 +43,16 @@ public class ListViewRecyclerViewAdapter  extends RecyclerView.Adapter<ListViewR
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final PlaceRestaurant place = mPlaceRestaurants.get(position);
         holder.mFragmentListviewBinding.listPlacesName.setText(place.getName());
-        holder.mFragmentListviewBinding.listPlacesDistance.setText(place.getDistance() + "m");
+        String distance = place.getDistance() + "m";
+        holder.mFragmentListviewBinding.listPlacesDistance.setText(distance);
         holder.mFragmentListviewBinding.listPlacesTypeAddress.setText(place.getAddress());
         int nbWorkmates = place.getUserList().size();
         String nbWorkmatesString = "" + nbWorkmates;
         holder.mFragmentListviewBinding.listPlacesNbWorkmates.setText(nbWorkmatesString);
         if (place.isOpen()) {
-            holder.mFragmentListviewBinding.listPlacesOpeningHours.setText("Open");
+            holder.mFragmentListviewBinding.listPlacesOpeningHours.setText(R.string.listView_restaurant_open);
         } else {
-            holder.mFragmentListviewBinding.listPlacesOpeningHours.setText("Closed");
+            holder.mFragmentListviewBinding.listPlacesOpeningHours.setText(R.string.listView_restaurant_close);
         }
         holder.mFragmentListviewBinding.listPlacesStar1.setVisibility(View.INVISIBLE);
         holder.mFragmentListviewBinding.listPlacesStar2.setVisibility(View.INVISIBLE);

@@ -44,7 +44,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:contentDescription="TODO" />
+            android:contentDescription="@string/description_image_restaurant" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/activity_details_act_btn"
@@ -58,7 +58,7 @@
             app:layout_constraintEnd_toEndOf="@id/activity_details_restaurant_card"
             app:layout_constraintTop_toBottomOf="@id/activity_details_img"
             app:srcCompat="@drawable/check_circle_outline_grey_24"
-            android:contentDescription="TODO" />
+            android:contentDescription="@string/description_details_act_btn" />
 
         <LinearLayout
             android:id="@+id/activity_details_restaurant_card"
@@ -94,7 +94,7 @@
                     android:layout_marginStart="8dp"
                     android:visibility="invisible"
                     app:srcCompat="@drawable/star_yellow_24"
-                    android:contentDescription="TODO" />
+                    android:contentDescription="@string/description_details_star1" />
 
                 <ImageView
                     android:id="@+id/activity_details_star2"
@@ -104,7 +104,7 @@
                     android:layout_marginStart="8dp"
                     android:visibility="invisible"
                     app:srcCompat="@drawable/star_yellow_24"
-                    android:contentDescription="TODO" />
+                    android:contentDescription="@string/description_details_star2" />
 
                 <ImageView
                     android:id="@+id/activity_details_star3"
@@ -114,7 +114,7 @@
                     android:layout_marginStart="8dp"
                     android:visibility="invisible"
                     app:srcCompat="@drawable/star_yellow_24"
-                    android:contentDescription="TODO" />
+                    android:contentDescription="@string/description_details_star3" />
 
 
             </LinearLayout>
@@ -152,7 +152,7 @@
             app:layout_constraintEnd_toStartOf="@id/activity_details_like_img"
             app:layout_constraintTop_toBottomOf="@id/activity_details_restaurant_card"
             app:layout_constraintBottom_toTopOf="@id/activity_details_call_txt"
-            android:contentDescription="TODO" />
+            android:contentDescription="@string/description_details_call_img" />
 
         <TextView
             android:id="@+id/activity_details_call_txt"
@@ -180,7 +180,7 @@
             app:layout_constraintEnd_toStartOf="@id/activity_details_website_img"
             app:layout_constraintTop_toBottomOf="@id/activity_details_restaurant_card"
             app:layout_constraintBottom_toTopOf="@id/activity_details_like_txt"
-            android:contentDescription="TODO" />
+            android:contentDescription="@string/description_details_like_img" />
 
         <TextView
             android:id="@+id/activity_details_like_txt"
@@ -208,7 +208,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/activity_details_restaurant_card"
             app:layout_constraintBottom_toTopOf="@id/activity_details_website_txt"
-            android:contentDescription="TODO" />
+            android:contentDescription="@string/description_details_website_img" />
 
         <TextView
             android:id="@+id/activity_details_website_txt"

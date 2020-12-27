@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.dimitri.remoiville.go4lunch.model.Message;
 import com.dimitri.remoiville.go4lunch.model.PlaceRestaurant;
 import com.dimitri.remoiville.go4lunch.model.User;
 import com.dimitri.remoiville.go4lunch.source.repository.MessageFirestoreRepository;

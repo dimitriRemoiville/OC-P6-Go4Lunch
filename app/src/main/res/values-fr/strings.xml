@@ -19,8 +19,4 @@
     <string name="website_txt">SITE INTERNET</string>
     <string name="like_txt">J\'AIME</string>
     <string name="call_txt">APPEL</string>
-    <string name="sort_title">Tri</string>
-    <string name="sort_distance">Distance</string>
-    <string name="sort_rating">Note</string>
-    <string name="sort_workmates">Collègue</string>
 </resources>

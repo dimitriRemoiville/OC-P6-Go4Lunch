@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
-    android:background="#FFFFFF"
     tools:context=".view.fragment.listview.ListViewFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -22,7 +21,6 @@
             android:id="@+id/list_places_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Le Zinc"
             android:textColor="@android:color/black"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -34,7 +32,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="end"
-            android:text="120m"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -65,7 +62,6 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="French - 12 Rue du Faubourg Poissonnière"
                 android:textColor="@android:color/black"
                 android:textSize="12sp" />
 
@@ -78,13 +74,13 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/list_places_nb_workmates"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/person_outline_black_24" />
+            app:srcCompat="@drawable/person_outline_black_24"
+            android:contentDescription="@string/description_workmates_logo" />
 
         <TextView
             android:id="@+id/list_places_nb_workmates"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="(2)"
             android:textColor="@android:color/black"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -107,7 +103,6 @@
             android:id="@+id/list_places_opening_hours"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Open until 7pm"
             android:textColor="@android:color/black"
             android:textSize="12sp"
             android:textStyle="italic"
@@ -123,7 +118,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/list_places_star2"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/star_yellow_24" />
+            app:srcCompat="@drawable/star_yellow_24"
+            android:contentDescription="@string/description_details_star1" />
 
         <ImageView
             android:id="@+id/list_places_star2"
@@ -133,7 +129,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/list_places_star3"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/star_yellow_24" />
+            app:srcCompat="@drawable/star_yellow_24"
+            android:contentDescription="@string/description_details_star2" />
 
         <ImageView
             android:id="@+id/list_places_star3"
@@ -143,7 +140,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/star_yellow_24" />
+            app:srcCompat="@drawable/star_yellow_24"
+            android:contentDescription="@string/description_details_star3" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -154,6 +152,7 @@
         android:layout_marginStart="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/description_listView_photo_restaurant" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

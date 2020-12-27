@@ -1,5 +1,7 @@
 package com.dimitri.remoiville.go4lunch.model;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -121,6 +123,7 @@ public class User {
         mHasChosenNotification = hasChosenNotification;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "User{" +

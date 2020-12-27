@@ -7,9 +7,6 @@ import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -54,11 +51,9 @@ public class ListViewFragment extends Fragment
     private RecyclerView mRecyclerView;
     private Context mContext;
     private final String API_KEY = BuildConfig.API_KEY;
-    private FusedLocationProviderClient mFusedLocationProviderClient;
     private Location mCurrentLocation;
-    private final int radius = 400;
-    private User currentUser;
-    PlacesClient placesClient;
+    private User mCurrentUser;
+    PlacesClient mPlacesClient;
     private static final String TAG = "ListViewFragment";
 
     @Override
@@ -79,9 +74,9 @@ public class ListViewFragment extends Fragment
         // Initialize Place SDK
         Places.initialize(mContext, API_KEY);
         // Create a new PlacesClient instance
-        placesClient = Places.createClient(mContext);
+        mPlacesClient = Places.createClient(mContext);
 
-        currentUser = SingletonCurrentUser.getInstance().getCurrentUser();
+        mCurrentUser = SingletonCurrentUser.getInstance().getCurrentUser();
 
         configureViewModel();
 
@@ -97,9 +92,9 @@ public class ListViewFragment extends Fragment
     }
 
     private void getLocation() {
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext);
+        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext);
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            mFusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
                     if (location != null) {
@@ -112,6 +107,7 @@ public class ListViewFragment extends Fragment
     }
 
     private void configureObserverPlacesRestaurants() {
+        int radius = 400;
         mMainViewModel.getRestaurantsData(mCurrentLocation, radius, API_KEY).observe(getViewLifecycleOwner(), places -> {
             Collections.sort(places, new PlaceRestaurant.PlaceDistanceComparator());
             loadWorkmatesLists(places);
@@ -120,7 +116,7 @@ public class ListViewFragment extends Fragment
 
     private void loadWorkmatesLists(List<PlaceRestaurant> places) {
         mMainViewModel.getUsersPlaceIDNotNull().observe(this, users -> {
-            String uid = currentUser.getUserID();
+            String uid = mCurrentUser.getUserID();
 
             for (int i = 0; i < users.size(); i++) {
                 if (users.get(i).getUserID().equals(uid)
@@ -168,7 +164,7 @@ public class ListViewFragment extends Fragment
         final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(event.place.getPhotoMetadatas().get(0))
                 .setMaxWidth(400)
                 .build();
-        placesClient.fetchPhoto(photoRequest).addOnSuccessListener(new OnSuccessListener<FetchPhotoResponse>() {
+        mPlacesClient.fetchPhoto(photoRequest).addOnSuccessListener(new OnSuccessListener<FetchPhotoResponse>() {
             @Override
             public void onSuccess(FetchPhotoResponse fetchPhotoResponse) {
                 Bitmap bitmap = fetchPhotoResponse.getBitmap();

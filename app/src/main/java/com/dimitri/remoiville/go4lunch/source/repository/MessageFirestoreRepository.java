@@ -7,7 +7,6 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 
 public class MessageFirestoreRepository {
 
@@ -24,8 +23,7 @@ public class MessageFirestoreRepository {
                 .limit(50);
     }
 
-    // --- CREATE ---
-
+    // Create new messages for chat
     public Task<DocumentReference> createMessageForChat(String textMessage, User userSender){
         Message message = new Message(textMessage, userSender);
         return getMessagesCollection().add(message);

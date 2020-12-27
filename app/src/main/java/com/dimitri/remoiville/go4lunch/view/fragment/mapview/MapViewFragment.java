@@ -7,9 +7,6 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -22,7 +19,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.dimitri.remoiville.go4lunch.BuildConfig;
 import com.dimitri.remoiville.go4lunch.R;
 import com.dimitri.remoiville.go4lunch.event.AutocompleteEvent;
-import com.dimitri.remoiville.go4lunch.model.PlaceRestaurant;
 import com.dimitri.remoiville.go4lunch.model.User;
 import com.dimitri.remoiville.go4lunch.view.activity.DetailsPlaceActivity;
 import com.dimitri.remoiville.go4lunch.viewmodel.Injection;
@@ -38,14 +34,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.model.Place;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-
-import java.util.List;
 
 public class MapViewFragment extends Fragment
         implements
@@ -59,10 +52,10 @@ public class MapViewFragment extends Fragment
     private final String API_KEY = BuildConfig.API_KEY;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private Location mCurrentLocation;
-    private final int radius = 400;
+    private final int mRadius = 400;
     private Context mContext;
+    private User mCurrentUser;
 
-    private User currentUser;
     private static final String TAG = "MapViewFragment";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -71,7 +64,7 @@ public class MapViewFragment extends Fragment
         View root = inflater.inflate(R.layout.fragment_mapview, container, false);
         mContext = root.getContext();
 
-        currentUser = SingletonCurrentUser.getInstance().getCurrentUser();
+        mCurrentUser = SingletonCurrentUser.getInstance().getCurrentUser();
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity().getApplicationContext());
 
@@ -119,7 +112,7 @@ public class MapViewFragment extends Fragment
         // get users with a place ID != null
         mMainViewModel.getUsersPlaceIDNotNull().observe(this, users -> {
             // load restaurants nearby
-            mMainViewModel.getRestaurantsData(mCurrentLocation,radius,API_KEY).observe(getViewLifecycleOwner(), places -> {
+            mMainViewModel.getRestaurantsData(mCurrentLocation, mRadius,API_KEY).observe(getViewLifecycleOwner(), places -> {
                 for (int i = 0; i < places.size(); i++) {
                     for (int j = 0; j < users.size(); j++) {
                         if (places.get(i).getPlaceId().equals(users.get(j).getRestaurantID())) {
@@ -134,7 +127,7 @@ public class MapViewFragment extends Fragment
                             .title(places.get(i).getName())
                             .alpha(0.9f);
 
-                    if (currentUser.getRestaurantID() != null && currentUser.getRestaurantID().equals(places.get(i).getPlaceId())) {
+                    if (mCurrentUser.getRestaurantID() != null && mCurrentUser.getRestaurantID().equals(places.get(i).getPlaceId())) {
                         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
                     } else {
                         if (places.get(i).getUserList().size() > 0) {

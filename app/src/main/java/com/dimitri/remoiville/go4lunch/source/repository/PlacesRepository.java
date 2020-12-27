@@ -19,7 +19,6 @@ import retrofit2.Response;
 
 public class PlacesRepository {
 
-    private final String mType = "restaurant";
     private final MutableLiveData<List<PlaceRestaurant>> listRestaurantsMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<PlaceRestaurant> restaurantDetail = new MutableLiveData<>();
     private final List<PlaceRestaurant> listRestaurants = new ArrayList<>();
@@ -39,7 +38,8 @@ public class PlacesRepository {
         Double lat = location.getLatitude();
         Double lng = location.getLongitude();
         String latLng = lat + "," + lng;
-        Call<PlacesPOJO> listRestaurantsPOJOOut = ServicePlacesApiGenerator.getRequestGoogleApi().getNearbyPlaces(latLng, radius, mType, key);
+        String type = "restaurant";
+        Call<PlacesPOJO> listRestaurantsPOJOOut = ServicePlacesApiGenerator.getRequestGoogleApi().getNearbyPlaces(latLng, radius, type, key);
         listRestaurantsPOJOOut.enqueue(new Callback<PlacesPOJO>() {
             @Override
             public void onResponse(Call<PlacesPOJO> call, Response<PlacesPOJO> response) {

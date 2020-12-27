@@ -29,7 +29,7 @@ public class WorkmatesFragment extends Fragment {
     private MainViewModel mMainViewModel;
     private RecyclerView mRecyclerView;
     private Context mContext;
-    private User currentUser;
+    private User mCurrentUser;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,7 +55,7 @@ public class WorkmatesFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.HORIZONTAL));
 
-        currentUser = SingletonCurrentUser.getInstance().getCurrentUser();
+        mCurrentUser = SingletonCurrentUser.getInstance().getCurrentUser();
 
         getWorkmateList();
 
@@ -64,7 +64,7 @@ public class WorkmatesFragment extends Fragment {
 
     private void getWorkmateList() {
         mMainViewModel.getAllUsersSortByRestaurantID().observe(getViewLifecycleOwner(), users -> {
-            String uid = currentUser.getUserID();
+            String uid = mCurrentUser.getUserID();
             for(int i = 0; i < users.size(); i++){
                 if (users.get(i).getUserID().equals(uid)
                         || users.get(i).getFirstName() == null

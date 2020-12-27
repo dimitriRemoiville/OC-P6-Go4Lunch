@@ -1,5 +1,7 @@
 package com.dimitri.remoiville.go4lunch.model;
 
+import androidx.annotation.NonNull;
+
 import com.google.firebase.firestore.ServerTimestamp;
 
 import java.util.Date;
@@ -49,6 +51,7 @@ public class Message {
         mCreatedAt = createdAt;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "Message{" +

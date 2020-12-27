@@ -34,10 +34,9 @@ public class NotificationsService extends FirebaseMessagingService {
     private final String NOTIFICATION_TAG = "GO4LUNCH";
     private final String API_KEY = BuildConfig.API_KEY;
 
-    private final PlacesRepository placesRepository = new PlacesRepository();
-    private final UserFirestoreRepository userFirestoreRepository = new UserFirestoreRepository();
-
-    private User currentUser;
+    private final PlacesRepository mPlacesRepository = new PlacesRepository();
+    private final UserFirestoreRepository mUserFirestoreRepository = new UserFirestoreRepository();
+    private User mCurrentUser;
 
     private static final String TAG = "NotificationsService";
 
@@ -46,23 +45,28 @@ public class NotificationsService extends FirebaseMessagingService {
     }
 
     @Override
+    public void onNewToken(@NonNull String s) {
+        super.onNewToken(s);
+    }
+
+    @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
         // set current user
-        userFirestoreRepository.getUser(FirebaseAuth.getInstance().getUid()).addOnSuccessListener(documentSnapshot -> {
+        mUserFirestoreRepository.getUser(FirebaseAuth.getInstance().getUid()).addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
-                currentUser = documentSnapshot.toObject(User.class);
-                if (remoteMessage.getNotification() != null && currentUser != null) {
+                mCurrentUser = documentSnapshot.toObject(User.class);
+                if (remoteMessage.getNotification() != null && mCurrentUser != null) {
                     if (remoteMessage.getNotification().getTitle() != null) {
                         String title = remoteMessage.getNotification().getTitle();
-                        if (title.equals("Today lunch") && currentUser.getRestaurantID() != null) {
-                            getRestaurantDetails(currentUser.getRestaurantID());
+                        if (title.equals("Today lunch") && mCurrentUser.getRestaurantID() != null) {
+                            getRestaurantDetails(mCurrentUser.getRestaurantID());
                         }
                     }
                 }
             } else {
-                currentUser = null;
+                mCurrentUser = null;
             }
         });
     }
@@ -87,7 +91,7 @@ public class NotificationsService extends FirebaseMessagingService {
 
         // Create an Intent that will be shown when user will click on the Notification
         Intent intent = new Intent(this, DetailsPlaceActivity.class);
-        intent.putExtra("placeId", currentUser.getRestaurantID());
+        intent.putExtra("placeId", mCurrentUser.getRestaurantID());
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
 
         String message = "";
