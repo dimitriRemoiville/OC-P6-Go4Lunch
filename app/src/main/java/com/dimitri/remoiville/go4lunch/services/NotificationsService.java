@@ -94,7 +94,7 @@ public class NotificationsService extends FirebaseMessagingService {
         intent.putExtra("placeId", mCurrentUser.getRestaurantID());
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
 
-        String message = "";
+        String message = currentPlace.getName() + " : " + currentPlace.getAddress();
 
         // Create a Style for the Notification
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
