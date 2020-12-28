@@ -56,8 +56,6 @@ public class MapViewFragment extends Fragment
     private Context mContext;
     private User mCurrentUser;
 
-    private static final String TAG = "MapViewFragment";
-
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         configureViewModel();
@@ -102,7 +100,7 @@ public class MapViewFragment extends Fragment
                     mMap.moveCamera(update);
                     addMarkersOnMap();
                 } else {
-                    Toast.makeText(mContext, "Location not found", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, R.string.location_not_found, Toast.LENGTH_SHORT).show();
                 }
             });
         }

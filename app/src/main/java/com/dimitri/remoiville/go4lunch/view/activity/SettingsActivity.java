@@ -115,11 +115,11 @@ public class SettingsActivity extends AppCompatActivity {
             mBinding.settingsLastNameLayout.setErrorEnabled(false);
 
             if (!validateEmail(email)) {
-                mBinding.settingsEmailLayout.setError("Not a valid email address!");
+                mBinding.settingsEmailLayout.setError(getString(R.string.settings_validity_email));
             } else if (validateName(firstName)) {
-                mBinding.settingsFirstNameLayout.setError("Not a valid first name!");
+                mBinding.settingsFirstNameLayout.setError(getString(R.string.settings_validity_first_name));
             } else if (validateName(lastName)) {
-                mBinding.settingsLastNameLayout.setError("Not a valid last name!");
+                mBinding.settingsLastNameLayout.setError(getString(R.string.settings_validity_last_name));
             } else {
                 doChanges(firstName, lastName, email);
             }
@@ -181,7 +181,7 @@ public class SettingsActivity extends AppCompatActivity {
                 FirebaseAuth.getInstance().sendPasswordResetEmail(mCurrentUser.getMail())
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
-                                showSnackBar(constraintLayout, "We sent you an email !");
+                                showSnackBar(constraintLayout, getString(R.string.settings_email_sent));
                                 mBinding.settingsResetPassword.setEnabled(false);
                             }
                         }));
@@ -193,10 +193,10 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void deleteUserWithAlert() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setTitle("Are you sure ?")
-                .setMessage("Do you really want to delete your account ?")
-                .setPositiveButton("OK", (dialog, which) -> deleteUser())
-                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+        builder.setTitle(R.string.settings_alert_title)
+                .setMessage(R.string.settings_alert_message)
+                .setPositiveButton(R.string.settings_alert_validation, (dialog, which) -> deleteUser())
+                .setNegativeButton(R.string.settings_alert_cancel, (dialog, which) -> dialog.dismiss())
                 .show();
     }
 
@@ -205,7 +205,7 @@ public class SettingsActivity extends AppCompatActivity {
                 FirebaseAuth.getInstance().getCurrentUser().delete()
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
-                                showSnackBar(constraintLayout, "Account deleted !");
+                                showSnackBar(constraintLayout, getString(R.string.settings_alert_confirmation));
                                 mBinding.settingsDeleteAccount.setEnabled(false);
                                 logOut();
                             }

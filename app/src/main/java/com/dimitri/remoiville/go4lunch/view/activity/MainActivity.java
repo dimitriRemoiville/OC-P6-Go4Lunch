@@ -103,9 +103,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void requestLocationPermission() {
         String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION};
         if (EasyPermissions.hasPermissions(mContext, perms)) {
-            Toast.makeText(mContext, "Permission already granted", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, R.string.permissions_granted, Toast.LENGTH_SHORT).show();
         } else {
-            EasyPermissions.requestPermissions(this, "Please grant the location permission", REQUEST_LOCATION_PERMISSION, perms);
+            String request = getString(R.string.request_permissions);
+            EasyPermissions.requestPermissions(this, request, REQUEST_LOCATION_PERMISSION, perms);
         }
     }
 

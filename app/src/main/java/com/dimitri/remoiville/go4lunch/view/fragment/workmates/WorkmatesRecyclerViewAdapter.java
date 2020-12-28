@@ -39,9 +39,9 @@ public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<Workmates
                 .into(holder.mFragmentWorkmatesBinding.listWorkmatesImg);
         String workmateTxt = user.getFirstName();
         if (user.getRestaurantID() != null) {
-            workmateTxt = workmateTxt + " is eating at " + user.getRestaurantName();
+            workmateTxt = workmateTxt + " " + holder.itemView.getContext().getString(R.string.is_eating_at) + " " + user.getRestaurantName();
         } else {
-            workmateTxt = workmateTxt + " hasn't decided yet";
+            workmateTxt = workmateTxt + " " + holder.itemView.getContext().getString(R.string.hasnt_decided_yet);
             int grey = ContextCompat.getColor(holder.itemView.getContext(), R.color.colorTextGrey);
             holder.mFragmentWorkmatesBinding.listWorkmatesTxt.setTextColor(grey);
         }
