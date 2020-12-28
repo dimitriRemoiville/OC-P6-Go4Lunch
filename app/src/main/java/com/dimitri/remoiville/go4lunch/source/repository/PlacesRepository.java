@@ -2,6 +2,7 @@ package com.dimitri.remoiville.go4lunch.source.repository;
 
 import android.location.Location;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
 import com.dimitri.remoiville.go4lunch.model.PlaceRestaurant;
@@ -33,14 +34,14 @@ public class PlacesRepository {
     }
 
     public MutableLiveData<List<PlaceRestaurant>> getListRestaurants(Location location, int radius, String key) {
-        Double lat = location.getLatitude();
-        Double lng = location.getLongitude();
+        double lat = location.getLatitude();
+        double lng = location.getLongitude();
         String latLng = lat + "," + lng;
         String type = "restaurant";
         Call<PlacesPOJO> listRestaurantsPOJOOut = ServicePlacesApiGenerator.getRequestGoogleApi().getNearbyPlaces(latLng, radius, type, key);
         listRestaurantsPOJOOut.enqueue(new Callback<PlacesPOJO>() {
             @Override
-            public void onResponse(Call<PlacesPOJO> call, Response<PlacesPOJO> response) {
+            public void onResponse(@NonNull Call<PlacesPOJO> call, @NonNull Response<PlacesPOJO> response) {
                 for (int i = 0; i < response.body().getResults().size(); i++) {
                     PlaceRestaurant place = new PlaceRestaurant(response.body().getResults().get(i), location, key);
                     listRestaurants.add(place);
@@ -52,7 +53,7 @@ public class PlacesRepository {
             }
 
             @Override
-            public void onFailure(Call<PlacesPOJO> call, Throwable t) {
+            public void onFailure(@NonNull Call<PlacesPOJO> call, Throwable t) {
                 listRestaurantsMutableLiveData.postValue(null);
             }
         });
@@ -91,13 +92,13 @@ public class PlacesRepository {
         Call<PlaceDetailsPOJO> restaurantDetailsPOJOOut = ServicePlacesApiGenerator.getRequestGoogleApi().getPlaceDetails(placeId,key);
         restaurantDetailsPOJOOut.enqueue(new Callback<PlaceDetailsPOJO>() {
             @Override
-            public void onResponse(Call<PlaceDetailsPOJO> call, Response<PlaceDetailsPOJO> response) {
+            public void onResponse(@NonNull Call<PlaceDetailsPOJO> call, @NonNull Response<PlaceDetailsPOJO> response) {
                 PlaceRestaurant place = new PlaceRestaurant(response.body().getResult(), key);
                 restaurantDetail.setValue(place);
             }
 
             @Override
-            public void onFailure(Call<PlaceDetailsPOJO> call, Throwable t) {
+            public void onFailure(@NonNull Call<PlaceDetailsPOJO> call, @NonNull Throwable t) {
                 restaurantDetail.postValue(null);
             }
         });

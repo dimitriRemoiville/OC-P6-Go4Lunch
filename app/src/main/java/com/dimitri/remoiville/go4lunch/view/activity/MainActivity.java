@@ -10,7 +10,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -102,9 +101,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @AfterPermissionGranted(REQUEST_LOCATION_PERMISSION)
     public void requestLocationPermission() {
         String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION};
-        if (EasyPermissions.hasPermissions(mContext, perms)) {
+/*        if (EasyPermissions.hasPermissions(mContext, perms)) {
             Toast.makeText(mContext, R.string.permissions_granted, Toast.LENGTH_SHORT).show();
-        } else {
+        } else {*/
+        if (!EasyPermissions.hasPermissions(mContext, perms)) {
             String request = getString(R.string.request_permissions);
             EasyPermissions.requestPermissions(this, request, REQUEST_LOCATION_PERMISSION, perms);
         }
