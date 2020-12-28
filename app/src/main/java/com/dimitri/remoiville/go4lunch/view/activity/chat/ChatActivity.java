@@ -1,9 +1,11 @@
 package com.dimitri.remoiville.go4lunch.view.activity.chat;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -52,10 +54,14 @@ public class ChatActivity extends AppCompatActivity {
     private void onClickSendMessage() {
         mBinding.messageSendButton.setOnClickListener(v -> {
             if (!TextUtils.isEmpty(mBinding.messageEditText.getText())) {
-                // SEND A TEXT MESSAGE
+                // Send a message
                 mMessageFirestoreRepository.createMessageForChat(mBinding.messageEditText.getText().toString(), mCurrentUser)
                         .addOnFailureListener(e -> Log.d(TAG, "onFailure: " + e.getMessage()));
                 mBinding.messageEditText.setText("");
+
+                // Close the keyboard
+                InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputMethodManager.hideSoftInputFromWindow(mBinding.messageEditText.getWindowToken(),0);
             }
         });
     }
