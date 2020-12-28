@@ -52,7 +52,6 @@ public class ListViewFragment extends Fragment
     private Location mCurrentLocation;
     private User mCurrentUser;
     PlacesClient mPlacesClient;
-    private static final String TAG = "ListViewFragment";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -110,7 +109,7 @@ public class ListViewFragment extends Fragment
     }
 
     private void loadWorkmatesLists(List<PlaceRestaurant> places) {
-        mMainViewModel.getUsersPlaceIDNotNull().observe(this, users -> {
+        mMainViewModel.getUsersPlaceIDNotNull().observe(getViewLifecycleOwner(), users -> {
             String uid = mCurrentUser.getUserID();
 
             for (int i = 0; i < users.size(); i++) {

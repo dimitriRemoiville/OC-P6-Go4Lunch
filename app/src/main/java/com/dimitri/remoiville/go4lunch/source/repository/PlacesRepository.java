@@ -25,8 +25,6 @@ public class PlacesRepository {
 
     private static PlacesRepository sPlacesRepository;
 
-    private final String TAG = "PlacesRepository";
-
     public static PlacesRepository getInstance(){
         if (sPlacesRepository == null) {
             sPlacesRepository = new PlacesRepository();

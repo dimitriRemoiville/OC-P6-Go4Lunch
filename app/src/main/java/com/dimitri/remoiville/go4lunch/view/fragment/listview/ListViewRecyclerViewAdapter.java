@@ -21,7 +21,6 @@ public class ListViewRecyclerViewAdapter  extends RecyclerView.Adapter<ListViewR
 
     private final List<PlaceRestaurant> mPlaceRestaurants;
     private final Bitmap mBitmap;
-    private static final String TAG = "ListViewRecyclerViewAda";
 
     public ListViewRecyclerViewAdapter(List<PlaceRestaurant> items) {
         mPlaceRestaurants = items;
