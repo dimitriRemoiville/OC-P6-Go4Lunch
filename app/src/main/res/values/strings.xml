@@ -41,9 +41,20 @@
     <string name="menu_title_search">Search</string>
     <string name="menu_title_chat">Chat</string>
 
+    <!-- Permissions -->
+    <string name="permissions_granted">Permission already granted</string>
+    <string name="request_permissions">Please grant the location permission</string>
+
     <!-- ListView Fragment-->
     <string name="listView_restaurant_open">Open</string>
     <string name="listView_restaurant_close">Close</string>
+
+    <!-- Mapview Fragment-->
+    <string name="location_not_found">Location not found</string>
+
+    <!-- Workmates Fragment-->
+    <string name="is_eating_at">is eating at</string>
+    <string name="hasnt_decided_yet">hasn\'t decided yet</string>
 
     <!-- Settings Activity-->
     <string name="settings_hint_last_name">Last name</string>
@@ -54,6 +65,16 @@
     <string name="settings_button_save">Save changes</string>
     <string name="settings_button_reset_password">Reset password</string>
     <string name="settings_button_delete_account">Delete account</string>
+    <string name="settings_validity_email">Not a valid email address !</string>
+    <string name="settings_validity_first_name">Not a valid first name !</string>
+    <string name="settings_validity_last_name">Not a valid last name !</string>
+    <string name="settings_email_sent">We sent you an email !</string>
+    <!-- Alert dialog setting -->
+    <string name="settings_alert_title">"Are you sure ?"</string>
+    <string name="settings_alert_message">"Do you really want to delete your account ?"</string>
+    <string name="settings_alert_validation">"OK"</string>
+    <string name="settings_alert_cancel">"Cancel"</string>
+    <string name="settings_alert_confirmation">Account deleted !</string>
 
     <!-- Chat Activity-->
     <string name="chat_hint_enter_message">Enter message</string>
@@ -73,6 +94,4 @@
     <string name="description_settings_profile_picture">profile picture current user</string>
     <string name="description_workmates_logo">logo workmates</string>
     <string name="description_listView_photo_restaurant">photo of the restaurant</string>
-
-    <!-- Alert dialog -->
 </resources>

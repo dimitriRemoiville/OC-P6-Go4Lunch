@@ -100,7 +100,11 @@ public class AuthActivity extends AppCompatActivity {
         mMainViewModel.getCurrentUser(FirebaseAuth.getInstance().getUid()).observe(this, user -> {
             if (user == null) {
                 FirebaseUser fUser = getCurrentUserFirebase();
-                User userToCreate = new User(fUser.getUid(), null, fUser.getDisplayName(), fUser.getEmail(), fUser.getPhotoUrl().toString());
+                String urlPhoto = null;
+                if (fUser.getPhotoUrl() != null) {
+                    urlPhoto = fUser.getPhotoUrl().toString();
+                }
+                User userToCreate = new User(fUser.getUid(), null, fUser.getDisplayName(), fUser.getEmail(), urlPhoto);
                 mMainViewModel.createNewUser(userToCreate);
                 SingletonCurrentUser.getInstance().setCurrentUser(userToCreate);
                 Intent intent = new Intent(mContext, SettingsActivity.class);
