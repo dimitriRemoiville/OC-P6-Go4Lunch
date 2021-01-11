@@ -4,6 +4,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -17,6 +18,7 @@ import com.bumptech.glide.Glide;
 import com.dimitri.remoiville.go4lunch.R;
 import com.dimitri.remoiville.go4lunch.databinding.ActivitySettingsBinding;
 import com.dimitri.remoiville.go4lunch.model.User;
+import com.dimitri.remoiville.go4lunch.utils.UtilsSettings;
 import com.dimitri.remoiville.go4lunch.viewmodel.Injection;
 import com.dimitri.remoiville.go4lunch.viewmodel.MainViewModel;
 import com.dimitri.remoiville.go4lunch.viewmodel.SingletonCurrentUser;
@@ -27,21 +29,21 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class SettingsActivity extends AppCompatActivity {
 
     private ActivitySettingsBinding mBinding;
     private MainViewModel mMainViewModel;
 
-    private User mCurrentUser;
-
-    private static final String EMAIL_PATTERN = "^[a-zA-Z0-9#_~!$&'()*+,;=:.\"(),:;<>@\\[\\]\\\\]+@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*$";
-    private final Pattern pattern = Pattern.compile(EMAIL_PATTERN);
     private ConstraintLayout constraintLayout;
     private Context mContext;
+
+    private User mCurrentUser;
     private boolean mIsCreation;
+    SharedPreferences sharedPref;
+    public static final String PREFERENCES = "com.dimitri.remoiville.go4lunch.Notification";
+    public static final String notification = "notifKey";
+    private boolean hasChosenNotification;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +58,12 @@ public class SettingsActivity extends AppCompatActivity {
         // is it the first connexion
         mIsCreation = getIntent().getBooleanExtra("creation", false);
 
+        // get current user
         mCurrentUser = SingletonCurrentUser.getInstance().getCurrentUser();
+
+        // get notification choice with the shared preferences
+        sharedPref = mContext.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+        hasChosenNotification = sharedPref.getBoolean(notification,false);
 
         if (mIsCreation) {
             setFirstConnexionUI();
@@ -98,7 +105,7 @@ public class SettingsActivity extends AppCompatActivity {
             mBinding.settingsFirstNameInput.setText(mCurrentUser.getFirstName());
         }
 
-        mBinding.settingsSwitchNotif.setChecked(mCurrentUser.hasChosenNotification());
+        mBinding.settingsSwitchNotif.setChecked(hasChosenNotification);
         mBinding.settingsDeleteAccount.setVisibility(View.VISIBLE);
         mBinding.settingsResetPassword.setVisibility(View.VISIBLE);
     }
@@ -114,11 +121,11 @@ public class SettingsActivity extends AppCompatActivity {
             mBinding.settingsFirstNameLayout.setErrorEnabled(false);
             mBinding.settingsLastNameLayout.setErrorEnabled(false);
 
-            if (!validateEmail(email)) {
+            if (!UtilsSettings.validateEmail(email)) {
                 mBinding.settingsEmailLayout.setError(getString(R.string.settings_validity_email));
-            } else if (validateName(firstName)) {
+            } else if (UtilsSettings.validateName(firstName)) {
                 mBinding.settingsFirstNameLayout.setError(getString(R.string.settings_validity_first_name));
-            } else if (validateName(lastName)) {
+            } else if (UtilsSettings.validateName(lastName)) {
                 mBinding.settingsLastNameLayout.setError(getString(R.string.settings_validity_last_name));
             } else {
                 doChanges(firstName, lastName, email);
@@ -126,21 +133,12 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
-    public boolean validateEmail(String email) {
-        Matcher matcher = pattern.matcher(email);
-        return matcher.matches();
-    }
-
-    public boolean validateName(String name) {
-        return name.length() <= 0;
-    }
-
     private void doChanges(String firstName, String lastName, String email) {
         mCurrentUser.setFirstName(firstName);
         mCurrentUser.setLastName(lastName);
         mCurrentUser.setMail(email);
 
-        if (mBinding.settingsSwitchNotif.isChecked() != mCurrentUser.hasChosenNotification()) {
+        if (mBinding.settingsSwitchNotif.isChecked() != hasChosenNotification) {
             if (mBinding.settingsSwitchNotif.isChecked()) {
                 subscribeToTopic();
             } else {
@@ -166,14 +164,16 @@ public class SettingsActivity extends AppCompatActivity {
             notificationManager.createNotificationChannel(channel);
         }
         FirebaseMessaging.getInstance().subscribeToTopic(getString(R.string.topic));
-        mCurrentUser.setHasChosenNotification(true);
-        mMainViewModel.updateHasChosenNotification(mCurrentUser.getUserID(), mCurrentUser.hasChosenNotification());
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean(notification, true);
+        editor.apply();
     }
 
     private void unsubscribeToTopic() {
         FirebaseMessaging.getInstance().unsubscribeFromTopic(getString(R.string.topic));
-        mCurrentUser.setHasChosenNotification(false);
-        mMainViewModel.updateHasChosenNotification(mCurrentUser.getUserID(), mCurrentUser.hasChosenNotification());
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean(notification, false);
+        editor.apply();
     }
 
     private void sendPasswordResetEmail() {
@@ -205,6 +205,8 @@ public class SettingsActivity extends AppCompatActivity {
                 FirebaseAuth.getInstance().getCurrentUser().delete()
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
+                                sharedPref.edit().clear();
+                                sharedPref.edit().apply();
                                 showSnackBar(constraintLayout, getString(R.string.settings_alert_confirmation));
                                 mBinding.settingsDeleteAccount.setEnabled(false);
                                 logOut();

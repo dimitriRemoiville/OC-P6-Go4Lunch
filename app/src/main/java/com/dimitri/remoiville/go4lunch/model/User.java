@@ -15,7 +15,6 @@ public class User {
     private List<String> mLikesList;
     private String mRestaurantID;
     private String mRestaurantName;
-    private boolean mHasChosenNotification;
 
     private final String defaultURLPicture = "https://firebasestorage.googleapis.com/v0/b/go4lunch-ee885.appspot.com/o/avatars%2Fdefault%2Fdefault_picture.jpg?alt=media&token=8c100d65-cb26-4c6f-8319-470ac3627c42";
 
@@ -35,11 +34,10 @@ public class User {
         mLikesList = new ArrayList<>();
         mRestaurantID = null;
         mRestaurantName = null;
-        mHasChosenNotification = false;
     }
 
 
-    public User(String userID, String firstName, String lastName, String mail, String URLProfilePicture, List<String> likesList, String restaurantID, String restaurantName, boolean hasChosenNotification) {
+    public User(String userID, String firstName, String lastName, String mail, String URLProfilePicture, List<String> likesList, String restaurantID, String restaurantName) {
         mUserID = userID;
         mFirstName = firstName;
         mLastName = lastName;
@@ -48,7 +46,6 @@ public class User {
         mLikesList = likesList;
         mRestaurantID = restaurantID;
         mRestaurantName = restaurantName;
-        mHasChosenNotification = hasChosenNotification;
     }
 
     public String getUserID() {
@@ -115,13 +112,6 @@ public class User {
         mRestaurantName = restaurantName;
     }
 
-    public boolean hasChosenNotification() {
-        return mHasChosenNotification;
-    }
-
-    public void setHasChosenNotification(boolean hasChosenNotification) {
-        mHasChosenNotification = hasChosenNotification;
-    }
 
     @NonNull
     @Override
@@ -133,7 +123,7 @@ public class User {
                 ", mMail='" + mMail + '\'' +
                 ", mURLProfilePicture='" + mURLProfilePicture + '\'' +
                 ", mLikesList=" + mLikesList +
-                ", mLunchRestaurantID='" + mRestaurantID + '\'' +
+                ", mRestaurantID='" + mRestaurantID + '\'' +
                 ", mRestaurantName='" + mRestaurantName + '\'' +
                 '}';
     }

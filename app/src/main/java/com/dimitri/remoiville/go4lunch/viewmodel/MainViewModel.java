@@ -27,7 +27,7 @@ public class MainViewModel extends ViewModel {
     private final UserFirestoreRepository mUserFirestoreRepository;
     private final MessageFirestoreRepository mMessageFirestoreRepository;
 
-    private MutableLiveData<List<PlaceRestaurant>> listRestaurants = new MutableLiveData<>();
+    private static MutableLiveData<List<PlaceRestaurant>> listRestaurants = new MutableLiveData<>();
     private MutableLiveData<PlaceRestaurant> restaurantDetails = new MutableLiveData<>();
 
     private final MutableLiveData<User> currentUser = new MutableLiveData<>();
@@ -45,12 +45,26 @@ public class MainViewModel extends ViewModel {
     }
 
     // API Places
-    public MutableLiveData<List<PlaceRestaurant>> getRestaurantsData(Location location, int radius, String key) {
-        return listRestaurants = mPlacesRepository.getListRestaurants(location, radius, key);
+    public void clearListRestaurants() {
+        listRestaurants.setValue(new ArrayList<>());
     }
 
-    public MutableLiveData<PlaceRestaurant> getRestaurantDetailsData(String placeId, String key) {
-        return restaurantDetails = mPlacesRepository.getRestaurantDetails(placeId,key);
+    // Set restaurants list from API Places
+    public void setListRestaurants(Location location, int radius, String key) {
+        listRestaurants = mPlacesRepository.getListRestaurants(location,radius,key);
+    }
+
+    // Get restaurants list
+    public MutableLiveData<List<PlaceRestaurant>> getListRestaurants() {
+        return listRestaurants;
+    }
+    // Set restaurant details from API Place
+    public void setRestaurantDetails(String placeId, String key) {
+        restaurantDetails = mPlacesRepository.getRestaurantDetails(placeId, key);
+    }
+    // Get restaurant detail
+    public MutableLiveData<PlaceRestaurant> getRestaurantDetails() {
+        return restaurantDetails;
     }
 
     // Cloud Firestore
@@ -120,11 +134,6 @@ public class MainViewModel extends ViewModel {
     // Update the list of restaurant liked by the use
     public void updateLikesList(String userID, List<String> likesList) {
         mUserFirestoreRepository.updateLikesList(userID, likesList);
-    }
-
-    // Update the boolean who signal if a user subscribe to the notifications services
-    public void updateHasChosenNotification(String userID, boolean hasChosenNotification) {
-        mUserFirestoreRepository.updateHasChosenNotification(userID, hasChosenNotification);
     }
 
     // Delete the specified user
