@@ -76,7 +76,7 @@ public class MapViewFragment extends Fragment
 
     private void configureViewModel() {
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory();
-        mMainViewModel = new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
+        mMainViewModel = new ViewModelProvider(requireActivity(), viewModelFactory).get(MainViewModel.class);
     }
 
 
@@ -98,7 +98,7 @@ public class MapViewFragment extends Fragment
                     LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                     CameraUpdate update = CameraUpdateFactory.newLatLngZoom(currentLatLng, 15);
                     mMap.moveCamera(update);
-                    addMarkersOnMap();
+                    loadRestaurantsFromPlaces();
                 } else {
                     Toast.makeText(mContext, R.string.location_not_found, Toast.LENGTH_SHORT).show();
                 }
@@ -106,11 +106,12 @@ public class MapViewFragment extends Fragment
         }
     }
 
-    private void addMarkersOnMap() {
+    private void loadRestaurantsFromPlaces() {
         // get users with a place ID != null
         mMainViewModel.getUsersPlaceIDNotNull().observe(this, users -> {
             // load restaurants nearby
-            mMainViewModel.getRestaurantsData(mCurrentLocation, mRadius,API_KEY).observe(getViewLifecycleOwner(), places -> {
+            mMainViewModel.getListRestaurants().observe(getViewLifecycleOwner(), places -> {
+                // looking for places with workmates
                 for (int i = 0; i < places.size(); i++) {
                     for (int j = 0; j < users.size(); j++) {
                         if (places.get(i).getPlaceId().equals(users.get(j).getRestaurantID())) {
@@ -119,6 +120,7 @@ public class MapViewFragment extends Fragment
                     }
                 }
 
+                // Adding markers on the map
                 for (int i = 0; i < places.size(); i++) {
                     LatLng position = new LatLng(places.get(i).getLat(), places.get(i).getLng());
                     MarkerOptions markerOptions = new MarkerOptions().position(position)
@@ -152,8 +154,25 @@ public class MapViewFragment extends Fragment
 
     @Override
     public boolean onMyLocationButtonClick() {
-        mMap.clear();
-        getLocation();
+        if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+            mFusedLocationProviderClient.getLastLocation().addOnSuccessListener(location -> {
+                if (location != null) {
+                    if (location.getLatitude() != mCurrentLocation.getLatitude()
+                            && location.getLongitude() != mCurrentLocation.getLongitude()) {
+                        mMap.clear();
+                        mCurrentLocation = location;
+                        LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(currentLatLng, 15);
+                        mMap.moveCamera(update);
+                        mMainViewModel.clearListRestaurants();
+                        mMainViewModel.setListRestaurants(mCurrentLocation, mRadius, API_KEY);
+                    }
+                } else {
+                    Toast.makeText(mContext, R.string.location_not_found, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
         return false;
     }
 
@@ -182,7 +201,7 @@ public class MapViewFragment extends Fragment
                     .title(place.getName())
                     .alpha(0.9f)
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))
-            .setTag(place.getId());
+                    .setTag(place.getId());
 
             LatLng currentLatLng = new LatLng(place.getLatLng().latitude, place.getLatLng().longitude);
             CameraUpdate update = CameraUpdateFactory.newLatLngZoom(currentLatLng, 15);

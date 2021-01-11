@@ -42,6 +42,7 @@ public class PlacesRepository {
         listRestaurantsPOJOOut.enqueue(new Callback<PlacesPOJO>() {
             @Override
             public void onResponse(@NonNull Call<PlacesPOJO> call, @NonNull Response<PlacesPOJO> response) {
+                listRestaurants.clear();
                 for (int i = 0; i < response.body().getResults().size(); i++) {
                     PlaceRestaurant place = new PlaceRestaurant(response.body().getResults().get(i), location, key);
                     listRestaurants.add(place);
@@ -49,6 +50,7 @@ public class PlacesRepository {
 /*                if (response.body().getNextPageToken() != null) {
                     getListRestaurantsNext(response.body().getNextPageToken(), location, key);
                 }*/
+                listRestaurantsMutableLiveData.setValue(new ArrayList<>());
                 listRestaurantsMutableLiveData.setValue(listRestaurants);
             }
 

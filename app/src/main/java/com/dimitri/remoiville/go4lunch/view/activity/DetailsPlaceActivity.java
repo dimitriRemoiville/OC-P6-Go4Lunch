@@ -68,7 +68,8 @@ public class DetailsPlaceActivity extends AppCompatActivity {
             // start display
             startDisplay();
             // get place details
-            mMainViewModel.getRestaurantDetailsData(mPlaceID, API_KEY)
+            mMainViewModel.setRestaurantDetails(mPlaceID,API_KEY);
+            mMainViewModel.getRestaurantDetails()
                     .observe(this, place -> {
                         place.setPlaceId(mPlaceID);
                         updateUI(place);

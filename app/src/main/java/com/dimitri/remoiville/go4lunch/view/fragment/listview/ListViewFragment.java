@@ -51,7 +51,7 @@ public class ListViewFragment extends Fragment
     private final String API_KEY = BuildConfig.API_KEY;
     private Location mCurrentLocation;
     private User mCurrentUser;
-    PlacesClient mPlacesClient;
+    private PlacesClient mPlacesClient;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -85,7 +85,7 @@ public class ListViewFragment extends Fragment
 
     private void configureViewModel() {
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory();
-        mMainViewModel = new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
+        mMainViewModel = new ViewModelProvider(requireActivity(), viewModelFactory).get(MainViewModel.class);
     }
 
     private void getLocation() {
@@ -101,8 +101,7 @@ public class ListViewFragment extends Fragment
     }
 
     private void configureObserverPlacesRestaurants() {
-        int radius = 400;
-        mMainViewModel.getRestaurantsData(mCurrentLocation, radius, API_KEY).observe(getViewLifecycleOwner(), places -> {
+        mMainViewModel.getListRestaurants().observe(getViewLifecycleOwner(), places -> {
             Collections.sort(places, new PlaceRestaurant.PlaceDistanceComparator());
             loadWorkmatesLists(places);
         });
@@ -121,6 +120,7 @@ public class ListViewFragment extends Fragment
             }
 
             for (int i = 0; i < places.size(); i++) {
+                places.get(i).getUserList().clear();
                 for (int j = 0; j < users.size(); j++) {
                     if (places.get(i).getPlaceId().equals(users.get(j).getRestaurantID())) {
                         places.get(i).getUserList().add(users.get(j));

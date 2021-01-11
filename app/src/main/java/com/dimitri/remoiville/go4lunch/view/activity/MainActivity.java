@@ -3,6 +3,8 @@ package com.dimitri.remoiville.go4lunch.view.activity;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -10,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +22,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -31,9 +35,14 @@ import com.dimitri.remoiville.go4lunch.databinding.ActivityMainBinding;
 import com.dimitri.remoiville.go4lunch.event.AutocompleteEvent;
 import com.dimitri.remoiville.go4lunch.model.User;
 import com.dimitri.remoiville.go4lunch.view.activity.chat.ChatActivity;
+import com.dimitri.remoiville.go4lunch.viewmodel.Injection;
+import com.dimitri.remoiville.go4lunch.viewmodel.MainViewModel;
 import com.dimitri.remoiville.go4lunch.viewmodel.SingletonCurrentUser;
+import com.dimitri.remoiville.go4lunch.viewmodel.ViewModelFactory;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.TypeFilter;
@@ -55,11 +64,15 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private ActivityMainBinding mBinding;
+    private MainViewModel mMainViewModel;
     private DrawerLayout drawer;
     private Context mContext;
     private NavController navController;
     private MenuItem searchItem;
     private MenuItem chatItem;
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+    private Location mCurrentLocation;
+    private int mRadius = 400;
 
     private final String API_KEY = BuildConfig.API_KEY;
     private final int REQUEST_LOCATION_PERMISSION = 1;
@@ -78,6 +91,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar(mBinding.appBarMain.toolbar);
         mContext = view.getContext();
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        configureViewModel();
+        // Set restaurant list
+        setRestaurantList();
+
         // Initialize Place SDK
         Places.initialize(getApplicationContext(), API_KEY);
         // Create a new PlacesClient instance
@@ -98,12 +115,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
+    private void setRestaurantList() {
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mFusedLocationProviderClient.getLastLocation().addOnSuccessListener(location -> {
+                if (location != null) {
+                    mCurrentLocation = location;
+                    mMainViewModel.setListRestaurants(mCurrentLocation, mRadius, API_KEY);
+                } else {
+                    Toast.makeText(mContext, R.string.location_not_found, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+    private void configureViewModel() {
+        ViewModelFactory viewModelFactory = Injection.provideViewModelFactory();
+        mMainViewModel = new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
+    }
+
     @AfterPermissionGranted(REQUEST_LOCATION_PERMISSION)
     public void requestLocationPermission() {
         String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION};
-/*        if (EasyPermissions.hasPermissions(mContext, perms)) {
-            Toast.makeText(mContext, R.string.permissions_granted, Toast.LENGTH_SHORT).show();
-        } else {*/
         if (!EasyPermissions.hasPermissions(mContext, perms)) {
             String request = getString(R.string.request_permissions);
             EasyPermissions.requestPermissions(this, request, REQUEST_LOCATION_PERMISSION, perms);
